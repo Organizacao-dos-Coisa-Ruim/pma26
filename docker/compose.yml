@@ -1,0 +1,11 @@
+name: test
+
+services:
+  front:
+    image: nginx:latest
+    environment:
+      - USER=nadottins
+    ports:
+      - "80"
+    deploy:
+      replicas: 5
