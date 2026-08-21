@@ -1,6 +1,6 @@
 [submodule "api/account"]
 	path = api/account
 	url = https://github.com/Nadoutti/pma-26-account.git
-[submodule "api/account-service/api/account-service"]
-	path = api/account-service/api/account-service
+[submodule "api/account-service"]
+	path = api/account-service
 	url = https://github.com/Organizacao-dos-Coisa-Ruim/pma26-account-service.git
