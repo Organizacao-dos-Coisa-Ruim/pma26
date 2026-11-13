@@ -113,7 +113,7 @@ Repositório próprio com MkDocs publicado, contendo:
 ## Checklist geral
 - [ ] Gateway
 - [ ] Auth
-- [ ] Account
+- [x] Account
 - [ ] Exchange
 - [ ] Product / Order (domínio do e-commerce)
 - [ ] Todos os serviços como submodules do `pma26`
