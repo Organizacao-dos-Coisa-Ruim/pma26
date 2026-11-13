@@ -115,5 +115,6 @@ Para rodar testes ou abrir na IDE, com Java 21: instale as interfaces antes dos 
 
 ## Documentação
 
+- [docs/onboarding.md](docs/onboarding.md): **comece por aqui** para criar um serviço novo ou um gargalo
 - [RUBRICA.md](RUBRICA.md): critérios de avaliação e checklist
 - [docs/ia.md](docs/ia.md): registro de uso de IA
