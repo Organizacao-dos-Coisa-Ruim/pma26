@@ -75,6 +75,23 @@ curl -i localhost:8080/accounts                                    # 401 (sem to
 curl -i localhost:8080/accounts -H "Authorization: Bearer $TOKEN"  # 200
 ```
 
+## Observabilidade (Prometheus + Grafana)
+
+O compose também sobe o **Prometheus** e o **Grafana**, acessíveis só desta máquina:
+
+| | URL | |
+|-|-----|-|
+| Grafana | http://localhost:3000 | usuário `admin`, senha `GRAFANA_ADMIN_PASSWORD` do `docker/.env` |
+| Prometheus | http://localhost:9090 | `Status → Targets` mostra se os 3 serviços estão sendo coletados |
+
+Dashboards (pasta **PMA26**, provisionados automaticamente):
+- **PMA26 - Visão geral** (home): req/s, latência p95/p99, respostas por status, taxa de 5xx, CPU, heap, pool do banco e threads do Tomcat por serviço. É o dashboard para acompanhar o load test.
+- **SpringBoot APM Dashboard** ([12900](https://grafana.com/grafana/dashboards/12900)): detalhes de JVM, GC, HikariCP, Tomcat e logs, por serviço.
+
+O Prometheus coleta a cada 5s `gateway:8080/gateway/actuator/prometheus`, `auth:8080/actuator/prometheus`
+e `account:8080/actuator/prometheus`. O `/actuator` do auth e do account não passa pelo gateway, então não fica exposto.
+Detalhes em [docs/gargalos/observabilidade.md](docs/gargalos/observabilidade.md).
+
 ## Desenvolvimento sem Docker (opcional)
 
 Para rodar testes ou abrir na IDE, com Java 21: instale as interfaces antes dos services.
