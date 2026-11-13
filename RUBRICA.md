@@ -111,7 +111,7 @@ Repositório próprio com MkDocs publicado, contendo:
 - Entrega no fim do curso. A data exata está no Blackboard.
 
 ## Checklist geral
-- [ ] Gateway
+- [x] Gateway
 - [x] Auth
 - [x] Account
 - [ ] Exchange

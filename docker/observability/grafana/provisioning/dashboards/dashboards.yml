@@ -1,0 +1,10 @@
+apiVersion: 1
+
+# Carrega os JSONs de /var/lib/grafana/dashboards (pasta docker/observability/grafana/dashboards)
+providers:
+  - name: pma26
+    folder: PMA26
+    type: file
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards

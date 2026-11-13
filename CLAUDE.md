@@ -66,7 +66,8 @@ pma26/
 ├── docker/
 │   ├── compose.yml              ← sobe o sistema inteiro localmente
 │   ├── java-service.Dockerfile  ← build genérico (interfaces + service) usado pelo compose
-│   └── .env.example             ← variáveis; copiar para docker/.env (fora do git)
+│   ├── .env.example             ← variáveis; copiar para docker/.env (fora do git)
+│   └── observability/           ← prometheus.yml + provisioning e dashboards do Grafana
 ├── k8s/                 ← (a criar) manifests do Kubernetes/EKS: deployment, service, hpa
 └── docs/                ← MkDocs (a criar) + ia.md (registro de uso de IA)
 ```
