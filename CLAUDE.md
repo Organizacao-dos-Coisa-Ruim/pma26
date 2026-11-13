@@ -67,8 +67,6 @@ pma26/
 └── docs/                ← MkDocs (a criar) + ia.md (registro de uso de IA)
 ```
 
-⚠️ O submodule `api/account` aponta para `Nadoutti/pma-26-account` (fork pessoal); para a entrega, o ideal é apontar para `Organizacao-dos-Coisa-Ruim/pma-26-account`.
-
 ## Stack
 
 - Java **21**, Spring Boot **4.1.x**, Spring Cloud **2025.1.x** (OpenFeign, Gateway), Lombok, Maven Wrapper (`./mvnw`).
@@ -78,7 +76,7 @@ pma26/
 - CI/CD: Jenkins ou GitHub Actions (build → push Docker Hub → deploy EKS).
 - Observabilidade: Spring Actuator + Micrometer + Prometheus + Grafana.
 
-Mantenha as versões alinhadas entre os serviços (hoje `account` está no Boot 4.1.0 e `account-service` no 4.1.1).
+Mantenha as versões alinhadas entre os serviços (hoje todos no Boot 4.1.1).
 
 ## Convenções
 
