@@ -112,7 +112,7 @@ Repositório próprio com MkDocs publicado, contendo:
 
 ## Checklist geral
 - [ ] Gateway
-- [ ] Auth
+- [x] Auth
 - [x] Account
 - [ ] Exchange
 - [ ] Product / Order (domínio do e-commerce)

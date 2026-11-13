@@ -60,6 +60,8 @@ pma26/
 ├── api/                 ← microsserviços, cada um é um git submodule
 │   ├── account/         → interface Account (Feign + DTOs)
 │   ├── account-service/ → implementação do Account
+│   ├── auth/            → interface Auth (Feign + DTOs)
+│   ├── auth-service/    → implementação do Auth (registro, login, JWT)
 │   └── gateway-service/ → API Gateway (Spring Cloud Gateway, WebFlux)
 ├── docker/
 │   └── compose.yml      ← sobe o sistema inteiro localmente
