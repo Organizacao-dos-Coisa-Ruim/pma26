@@ -8,3 +8,9 @@
 	path = api/gateway-service
 	url = https://github.com/Organizacao-dos-Coisa-Ruim/gateway-service.git
 	branch = main
+[submodule "api/auth"]
+	path = api/auth
+	url = https://github.com/Organizacao-dos-Coisa-Ruim/pma26-auth.git
+[submodule "api/auth-service"]
+	path = api/auth-service
+	url = https://github.com/Organizacao-dos-Coisa-Ruim/pma26-auth-service.git
