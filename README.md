@@ -101,6 +101,12 @@ O Prometheus coleta a cada 5s `gateway:8080/gateway/actuator/prometheus`, `auth:
 e `account:8080/actuator/prometheus`. O `/actuator` do auth e do account não passa pelo gateway, então não fica exposto.
 Detalhes em [docs/gargalos/observabilidade.md](docs/gargalos/observabilidade.md).
 
+## CI/CD
+
+GitHub Actions em todos os repositórios: testes a cada PR, imagem no Docker Hub a cada merge na `main` dos services,
+e no `pma26` um **smoke test** que sobe o compose inteiro e roda [`docker/smoke-test.sh`](docker/smoke-test.sh).
+Detalhes e configuração dos secrets em [docs/cicd.md](docs/cicd.md).
+
 ## Desenvolvimento sem Docker (opcional)
 
 Para rodar testes ou abrir na IDE, com Java 21: instale as interfaces antes dos services.
@@ -115,6 +121,7 @@ Para rodar testes ou abrir na IDE, com Java 21: instale as interfaces antes dos 
 
 ## Documentação
 
+- [docs/cicd.md](docs/cicd.md): pipelines e secrets
 - [docs/onboarding.md](docs/onboarding.md): **comece por aqui** para criar um serviço novo ou um gargalo
 - [RUBRICA.md](RUBRICA.md): critérios de avaliação e checklist
 - [docs/ia.md](docs/ia.md): registro de uso de IA
