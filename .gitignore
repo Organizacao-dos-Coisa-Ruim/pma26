@@ -1,0 +1,10 @@
+# variáveis de ambiente com segredos
+.env
+*.env
+!*.env.example
+
+# IDE / build
+.idea/
+.vscode/
+*.iml
+target/

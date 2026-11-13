@@ -1,0 +1,53 @@
+# Fluxo completo do sistema, pelo gateway.
+# Abra no VS Code com a extensão "REST Client" (humao.rest-client) e clique em "Send Request"
+# em cada bloco, de cima para baixo. O token do login é reaproveitado nas chamadas seguintes.
+
+@gateway = http://localhost:8080
+@email = ana@insper.edu.br
+@password = 123456
+
+### Health-check (rotas abertas)
+GET {{gateway}}/auth/health-check
+
+###
+GET {{gateway}}/accounts/health-check
+
+### 1. Registrar usuário (aberta) -> 201 | 409 se o email já existe
+POST {{gateway}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Ana",
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### 2. Login (aberta) -> 200 {"jwt": "..."} | 401
+# @name login
+POST {{gateway}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### 3. Rota protegida SEM token -> 401
+GET {{gateway}}/accounts
+
+### 4. Rota protegida COM token -> 200
+GET {{gateway}}/accounts
+Authorization: Bearer {{login.response.body.jwt}}
+
+### 5. Token inválido -> 401
+GET {{gateway}}/accounts
+Authorization: Bearer token-invalido
+
+### 6. Login com senha errada -> 401
+POST {{gateway}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "senha-errada"
+}

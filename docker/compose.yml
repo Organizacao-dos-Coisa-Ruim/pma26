@@ -1,11 +1,77 @@
-name: test
+# Sobe o sistema inteiro localmente.
+#
+#   cp docker/.env.example docker/.env   # e preencha as senhas
+#   docker compose -f docker/compose.yml up --build
+#
+# Só o gateway publica porta para fora (http://localhost:8080). Os serviços se enxergam
+# pelo nome (http://account:8080, http://auth:8080), igual aos Services do Kubernetes.
+
+name: pma26
+
+x-java-build: &java-build
+  context: ../api
+  dockerfile: ../docker/java-service.Dockerfile
 
 services:
-  front:
-    image: nginx:latest
+
+  db:
+    image: postgres:17-alpine
     environment:
-      - USER=nadottins
+      POSTGRES_DB: ${DATABASE_DB:-store}
+      POSTGRES_USER: ${DATABASE_USERNAME:-store}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?defina DATABASE_PASSWORD em docker/.env}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      retries: 20
+
+  account:
+    image: account
+    build:
+      <<: *java-build
+      args:
+        INTERFACES: account
+        SERVICE: account-service
+    environment:
+      DATABASE_HOST: db
+      DATABASE_DB: ${DATABASE_DB:-store}
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-store}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:?defina DATABASE_PASSWORD em docker/.env}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  auth:
+    image: auth
+    build:
+      <<: *java-build
+      args:
+        INTERFACES: auth account
+        SERVICE: auth-service
+    environment:
+      JWT_SECRET: ${JWT_SECRET:?defina JWT_SECRET em docker/.env (mínimo de 32 caracteres)}
+      JWT_DURATION: ${JWT_DURATION:-1h}
+    depends_on:
+      - account
+    restart: unless-stopped
+
+  gateway:
+    image: gateway
+    build:
+      <<: *java-build
+      args:
+        SERVICE: gateway-service
+    environment:
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-*}
     ports:
-      - "80"
-    deploy:
-      replicas: 5
+      - "${GATEWAY_PORT:-8080}:8080"
+    depends_on:
+      - account
+      - auth
+    restart: unless-stopped
+
+volumes:
+  db-data:
