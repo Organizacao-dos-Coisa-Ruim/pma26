@@ -1,0 +1,131 @@
+# CLAUDE.md — pma26
+
+Repositório principal do projeto de **Plataformas, Microsserviços e APIs (Insper, 2026.2)**: um e-commerce em microsserviços Spring Boot, rodando na AWS (EKS).
+
+## ⚠️ Antes de qualquer tarefa: leia `RUBRICA.md`
+
+**Sempre leia [RUBRICA.md](RUBRICA.md) antes de planejar ou implementar algo.** Ela define o que vale nota, e toda decisão deve ser tomada com ela em mente:
+
+- Diga a qual item da rubrica a tarefa contribui (ex.: "Bottlenecks — cache com Redis").
+- Se a tarefa não contribui para nenhum item, avise antes de gastar esforço nela.
+- Lembre que **80% da nota não é código de serviço**: gargalos (20%), load test (15%), EKS (10%), CI/CD (10%), custos (10%), MkDocs (10%), AWS (5%). Não fique polindo CRUD.
+- Ao terminar algo que corresponde a um item do checklist da rubrica, sugira marcá-lo.
+
+## Regras de uso de IA (exigidas pelo curso)
+
+- No código, a IA é **parcialmente** permitida: boilerplate, sugestões, correção de erros. **Não implemente uma feature inteira sem o usuário pedir explicitamente.** Na dúvida, proponha e espere aprovação.
+- **Registre o uso de IA** em `docs/ia.md` (crie se não existir): data, serviço/arquivo, o que a IA fez e o que o integrante fez. A documentação final precisa declarar isso.
+- Explique o que foi feito de forma que qualquer integrante consiga **defender o código na apresentação**. Prefira soluções simples e explicáveis a soluções "espertas".
+
+## Arquitetura
+
+```
+              Internet
+                 │
+            [ Gateway ]  ← único ponto de entrada, valida o token (JWT) com o Auth
+     ┌──────┬────┴────┬──────────┬─────────┐
+  [Auth] [Account] [Exchange] [Product] [Order]
+     │       │                    │         │
+     └───────┴──── PostgreSQL (RDS em produção) ┘
+```
+
+- **Gateway**: Spring Cloud Gateway. Roteia por prefixo (`/auth/**`, `/accounts/**`, `/exchange/**`, `/products/**`, `/orders/**`) e checa o token nas rotas protegidas.
+- **Auth**: login e emissão/validação de JWT. Consulta o Account via Feign.
+- **Account**: CRUD de usuários.
+- **Exchange**: câmbio entre moedas.
+- **Product / Order**: domínio do e-commerce.
+- Os serviços se comunicam por **HTTP via OpenFeign**, usando o nome do serviço como host (`http://account:8080`): DNS do Docker Compose localmente e Service do Kubernetes no EKS.
+- Os serviços nunca são expostos diretamente: só o gateway tem acesso externo.
+
+### Padrão interface + service (padrão do curso)
+
+Cada domínio tem **dois repositórios / dois artefatos Maven**:
+
+| Repositório | Papel | Exemplo |
+|-------------|-------|---------|
+| `<dominio>` | **Interface**: `@FeignClient` + DTOs (`*In` / `*Out` como `record`). É uma lib que os outros serviços importam para chamar este. | `api/account` |
+| `<dominio>-service` | **Implementação**: implementa a interface, com `Resource` (controller), `Service`, `Repository`, `Model` e o banco. É o que roda em container. | `api/account-service` |
+
+- A interface **precisa ser instalada antes** do service (`mvn clean install` na interface).
+- DTOs: `record` com `@Builder` (Lombok). Entidade JPA (`*Model`) ≠ DTO; converta numa classe `*Parser`.
+- Todo serviço expõe `GET /<recurso>/health-check`.
+
+## Estrutura do repositório
+
+```
+pma26/
+├── CLAUDE.md
+├── RUBRICA.md
+├── api/                 ← microsserviços, cada um é um git submodule
+│   ├── account/         → interface Account (Feign + DTOs)
+│   └── account-service/ → implementação do Account
+├── docker/
+│   └── compose.yml      ← sobe o sistema inteiro localmente
+├── k8s/                 ← (a criar) manifests do Kubernetes/EKS: deployment, service, hpa
+└── docs/                ← (a criar) MkDocs
+```
+
+Repositórios da organização `Organizacao-dos-Coisa-Ruim` que ainda não são submodules: `gateway-service`.
+⚠️ O submodule `api/account` aponta para `Nadoutti/pma-26-account` (fork pessoal); para a entrega, o ideal é apontar para `Organizacao-dos-Coisa-Ruim/pma-26-account`.
+
+## Stack
+
+- Java **21**, Spring Boot **4.1.x**, Spring Cloud **2025.1.x** (OpenFeign, Gateway), Lombok, Maven Wrapper (`./mvnw`).
+- Banco: PostgreSQL (container local, RDS na AWS). Migrações com Flyway.
+- Containers: Docker, Docker Compose (local), Docker Hub (registry).
+- Nuvem: AWS EKS, RDS, VPC via CloudFormation.
+- CI/CD: Jenkins ou GitHub Actions (build → push Docker Hub → deploy EKS).
+- Observabilidade: Spring Actuator + Micrometer + Prometheus + Grafana.
+
+Mantenha as versões alinhadas entre os serviços (hoje `account` está no Boot 4.1.0 e `account-service` no 4.1.1).
+
+## Convenções
+
+- **Pacotes:** `pma.<dominio>` (ex.: `pma.account`, `pma.auth`).
+- **Porta:** todo serviço roda na **8080** dentro do container; só o gateway é publicado para fora.
+- **Configuração:** `application.yaml`, com valores sensíveis vindos de **variáveis de ambiente** (`${DATABASE_HOST}`, `${JWT_SECRET}`...). **Nunca comite segredos**, credenciais AWS ou senhas.
+- **Dockerfile** na raiz de cada `*-service` (multi-stage ou a partir do jar).
+- **Nomes de imagem/deployment/service** iguais ao nome do serviço (`gateway`, `auth`, `account`...), porque o HPA e o load test usam esses nomes.
+- **Commits:** Conventional Commits em português ou inglês (`feat:`, `fix:`, `docs:`, `chore:`).
+- **Senhas:** sempre com hash (BCrypt / SHA-256 + salt), nunca em texto puro.
+
+## Trabalhando com submodules
+
+```bash
+# clonar tudo
+git clone --recurse-submodules https://github.com/Organizacao-dos-Coisa-Ruim/pma26.git
+
+# atualizar os submodules para o último commit de cada repo
+git submodule update --remote --merge
+
+# adicionar um novo serviço
+git submodule add https://github.com/Organizacao-dos-Coisa-Ruim/<repo>.git api/<nome>
+```
+
+- Alterações em um serviço são **commitadas e pushadas no repositório do serviço**. Depois, no `pma26`, comite o novo ponteiro do submodule.
+- Não edite o código de um serviço "por dentro" do `pma26` sem commitar no repositório dele: a mudança se perde.
+
+## Rodando localmente
+
+```bash
+# 1. instalar as interfaces (libs Feign) no repositório Maven local
+cd api/account && ./mvnw clean install && cd ../..
+
+# 2. buildar os services
+cd api/account-service && ./mvnw clean package -DskipTests && cd ../..
+
+# 3. subir tudo
+docker compose -f docker/compose.yml up --build
+```
+
+> O `docker/compose.yml` hoje é só um teste com nginx; ele precisa ser reescrito com os serviços reais + Postgres.
+
+## Como o Claude deve trabalhar aqui
+
+1. **Leia `RUBRICA.md`** e diga qual item a tarefa atende.
+2. **Não escreva código sem o usuário pedir.** Para pedidos de análise ou planejamento, entregue o plano e espere.
+3. Antes de mudar um serviço, leia o código existente dele e siga o padrão interface + service.
+4. Mudanças pequenas e focadas, num serviço por vez; diga em qual repositório (submodule) a mudança precisa ser commitada.
+5. Não faça commit, push, deploy na AWS nem crie recursos pagos sem confirmação explícita. **EKS/RDS custam dinheiro**: lembre de derrubar os recursos ao final dos testes.
+6. Ao concluir, atualize `docs/ia.md` e, se for o caso, o checklist da `RUBRICA.md`.
+7. Responda em **português**.
