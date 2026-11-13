@@ -64,7 +64,9 @@ pma26/
 │   ├── auth-service/    → implementação do Auth (registro, login, JWT)
 │   └── gateway-service/ → API Gateway (Spring Cloud Gateway, WebFlux)
 ├── docker/
-│   └── compose.yml      ← sobe o sistema inteiro localmente
+│   ├── compose.yml              ← sobe o sistema inteiro localmente
+│   ├── java-service.Dockerfile  ← build genérico (interfaces + service) usado pelo compose
+│   └── .env.example             ← variáveis; copiar para docker/.env (fora do git)
 ├── k8s/                 ← (a criar) manifests do Kubernetes/EKS: deployment, service, hpa
 └── docs/                ← MkDocs (a criar) + ia.md (registro de uso de IA)
 ```
@@ -109,17 +111,14 @@ git submodule add https://github.com/Organizacao-dos-Coisa-Ruim/<repo>.git api/<
 ## Rodando localmente
 
 ```bash
-# 1. instalar as interfaces (libs Feign) no repositório Maven local
-cd api/account && ./mvnw clean install && cd ../..
-
-# 2. buildar os services
-cd api/account-service && ./mvnw clean package -DskipTests && cd ../..
-
-# 3. subir tudo
+cp docker/.env.example docker/.env      # preencher DATABASE_PASSWORD e JWT_SECRET
 docker compose -f docker/compose.yml up --build
 ```
 
-> O `docker/compose.yml` hoje é só um teste com nginx; ele precisa ser reescrito com os serviços reais + Postgres.
+- Só precisa de Docker: o `docker/java-service.Dockerfile` (contexto `api/`) instala as interfaces e empacota o service dentro do container. Ao criar um serviço novo, adicione-o no `compose.yml` com `INTERFACES` (interfaces de que ele depende) e `SERVICE`.
+- Só o gateway publica porta (`localhost:8080`). Postgres único (`store`), cada serviço no seu schema (Flyway).
+- `docker/.env` tem segredos e está no `.gitignore`; nunca comitar.
+- Fluxo de teste manual: `docs/requests.http` (VS Code REST Client). Detalhes no `README.md`.
 
 ## Como o Claude deve trabalhar aqui
 
