@@ -4,3 +4,7 @@
 [submodule "api/account-service"]
 	path = api/account-service
 	url = https://github.com/Organizacao-dos-Coisa-Ruim/pma26-account-service.git
+[submodule "api/gateway-service"]
+	path = api/gateway-service
+	url = https://github.com/Organizacao-dos-Coisa-Ruim/gateway-service.git
+	branch = main
