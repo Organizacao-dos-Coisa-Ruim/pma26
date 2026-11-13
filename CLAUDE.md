@@ -30,6 +30,7 @@ Repositório principal do projeto de **Plataformas, Microsserviços e APIs (Insp
 ```
 
 - **Gateway**: Spring Cloud Gateway. Roteia por prefixo (`/auth/**`, `/accounts/**`, `/exchange/**`, `/products/**`, `/orders/**`) e checa o token nas rotas protegidas.
+  Contrato com o Auth: `POST /auth/solve {"jwt": "..."}` → `{"idAccount": "...", "role": "..."}`. O gateway repassa `id-account` e `role-account` em headers; os serviços confiam nesses headers e nunca leem o token.
 - **Auth**: login e emissão/validação de JWT. Consulta o Account via Feign.
 - **Account**: CRUD de usuários.
 - **Exchange**: câmbio entre moedas.
@@ -58,14 +59,14 @@ pma26/
 ├── RUBRICA.md
 ├── api/                 ← microsserviços, cada um é um git submodule
 │   ├── account/         → interface Account (Feign + DTOs)
-│   └── account-service/ → implementação do Account
+│   ├── account-service/ → implementação do Account
+│   └── gateway-service/ → API Gateway (Spring Cloud Gateway, WebFlux)
 ├── docker/
 │   └── compose.yml      ← sobe o sistema inteiro localmente
 ├── k8s/                 ← (a criar) manifests do Kubernetes/EKS: deployment, service, hpa
-└── docs/                ← (a criar) MkDocs
+└── docs/                ← MkDocs (a criar) + ia.md (registro de uso de IA)
 ```
 
-Repositórios da organização `Organizacao-dos-Coisa-Ruim` que ainda não são submodules: `gateway-service`.
 ⚠️ O submodule `api/account` aponta para `Nadoutti/pma-26-account` (fork pessoal); para a entrega, o ideal é apontar para `Organizacao-dos-Coisa-Ruim/pma-26-account`.
 
 ## Stack
