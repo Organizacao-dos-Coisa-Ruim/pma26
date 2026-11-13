@@ -1,10 +1,13 @@
 # Fluxo completo do sistema, pelo gateway.
 # Abra no VS Code com a extensão "REST Client" (humao.rest-client) e clique em "Send Request"
-# em cada bloco, de cima para baixo. O token do login é reaproveitado nas chamadas seguintes.
+# em cada bloco, de cima para baixo. Os tokens dos logins são reaproveitados nas chamadas seguintes.
 
 @gateway = http://localhost:8080
 @email = ana@insper.edu.br
 @password = 123456
+# o mesmo ADMIN_EMAIL / ADMIN_PASSWORD do docker/.env
+@adminEmail = admin@pma26.local
+@adminPassword = troque-pela-senha-do-env
 
 ### Health-check (rotas abertas)
 GET {{gateway}}/auth/health-check
@@ -33,17 +36,13 @@ Content-Type: application/json
 }
 
 ### 3. Rota protegida SEM token -> 401
-GET {{gateway}}/accounts
+GET {{gateway}}/accounts/qualquer-id
 
-### 4. Rota protegida COM token -> 200
-GET {{gateway}}/accounts
-Authorization: Bearer {{login.response.body.jwt}}
-
-### 5. Token inválido -> 401
-GET {{gateway}}/accounts
+### 4. Token inválido -> 401
+GET {{gateway}}/accounts/qualquer-id
 Authorization: Bearer token-invalido
 
-### 6. Login com senha errada -> 401
+### 5. Login com senha errada -> 401
 POST {{gateway}}/auth/login
 Content-Type: application/json
 
@@ -51,3 +50,38 @@ Content-Type: application/json
   "email": "{{email}}",
   "password": "senha-errada"
 }
+
+# --- RBAC -------------------------------------------------------------------
+
+### 6. User tentando listar todas as contas -> 403 (só admin)
+GET {{gateway}}/accounts
+Authorization: Bearer {{login.response.body.jwt}}
+
+### 7. Login do admin -> 200 {"jwt": "..."} (token com role "admin")
+# @name adminLogin
+POST {{gateway}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{adminEmail}}",
+  "password": "{{adminPassword}}"
+}
+
+### 8. Admin lista as contas -> 200 (cada uma com o seu "role")
+# @name contas
+GET {{gateway}}/accounts
+Authorization: Bearer {{adminLogin.response.body.jwt}}
+
+### 9. User vê uma conta: a própria -> 200; a de outra pessoa -> 403
+# troque pelo id da Ana (resposta do passo 8) para ver o 200
+GET {{gateway}}/accounts/{{contas.response.body.$[0].id}}
+Authorization: Bearer {{login.response.body.jwt}}
+
+### 10. User tentando apagar uma conta -> 403
+DELETE {{gateway}}/accounts/{{contas.response.body.$[0].id}}
+Authorization: Bearer {{login.response.body.jwt}}
+
+### 11. Header forjado não adianta -> 403 (o gateway reescreve os headers de identidade)
+GET {{gateway}}/accounts
+Authorization: Bearer {{login.response.body.jwt}}
+role-account: admin

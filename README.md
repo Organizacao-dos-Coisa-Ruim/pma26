@@ -71,9 +71,18 @@ curl -X POST localhost:8080/auth/register -H 'Content-Type: application/json' \
 TOKEN=$(curl -s -X POST localhost:8080/auth/login -H 'Content-Type: application/json' \
   -d '{"email":"ana@insper.edu.br","password":"123456"}' | sed 's/.*"jwt":"\([^"]*\)".*/\1/')
 
-curl -i localhost:8080/accounts                                    # 401 (sem token)
-curl -i localhost:8080/accounts -H "Authorization: Bearer $TOKEN"  # 200
+ID=$(echo "$TOKEN" | cut -d. -f2 | base64 -d 2>/dev/null | sed 's/.*"sub":"\([^"]*\)".*/\1/')
+
+curl -i localhost:8080/accounts/$ID                                    # 401 (sem token)
+curl -i localhost:8080/accounts/$ID -H "Authorization: Bearer $TOKEN"  # 200 (a própria conta)
+curl -i localhost:8080/accounts     -H "Authorization: Bearer $TOKEN"  # 403 (listar é só admin)
 ```
+
+## Papéis (RBAC)
+
+Toda conta registrada é `user`. O primeiro `admin` é criado na subida a partir de `ADMIN_EMAIL`/`ADMIN_PASSWORD` do `docker/.env`.
+Um `user` só vê a própria conta; listar, apagar e criar contas direto são só para `admin` (`403` para os outros).
+Detalhes em [docs/gargalos/rbac.md](docs/gargalos/rbac.md).
 
 ## Observabilidade (Prometheus + Grafana)
 
