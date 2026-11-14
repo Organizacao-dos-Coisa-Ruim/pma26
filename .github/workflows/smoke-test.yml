@@ -1,0 +1,46 @@
+# Teste de integração do sistema inteiro: builda todos os serviços pelo compose,
+# sobe tudo e roda docker/smoke-test.sh (register -> login -> rotas protegidas -> RBAC).
+# Roda em todo PR/push do pma26, ou seja, sempre que um ponteiro de submodule muda.
+name: Smoke test (compose)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Gerar docker/.env com segredos aleatórios (só para este job)
+        # o resto das variáveis usa os padrões do compose.yml
+        run: |
+          {
+            echo "DATABASE_PASSWORD=$(openssl rand -hex 16)"
+            echo "JWT_SECRET=$(openssl rand -hex 32)"
+            echo "GRAFANA_ADMIN_PASSWORD=$(openssl rand -hex 12)"
+            echo "ADMIN_EMAIL=admin@pma26.local"
+            echo "ADMIN_PASSWORD=$(openssl rand -hex 12)"
+          } > docker/.env
+
+      - name: Build e subida
+        run: docker compose -f docker/compose.yml up --build -d
+
+      - name: Smoke test
+        run: |
+          set -a; . docker/.env; set +a
+          bash docker/smoke-test.sh
+
+      - name: Logs dos serviços (se falhar)
+        if: failure()
+        run: docker compose -f docker/compose.yml logs --no-color account auth gateway
+
+      - name: Derrubar
+        if: always()
+        run: docker compose -f docker/compose.yml down -v
