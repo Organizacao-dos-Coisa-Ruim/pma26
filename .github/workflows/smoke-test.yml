@@ -39,7 +39,7 @@ jobs:
 
       - name: Logs dos serviços (se falhar)
         if: failure()
-        run: docker compose -f docker/compose.yml logs --no-color account auth gateway
+        run: docker compose -f docker/compose.yml logs --no-color account auth exchange gateway
 
       - name: Derrubar
         if: always()

@@ -85,3 +85,23 @@ Authorization: Bearer {{login.response.body.jwt}}
 GET {{gateway}}/accounts
 Authorization: Bearer {{login.response.body.jwt}}
 role-account: admin
+
+# --- Exchange ---------------------------------------------------------------
+
+### 12. Health-check do Exchange (aberta) -> 200
+GET {{gateway}}/exchange/health-check
+
+### 13. Cotação USD -> BRL -> 200 {"sell", "buy", "date", "id-account"}
+GET {{gateway}}/exchange/USD/BRL
+Authorization: Bearer {{login.response.body.jwt}}
+
+### 14. Cotação sem token -> 401
+GET {{gateway}}/exchange/USD/BRL
+
+### 15. Moedas iguais ou código inválido -> 400
+GET {{gateway}}/exchange/BRL/BRL
+Authorization: Bearer {{login.response.body.jwt}}
+
+### 16. Par inexistente -> 404
+GET {{gateway}}/exchange/USD/XYZ
+Authorization: Bearer {{login.response.body.jwt}}

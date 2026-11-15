@@ -14,3 +14,9 @@
 [submodule "api/auth-service"]
 	path = api/auth-service
 	url = https://github.com/Organizacao-dos-Coisa-Ruim/pma26-auth-service.git
+[submodule "api/exchange"]
+	path = api/exchange
+	url = https://github.com/Organizacao-dos-Coisa-Ruim/pma26-exchange.git
+[submodule "api/exchange-service"]
+	path = api/exchange-service
+	url = https://github.com/Organizacao-dos-Coisa-Ruim/pma26-exchange-service.git

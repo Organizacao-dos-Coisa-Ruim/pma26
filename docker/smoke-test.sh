@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Smoke test do sistema inteiro, pelo gateway: register -> login -> rotas protegidas -> RBAC.
+# Smoke test do sistema inteiro, pelo gateway: register -> login -> rotas protegidas -> exchange -> RBAC.
 # Usado no CI do pma26 e também localmente, com o compose de pé:
 #
 #   ADMIN_EMAIL=... ADMIN_PASSWORD=... ./docker/smoke-test.sh
@@ -36,7 +36,8 @@ login() {
 
 echo "Aguardando o gateway em $GATEWAY ..."
 for _ in $(seq 1 90); do
-  if [ "$(status "$GATEWAY/auth/health-check")" = 200 ] && [ "$(status "$GATEWAY/accounts/health-check")" = 200 ]; then
+  if [ "$(status "$GATEWAY/auth/health-check")" = 200 ] && [ "$(status "$GATEWAY/accounts/health-check")" = 200 ] \
+     && [ "$(status "$GATEWAY/exchange/health-check")" = 200 ]; then
     break
   fi
   sleep 2
@@ -45,6 +46,7 @@ done
 echo "Health-check"
 check "auth"    200 "$(status "$GATEWAY/auth/health-check")"
 check "account" 200 "$(status "$GATEWAY/accounts/health-check")"
+check "exchange" 200 "$(status "$GATEWAY/exchange/health-check")"
 
 echo "Registro e login"
 check "register"           201 "$(status -X POST "$GATEWAY/auth/register" -H "$JSON" -d "{\"name\":\"Smoke\",\"email\":\"$EMAIL\",\"password\":\"123456\"}")"
@@ -58,6 +60,12 @@ echo "Rotas protegidas"
 check "sem token"       401 "$(status "$GATEWAY/accounts/$USER_ID")"
 check "token inválido"  401 "$(status -H 'Authorization: Bearer invalido' "$GATEWAY/accounts/$USER_ID")"
 check "a própria conta" 200 "$(status -H "Authorization: Bearer $USER_TOKEN" "$GATEWAY/accounts/$USER_ID")"
+
+echo "Exchange"
+# só cenários que não dependem da AwesomeAPI (a cotação real precisa de internet)
+check "cotação sem token" 401 "$(status "$GATEWAY/exchange/USD/BRL")"
+check "moedas iguais"     400 "$(status -H "Authorization: Bearer $USER_TOKEN" "$GATEWAY/exchange/BRL/BRL")"
+check "código inválido"   400 "$(status -H "Authorization: Bearer $USER_TOKEN" "$GATEWAY/exchange/US/BRL")"
 
 echo "RBAC"
 ADMIN_TOKEN="$(login "$ADMIN_EMAIL" "$ADMIN_PASSWORD")"
