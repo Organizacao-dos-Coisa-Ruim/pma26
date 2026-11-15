@@ -92,7 +92,7 @@ Sem carga, o HPA espera 5 minutos estável antes de reduzir as réplicas (evita 
 ## Validação (kind, 2026-11-15)
 
 - Todos os pods `Running` e `Ready`.
-- `docker/smoke-test.sh`: 21 cenários OK, inclusive cotação real e RBAC.
+- `docker/smoke-test.sh`: 20 cenários OK, inclusive cotação real e RBAC.
 - `docker/zap-scan.sh`: 0 alertas, 120 regras passando (mesmo resultado do compose).
 - HPA: com 50 conexões contínuas, o gateway foi de 2 para 10 pods em ~90 s
   (eventos `SuccessfulRescale`: 2 → 3 → 4 → 8 → 10). Sem carga, voltou a 1 (10 → 3 → 1,
