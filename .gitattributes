@@ -1,0 +1,5 @@
+# Scripts shell sempre com fim de linha LF (Linux), mesmo no Windows: com CRLF o bash do
+# WSL/Linux falha com "/usr/bin/env: 'bash\r': No such file or directory".
+*.sh text eol=lf
+# o .env.example é copiado para docker/.env e lido pelo bash: com CRLF as senhas ficariam com "\r" no fim
+docker/.env.example text eol=lf

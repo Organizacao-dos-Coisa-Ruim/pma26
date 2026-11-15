@@ -13,7 +13,12 @@ C="${2:-10}"
 PAIR="${3:-USD/BRL}"
 GATEWAY="${GATEWAY:-http://localhost:8080}"
 NETWORK="${NETWORK:-pma26_default}"
-: "${ADMIN_EMAIL:?defina ADMIN_EMAIL}" "${ADMIN_PASSWORD:?defina ADMIN_PASSWORD}"
+# sem as variáveis no terminal, lê o login do admin direto do docker/.env
+ENV_FILE="$(cd "$(dirname "$0")" && pwd)/.env"
+if [ -z "${ADMIN_EMAIL:-}" ] && [ -f "$ENV_FILE" ]; then
+  set -a; . "$ENV_FILE"; set +a
+fi
+: "${ADMIN_EMAIL:?defina ADMIN_EMAIL (ou crie docker/.env)}" "${ADMIN_PASSWORD:?defina ADMIN_PASSWORD (ou crie docker/.env)}"
 
 TOKEN="$(curl -s -X POST "$GATEWAY/auth/login" -H 'Content-Type: application/json' \
   -d "{\"email\":\"$ADMIN_EMAIL\",\"password\":\"$ADMIN_PASSWORD\"}" | sed -n 's/.*"jwt":"\([^"]*\)".*/\1/p')"
