@@ -1,0 +1,165 @@
+# Rotas expostas pelo gateway (único ponto de entrada do sistema).
+# Usado pelo scan de vulnerabilidades (OWASP ZAP API Scan, docs/gargalos/scan-vulnerabilidades.md),
+# que precisa saber quais rotas existem para atacá-las. Também documenta a API para o MkDocs.
+openapi: 3.0.3
+info:
+  title: PMA26 - API pelo gateway
+  version: 0.0.1
+  description: |
+    E-commerce em microsserviços (Insper, PMA 2026.2). Rotas marcadas com cadeado exigem
+    `Authorization: Bearer <jwt>`, obtido em `POST /auth/login`.
+servers:
+  - url: http://localhost:8080
+
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    RegisterIn:
+      type: object
+      required: [name, email, password]
+      properties:
+        name: { type: string, example: Ana }
+        email: { type: string, format: email, example: ana@insper.edu.br }
+        password: { type: string, example: "123456" }
+    CredentialIn:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email, example: ana@insper.edu.br }
+        password: { type: string, example: "123456" }
+    TokenOut:
+      type: object
+      properties:
+        jwt: { type: string }
+    SolveIn:
+      type: object
+      properties:
+        jwt: { type: string }
+    AccountIn:
+      type: object
+      required: [name, email, password]
+      properties:
+        name: { type: string, example: Ana }
+        email: { type: string, format: email, example: ana@insper.edu.br }
+        password: { type: string, example: "123456" }
+    AccountOut:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        email: { type: string }
+        role: { type: string, enum: [user, admin] }
+    QuoteOut:
+      type: object
+      properties:
+        sell: { type: number, example: 5.668 }
+        buy: { type: number, example: 5.6666 }
+        date: { type: string, example: "2026-11-13 18:30:13" }
+        id-account: { type: string }
+
+security:
+  - bearer: []
+
+paths:
+  /health-check:
+    get:
+      summary: Health-check do gateway
+      security: []
+      responses: { "200": { description: OK } }
+
+  /auth/health-check:
+    get:
+      summary: Health-check do Auth
+      security: []
+      responses: { "200": { description: OK } }
+  /auth/register:
+    post:
+      summary: Cria uma conta (role user)
+      security: []
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/RegisterIn" } } }
+      responses:
+        "201": { description: Criada }
+        "400": { description: Campo faltando }
+        "409": { description: Email já existe }
+  /auth/login:
+    post:
+      summary: Login, devolve o JWT
+      security: []
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/CredentialIn" } } }
+      responses:
+        "200":
+          description: Token
+          content: { application/json: { schema: { $ref: "#/components/schemas/TokenOut" } } }
+        "401": { description: Credenciais inválidas }
+  /auth/solve:
+    post:
+      summary: Valida um JWT (usado pelo gateway; exposto com token)
+      requestBody:
+        content: { application/json: { schema: { $ref: "#/components/schemas/SolveIn" } } }
+      responses:
+        "200": { description: Token válido }
+        "401": { description: Token inválido }
+
+  /accounts/health-check:
+    get:
+      summary: Health-check do Account
+      security: []
+      responses: { "200": { description: OK } }
+  /accounts:
+    get:
+      summary: Lista as contas (só admin)
+      responses:
+        "200":
+          description: Contas
+          content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/AccountOut" } } } }
+        "403": { description: Não é admin }
+    post:
+      summary: Cria conta (uso interno do Auth; pelo gateway, só admin)
+      requestBody:
+        content: { application/json: { schema: { $ref: "#/components/schemas/AccountIn" } } }
+      responses:
+        "201": { description: Criada }
+        "403": { description: Não é admin }
+  /accounts/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      summary: Uma conta (a própria ou admin)
+      responses:
+        "200":
+          description: Conta
+          content: { application/json: { schema: { $ref: "#/components/schemas/AccountOut" } } }
+        "403": { description: Conta de outra pessoa }
+        "404": { description: Não existe }
+    delete:
+      summary: Apaga uma conta (só admin)
+      responses:
+        "204": { description: Apagada }
+        "403": { description: Não é admin }
+
+  /exchange/health-check:
+    get:
+      summary: Health-check do Exchange
+      security: []
+      responses: { "200": { description: OK } }
+  /exchange/{from}/{to}:
+    parameters:
+      - { name: from, in: path, required: true, schema: { type: string, example: USD } }
+      - { name: to, in: path, required: true, schema: { type: string, example: BRL } }
+    get:
+      summary: Cotação entre duas moedas
+      responses:
+        "200":
+          description: Cotação
+          content: { application/json: { schema: { $ref: "#/components/schemas/QuoteOut" } } }
+        "400": { description: Código inválido ou moedas iguais }
+        "404": { description: Par inexistente }
+        "503": { description: Fonte de cotações indisponível }

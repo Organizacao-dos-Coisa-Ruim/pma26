@@ -1,5 +1,6 @@
 # Teste de integração do sistema inteiro: builda todos os serviços pelo compose,
-# sobe tudo e roda docker/smoke-test.sh (register -> login -> rotas protegidas -> RBAC).
+# sobe tudo, roda docker/smoke-test.sh (register -> login -> rotas protegidas -> RBAC)
+# e o scan de vulnerabilidades docker/zap-scan.sh (OWASP ZAP).
 # Roda em todo PR/push do pma26, ou seja, sempre que um ponteiro de submodule muda.
 name: Smoke test (compose)
 
@@ -36,6 +37,19 @@ jobs:
         run: |
           set -a; . docker/.env; set +a
           bash docker/smoke-test.sh
+
+      # Scan de vulnerabilidades (gargalo #78): OWASP ZAP ataca as rotas do gateway (docs/openapi.yaml).
+      # Qualquer alerta WARN/FAIL quebra o job; o relatório fica nos artefatos do workflow.
+      - name: Scan de vulnerabilidades (OWASP ZAP)
+        run: bash docker/zap-scan.sh zap-report
+
+      - name: Relatório do ZAP
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report
+          path: zap-report/zap-report.*
+          if-no-files-found: ignore
 
       - name: Logs dos serviços (se falhar)
         if: failure()
