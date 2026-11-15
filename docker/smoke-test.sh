@@ -62,8 +62,9 @@ check "token inválido"  401 "$(status -H 'Authorization: Bearer invalido' "$GAT
 check "a própria conta" 200 "$(status -H "Authorization: Bearer $USER_TOKEN" "$GATEWAY/accounts/$USER_ID")"
 
 echo "Exchange"
-# só cenários que não dependem da AwesomeAPI (a cotação real precisa de internet)
 check "cotação sem token" 401 "$(status "$GATEWAY/exchange/USD/BRL")"
+# no CI a AwesomeAPI é um mock (docker/compose.ci.yml); localmente é a API real e precisa de internet
+check "cotação com token" 200 "$(status -H "Authorization: Bearer $USER_TOKEN" "$GATEWAY/exchange/USD/BRL")"
 check "moedas iguais"     400 "$(status -H "Authorization: Bearer $USER_TOKEN" "$GATEWAY/exchange/BRL/BRL")"
 check "código inválido"   400 "$(status -H "Authorization: Bearer $USER_TOKEN" "$GATEWAY/exchange/US/BRL")"
 

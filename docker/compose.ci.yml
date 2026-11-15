@@ -1,0 +1,15 @@
+# Ajustes do compose para o CI (usado junto com o compose.yml):
+#
+#   docker compose -f docker/compose.yml -f docker/compose.ci.yml up --build -d
+#
+# Troca a AwesomeAPI real por um mock (docker/ci/awesomeapi-mock.conf), porque a API pública
+# responde 429 para os IPs compartilhados dos runners do GitHub.
+services:
+  awesomeapi-mock:
+    image: nginx:1.27-alpine
+    volumes:
+      - ./ci/awesomeapi-mock.conf:/etc/nginx/conf.d/default.conf:ro
+
+  exchange:
+    environment:
+      EXCHANGE_API_URL: http://awesomeapi-mock

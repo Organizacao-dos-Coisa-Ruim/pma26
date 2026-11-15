@@ -66,6 +66,17 @@ Relatório: [zap/depois.html](zap/depois.html). Os três cadastros que davam 503
 **O CI realmente quebra?** Sim. Rodando o mesmo scan direto contra o Account (sem passar pelo gateway, portanto sem
 os headers), o `zap-api-scan.py` encontrou 3 alertas e saiu com código 2, o que falha o passo do workflow.
 
+### Primeira execução no CI: 503 por rate limit da API externa
+
+Na primeira execução no GitHub Actions, o ZAP quebrou o job com um único alerta: `GET /exchange/USD/BRL` →
+**503**. O log do exchange mostrou a causa: `AwesomeAPI falhou para USD-BRL: status 429 Too Many Requests`. Os
+runners do GitHub usam IPs compartilhados por milhares de projetos, e a AwesomeAPI pública limita esses IPs.
+
+Não era vulnerabilidade: o Exchange fez o certo (API externa falhou → 503). Mas um CI que depende de uma API externa
+fora do nosso controle fica instável. **Correção:** no CI, `docker/compose.ci.yml` troca a AwesomeAPI por um mock
+(nginx com uma cotação fixa, `docker/ci/awesomeapi-mock.conf`). O scan continua atacando todo o nosso código e o
+resultado fica determinístico. Com o mock, o smoke test também passou a conferir uma cotação com 200.
+
 ### O que o ZAP testou e não encontrou
 
 Entre as 120 regras que passaram (lista completa no relatório):
