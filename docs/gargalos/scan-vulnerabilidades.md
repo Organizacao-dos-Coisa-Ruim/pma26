@@ -94,16 +94,39 @@ Configurado no `exchange-service`: plugin `dependency-check-maven` 12.2.2 no `po
 dependências de teste, falsos positivos em `dependency-check-suppressions.xml` com justificativa) e workflow
 `.github/workflows/dependency-check.yml`.
 
-**Status: aguardando a chave da NVD.** A primeira execução local, sem chave, falhou: a base da NVD tem 425.851
-registros e, sem chave, a NVD bloqueia o download por rate limit (`NVD Returned Status Code: 429`). Com o secret
-`NVD_API_KEY` configurado no repositório, o workflow roda; sem ele, o job só emite um aviso e termina, em vez de
-quebrar todo PR.
+### Baixando a base da NVD
 
-**Cuidado com falso negativo:** rodando com a base incompleta (`-DautoUpdate=false` depois do 429), o plugin
-terminou com `BUILD SUCCESS` em 3 segundos, sem ter checado quase nada. Um resultado verde só vale se a atualização
-da base terminou sem erro, o que no CI é garantido pela chave.
+A base tem ~425 mil CVEs (~213 páginas da API da NVD), e o download deu trabalho:
+- **Sem chave:** a NVD bloqueia por rate limit (`NVD Returned Status Code: 429`). Por isso o workflow exige o secret
+  `NVD_API_KEY` (chave gratuita); sem ele, o job só emite um aviso e termina.
+- **Com chave:** a NVD ainda devolve **503** de vez em quando no meio do download, e com a configuração padrão o
+  plugin desistia (aconteceu localmente e no GitHub Actions). Com `nvdApiDelay=3000` e `nvdMaxRetryCount=50` no
+  `pom.xml`, o download completo terminou (~36 min na primeira vez; depois, só as atualizações).
+- **Cuidado com falso negativo:** rodando com a base incompleta (`-DautoUpdate=false` depois do 429), o plugin
+  terminou com `BUILD SUCCESS` em 3 segundos, sem ter checado quase nada. Um resultado verde só vale se a base
+  estiver completa; conferimos no relatório (`scanInfo.dataSource` e número de dependências analisadas).
 
-> TODO: configurar `NVD_API_KEY`, rodar o workflow e registrar aqui as CVEs encontradas (ou a ausência delas).
+### Resultado: 11 CVEs com nota ≥ 7 → 0
+
+Primeira execução com a base completa (2026-11-15, `exchange-service` no Spring Boot 4.1.1): **build quebrado**.
+54 dependências analisadas, CVEs em 4 bibliotecas:
+
+| Biblioteca | Versão | CVEs (CVSS) | Afeta o projeto? | Corrigida em |
+|------------|--------|-------------|------------------|--------------|
+| `tomcat-embed-core` | 11.0.24 | CVE-2026-65637 (9.8), CVE-2026-65905 (9.8), CVE-2026-65182 (9.1), CVE-2026-68525 (9.1), CVE-2026-65183 (8.1), CVE-2026-66422 (8.1), CVE-2026-68569 (8.1), CVE-2026-65927 (7.5), CVE-2026-68763 (7.5) + 2 abaixo de 7 | A maioria não: autenticação DIGEST/FORM/CLIENT-CERT do próprio Tomcat, rewrite valve, sockets Unix e security-role-ref, que não usamos (a autenticação é JWT no gateway). CVE-2026-65637 ("validação de entrada", correção incompleta de outra CVE) e CVE-2026-68763 (HTTP/2) são vagas demais para descartar | 11.0.25 |
+| `spring-cloud-commons` / `spring-cloud-context` | 5.0.2 | CVE-2026-59284 (7.6) | Não: exige o endpoint `/actuator/env` gravável exposto; os serviços expõem só `health`, `info` e `prometheus`, e o gateway não roteia `/actuator` | 5.0.3 |
+| `netty-transport` | 4.2.17 | CVE-2026-89044 (6.5) | Abaixo do limite (não quebra o build); validação do header `Transfer-Encoding` | 4.2.18 |
+
+**Correção:** em vez de forçar cada biblioteca, atualizar o que as traz. **Spring Boot 4.1.1 → 4.1.2** (Tomcat 11.0.27,
+Netty 4.2.19) e **Spring Cloud → 2025.1.4** (Commons 5.0.4), em **todos os serviços**, para manter as versões
+alinhadas (o gateway já estava no Spring Cloud 2025.1.4 e os outros no 2025.1.2). Um PR por repositório.
+
+**Depois:** o Dependency-Check, com a mesma base completa, analisou as mesmas 54 dependências e encontrou
+**0 vulnerabilidades**. Com as versões novas, o sistema inteiro passou no smoke test (20 cenários) e no ZAP
+(0 alertas), rodando no Kubernetes local (kind).
+
+Mesmo sem exploração prática na maioria dos casos, atualizar foi a decisão certa: custou duas linhas de `pom.xml`,
+e o próximo scan não fica poluído com CVEs conhecidas, então uma CVE nova e relevante aparece.
 
 ## Como reproduzir
 
