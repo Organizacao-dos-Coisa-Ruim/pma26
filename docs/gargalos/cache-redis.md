@@ -12,6 +12,10 @@ mesmo a cotação de um par sendo **igual para todos os usuários** e mudando s�
   mais pods), o número de chamadas cresce junto com o tráfego, e qualquer lentidão ou bloqueio dela vira erro no Exchange.
 - **Desperdício:** em 500 requisições de USD→BRL, as 500 iam buscar exatamente o mesmo valor.
 
+O rate limit não é hipotético: no CI do GitHub Actions, a AwesomeAPI respondeu **429 Too Many Requests** já na
+primeira cotação (os runners usam IPs compartilhados), e o Exchange devolveu 503. Ver
+[scan-vulnerabilidades.md](scan-vulnerabilidades.md#primeira-execucao-no-ci-503-por-rate-limit-da-api-externa).
+
 ## Solução
 
 Guardar a cotação de cada par no **Redis** por **5 minutos** (TTL configurável). A primeira requisição do par busca
