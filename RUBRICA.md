@@ -114,11 +114,12 @@ Repositório próprio com MkDocs publicado, contendo:
 - [x] Gateway
 - [x] Auth
 - [x] Account
-- [ ] Exchange
+- [x] Exchange (falta só a integração com o Order, #39, que depende do Order existir)
 - [ ] Product / Order (domínio do e-commerce)
 - [ ] Todos os serviços como submodules do `pma26`
 - [ ] Docker Compose local subindo o sistema inteiro
 - [ ] 2 gargalos por integrante, com evidência
+  - [x] Felipe: cache Redis no Exchange ([docs](docs/gargalos/cache-redis.md)) e scan de vulnerabilidades com OWASP ZAP ([docs](docs/gargalos/scan-vulnerabilidades.md)); faltam os prints do Grafana e do Actions
 - [ ] AWS CLI configurado
 - [ ] EKS + VPC + Node Group + RDS
 - [ ] CI/CD: Docker Hub → EKS
