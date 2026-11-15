@@ -26,3 +26,10 @@ scrape_configs:
       - targets: ["account:8080"]
         labels:
           application: account
+
+  - job_name: exchange
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["exchange:8080"]
+        labels:
+          application: exchange

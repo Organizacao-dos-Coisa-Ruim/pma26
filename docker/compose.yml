@@ -61,6 +61,18 @@ services:
       - account
     restart: unless-stopped
 
+  exchange:
+    image: exchange
+    build:
+      <<: *java-build
+      args:
+        INTERFACES: exchange
+        SERVICE: exchange-service
+    # sem banco: a cotação vem da AwesomeAPI (pública, sem chave)
+    environment:
+      EXCHANGE_API_URL: ${EXCHANGE_API_URL:-https://economia.awesomeapi.com.br}
+    restart: unless-stopped
+
   gateway:
     image: gateway
     build:
@@ -74,6 +86,7 @@ services:
     depends_on:
       - account
       - auth
+      - exchange
     restart: unless-stopped
 
   # --- Observabilidade ---
@@ -94,6 +107,7 @@ services:
       - gateway
       - auth
       - account
+      - exchange
     restart: unless-stopped
 
   grafana:
