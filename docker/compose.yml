@@ -68,9 +68,27 @@ services:
       args:
         INTERFACES: exchange
         SERVICE: exchange-service
-    # sem banco: a cotação vem da AwesomeAPI (pública, sem chave)
+    # sem banco: a cotação vem da AwesomeAPI (pública, sem chave) e fica em cache no Redis
     environment:
       EXCHANGE_API_URL: ${EXCHANGE_API_URL:-https://economia.awesomeapi.com.br}
+      REDIS_HOST: redis
+      EXCHANGE_CACHE_TTL: ${EXCHANGE_CACHE_TTL:-5m}
+      # "none" desliga o cache (para medir o antes/depois do gargalo #76)
+      EXCHANGE_CACHE_TYPE: ${EXCHANGE_CACHE_TYPE:-redis}
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  # Cache das cotações do Exchange (gargalo #76). Sem porta publicada e sem volume:
+  # é só cache, perder os dados num restart não tem problema (a próxima chamada busca de novo).
+  redis:
+    image: redis:7.4-alpine
+    # limite de memória com descarte das chaves menos usadas, como num cache de verdade
+    command: ["redis-server", "--maxmemory", "64mb", "--maxmemory-policy", "allkeys-lru", "--save", ""]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      retries: 20
     restart: unless-stopped
 
   gateway:

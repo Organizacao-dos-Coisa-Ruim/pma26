@@ -171,6 +171,43 @@
           "legendFormat": "máximo {{application}}"
         }
       ]
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "Exchange: requisições x chamadas à AwesomeAPI",
+      "description": "Gargalo #76 (cache Redis). Sem cache as duas linhas coincidem: toda cotação vai à API externa. Com cache, as chamadas à API ficam perto de zero.",
+      "gridPos": { "x": 0, "y": 40, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "reqps", "min": 0 }, "overrides": [] },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(http_server_requests_seconds_count{application=\"exchange\", uri=\"/exchange/{from}/{to}\"}[1m]))",
+          "legendFormat": "requisições de cotação"
+        },
+        {
+          "refId": "B",
+          "expr": "sum(rate(exchange_external_calls_total{application=\"exchange\"}[1m]))",
+          "legendFormat": "chamadas à AwesomeAPI"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Exchange: taxa de acerto do cache",
+      "description": "Gargalo #76. Fração das leituras do cache 'rates' que encontraram a cotação no Redis: hit / (hit + miss).",
+      "gridPos": { "x": 12, "y": 40, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0, "max": 1 }, "overrides": [] },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(cache_gets_total{application=\"exchange\", cache=\"rates\", result=\"hit\"}[1m])) / sum(rate(cache_gets_total{application=\"exchange\", cache=\"rates\", result=~\"hit|miss\"}[1m]))",
+          "legendFormat": "hit ratio"
+        }
+      ]
     }
   ]
 }
