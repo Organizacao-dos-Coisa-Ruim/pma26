@@ -1,0 +1,31 @@
+# Overlay local (kind): Postgres dentro do cluster, imagens buildadas localmente
+# (carregadas com "kind load docker-image") e gateway em http://localhost:8080.
+#
+#   kubectl apply -k k8s/overlays/kind
+#
+# Passo a passo completo em k8s/README.md.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: pma26
+
+resources:
+  - ../../base
+  - postgres.yaml
+
+# Segredos lidos de secrets.env (fora do git; modelo em secrets.env.example).
+# O Kustomize cria o Secret "pma26-secrets" e atualiza as referências dos Deployments.
+secretGenerator:
+  - name: pma26-secrets
+    envs: [secrets.env]
+
+patches:
+  # gateway acessível de fora do cluster: NodePort 30080, que o kind-cluster.yaml liga em localhost:8080
+  - target: { kind: Service, name: gateway }
+    patch: |-
+      - op: replace
+        path: /spec/type
+        value: NodePort
+      - op: add
+        path: /spec/ports/0/nodePort
+        value: 30080

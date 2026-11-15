@@ -1,0 +1,58 @@
+# Account: CRUD de usuários. Usa o Postgres (no kind, dentro do cluster; no EKS, o RDS).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account
+  labels: { app: account }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: account }
+  template:
+    metadata:
+      labels: { app: account }
+    spec:
+      containers:
+        - name: account
+          image: account
+          # sem tag a imagem é "latest", e o padrão seria sempre baixar do registry;
+          # no kind a imagem é carregada localmente (kind load), então só baixa se não existir
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8080 }
+          envFrom:
+            - configMapRef: { name: pma26-config }
+          env:
+            - name: DATABASE_PASSWORD
+              valueFrom: { secretKeyRef: { name: pma26-secrets, key: DATABASE_PASSWORD } }
+            - name: ADMIN_EMAIL
+              valueFrom: { secretKeyRef: { name: pma26-secrets, key: ADMIN_EMAIL } }
+            - name: ADMIN_PASSWORD
+              valueFrom: { secretKeyRef: { name: pma26-secrets, key: ADMIN_PASSWORD } }
+          resources:
+            requests: { cpu: 250m, memory: 384Mi }
+            limits: { cpu: "1", memory: 768Mi }
+          # a JVM demora para subir: até 150 s de tolerância antes de valerem as outras probes
+          startupProbe:
+            httpGet: { path: /actuator/health/liveness, port: http }
+            periodSeconds: 5
+            failureThreshold: 30
+          # pronto para receber tráfego (o Service só manda requisições para pods prontos)
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: http }
+            periodSeconds: 10
+          # travou: o Kubernetes reinicia o container
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: http }
+            periodSeconds: 10
+            failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: account
+  labels: { app: account }
+spec:
+  selector: { app: account }
+  ports:
+    - { name: http, port: 8080, targetPort: http }

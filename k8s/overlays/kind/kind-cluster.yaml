@@ -1,0 +1,15 @@
+# Cluster local para testar os manifests antes do EKS (gratuito, roda dentro do Docker).
+#
+#   kind create cluster --name pma26 --config k8s/overlays/kind/kind-cluster.yaml
+#
+# Um único nó. A porta 30080 do nó (NodePort do gateway) fica acessível em localhost:8080,
+# então os scripts (smoke test, load test, ZAP) funcionam igual ao compose.
+# Não suba junto com o compose: os dois usam a porta 8080.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      - containerPort: 30080
+        hostPort: 8080
+        protocol: TCP
