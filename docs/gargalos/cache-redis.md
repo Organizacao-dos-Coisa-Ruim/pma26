@@ -134,9 +134,37 @@ Leitura dos resultados:
   esperando o timeout do Redis), com o aviso `Cache 'rates' failed to get entry` no log. Ao religar o Redis,
   voltou a ~15 ms.
 
+### Grafana: sem cache x com cache
+
+Mesma carga nas duas fases (3 × 500 requisições de USD/BRL pelo gateway, com 15 s entre as rodadas). Primeiro com
+`EXCHANGE_CACHE_TYPE=none`, depois com o Redis. Compose local, 2026-11-15.
+
+![Requisições de cotação x chamadas à AwesomeAPI](img/cache-chamadas.png)
+
+- **20:08–20:10, sem cache:** a linha amarela (chamadas à AwesomeAPI) acompanha a verde (requisições de cotação): cada
+  requisição vai à API externa. A pequena defasagem no início vem do reinício do exchange, porque o Prometheus precisa
+  de duas coletas para calcular a taxa.
+- **A partir de 20:12, com cache:** a verde sobe e a amarela fica em zero. O Redis responde e a API externa não é chamada.
+
+![Taxa de acerto do cache](img/cache-hit-ratio.png)
+
+- Sem cache, o painel fica vazio, porque não há cache para consultar. Com o Redis, a taxa de acerto fica perto de
+  **100%**: só a primeira requisição de cada par, a cada 5 minutos, vai à API. O trecho de 20:05 é de requisições de
+  teste anteriores à medição.
+
+Contadores no Prometheus ao final de cada fase:
+
+| fase | requisições de cotação | chamadas à AwesomeAPI (`exchange_external_calls_total`) | hits / misses do cache |
+|------|------------------------|---------------------------------------------------------|------------------------|
+| sem cache | 1500 | **1500** | — |
+| com Redis | 1500 | **1** | 1499 / 11 |
+
+Os 11 misses e 1 chamada mostram o `sync = true` com lock funcionando: as requisições simultâneas da primeira leva
+encontraram o cache vazio (miss), mas só uma foi à API; as outras esperaram o valor.
+
 Testes automatizados (`ExchangeResourceIntegrationTest`, cache em memória no perfil `test`):
 - duas cotações do mesmo par → 1 chamada à API (`segundaCotacaoVemDoCache`);
 - 10 requisições simultâneas com a API lenta → 1 chamada (`requisicoesSimultaneasComCacheVazioChamamAApiUmaVez`);
 - erro 404 não é cacheado → 2 chamadas (`erroNaoECacheado`).
 
-> TODO: anexar prints do Grafana (painéis do Exchange) durante a carga, sem e com cache, e repetir no EKS.
+> TODO: repetir a medição no EKS.
