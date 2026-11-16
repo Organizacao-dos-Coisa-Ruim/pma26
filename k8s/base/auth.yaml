@@ -1,0 +1,49 @@
+# Auth: login e emissão/validação do JWT. Chama o Account via Feign (http://account:8080).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth
+  labels: { app: auth }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: auth }
+  template:
+    metadata:
+      labels: { app: auth }
+    spec:
+      containers:
+        - name: auth
+          image: auth
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8080 }
+          envFrom:
+            - configMapRef: { name: pma26-config }
+          env:
+            - name: JWT_SECRET
+              valueFrom: { secretKeyRef: { name: pma26-secrets, key: JWT_SECRET } }
+          resources:
+            requests: { cpu: 250m, memory: 384Mi }
+            limits: { cpu: "1", memory: 768Mi }
+          startupProbe:
+            httpGet: { path: /actuator/health/liveness, port: http }
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: http }
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: http }
+            periodSeconds: 10
+            failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth
+  labels: { app: auth }
+spec:
+  selector: { app: auth }
+  ports:
+    - { name: http, port: 8080, targetPort: http }

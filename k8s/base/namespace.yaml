@@ -1,0 +1,5 @@
+# Todo o sistema fica no namespace pma26 (kubectl -n pma26 ...).
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pma26
