@@ -1,0 +1,20 @@
+# metrics-server: mede CPU e memória dos pods. Sem ele o HPA não sabe quando escalar
+# ("kubectl top" e "kubectl get hpa" mostram <unknown>).
+#
+#   kubectl apply -k k8s/addons/metrics-server
+#
+# Fica separado do sistema porque é instalado no namespace kube-system, uma vez por cluster.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.7.2/components.yaml
+
+patches:
+  # no kind os kubelets usam certificados autoassinados; sem esta flag o metrics-server não consegue
+  # ler as métricas. No EKS não é necessário (pode aplicar o components.yaml original).
+  - target: { kind: Deployment, name: metrics-server }
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --kubelet-insecure-tls

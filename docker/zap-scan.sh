@@ -10,11 +10,17 @@
 #
 # Sai com código != 0 se houver qualquer alerta de nível WARN ou FAIL (rodar sem -I é proposital:
 # todo alerta novo quebra o CI). Ajustes de regras, se precisar, vão em .zap/rules.tsv.
+#
+# No kind (k8s/README.md): NETWORK=kind GATEWAY_INTERNAL=http://pma26-control-plane:30080 ./docker/zap-scan.sh
 set -eu
 
 REPORT_DIR="${1:-zap-report}"
+# GATEWAY: endereço visto da sua máquina (cadastro e login); GATEWAY_INTERNAL: visto pelo container do ZAP
 GATEWAY="${GATEWAY:-http://localhost:8080}"
 NETWORK="${NETWORK:-pma26_default}"
+GATEWAY_INTERNAL="${GATEWAY_INTERNAL:-http://gateway:8080}"
+# host sem esquema e porta (ex.: gateway), para o ZAP só mandar o token para o próprio gateway
+GATEWAY_HOST="$(echo "$GATEWAY_INTERNAL" | sed -E 's#^[a-z]+://##; s#[:/].*$##')"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 JSON='Content-Type: application/json'
 EMAIL="zap-$(date +%s)@pma26.local"
@@ -37,7 +43,7 @@ MSYS_NO_PATHCONV=1 docker run --rm --network "$NETWORK" \
   -v "$(cd "$REPORT_DIR" && pwd -W 2>/dev/null || pwd)":/zap/wrk:rw \
   -e ZAP_AUTH_HEADER=Authorization \
   -e ZAP_AUTH_HEADER_VALUE="Bearer $TOKEN" \
-  -e ZAP_AUTH_HEADER_SITE=gateway \
+  -e ZAP_AUTH_HEADER_SITE="$GATEWAY_HOST" \
   zaproxy/zap-stable zap-api-scan.py \
-  -t /zap/wrk/openapi.yaml -f openapi -O http://gateway:8080 \
+  -t /zap/wrk/openapi.yaml -f openapi -O "$GATEWAY_INTERNAL" \
   -r zap-report.html -J zap-report.json $RULES

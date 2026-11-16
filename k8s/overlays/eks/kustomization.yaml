@@ -1,0 +1,47 @@
+# Overlay da AWS (EKS) — ESQUELETO, ainda não testado (issues #51–#60).
+#
+#   kubectl apply -k k8s/overlays/eks
+#
+# Diferenças em relação ao kind:
+#   - banco no RDS (sem o postgres.yaml): DATABASE_HOST aponta para o endpoint do RDS
+#   - imagens do Docker Hub (<usuario>/gateway, ...) em vez de imagens locais
+#   - gateway exposto por um LoadBalancer da AWS (gera custo: derrubar ao final dos testes)
+#   - metrics-server: o components.yaml original, sem --kubelet-insecure-tls
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: pma26
+
+resources:
+  - ../../base
+
+secretGenerator:
+  - name: pma26-secrets
+    envs: [secrets.env]
+
+configMapGenerator:
+  - name: pma26-config
+    behavior: merge
+    literals:
+      # TODO: endpoint do RDS (saída do CloudFormation / console do RDS)
+      - DATABASE_HOST=TROCAR-PELO-ENDPOINT-DO-RDS
+
+images:
+  # TODO: trocar DOCKERHUB_USUARIO pelo usuário do Docker Hub do grupo (mesmo do secret DOCKERHUB_USERNAME do CI)
+  - { name: gateway, newName: DOCKERHUB_USUARIO/gateway, newTag: latest }
+  - { name: auth, newName: DOCKERHUB_USUARIO/auth, newTag: latest }
+  - { name: account, newName: DOCKERHUB_USUARIO/account, newTag: latest }
+  - { name: exchange, newName: DOCKERHUB_USUARIO/exchange, newTag: latest }
+
+patches:
+  - target: { kind: Service, name: gateway }
+    patch: |-
+      - op: replace
+        path: /spec/type
+        value: LoadBalancer
+  # com a tag "latest" no Docker Hub, sempre baixar para pegar a versão nova do CI
+  - target: { kind: Deployment }
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Always

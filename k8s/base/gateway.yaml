@@ -1,0 +1,72 @@
+# Gateway: único ponto de entrada. É o deployment que o HPA escala no load test.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  labels: { app: gateway }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: gateway }
+  template:
+    metadata:
+      labels: { app: gateway }
+    spec:
+      containers:
+        - name: gateway
+          image: gateway
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8080 }
+          envFrom:
+            - configMapRef: { name: pma26-config }
+          resources:
+            # o HPA mede a CPU como % deste request: 50% de 250m = escala acima de 125m por pod
+            requests: { cpu: 250m, memory: 256Mi }
+            limits: { cpu: "1", memory: 512Mi }
+          # no gateway o Actuator fica em /gateway/actuator (o resto das rotas é roteado)
+          startupProbe:
+            httpGet: { path: /gateway/actuator/health/liveness, port: http }
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: { path: /gateway/actuator/health/readiness, port: http }
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /gateway/actuator/health/liveness, port: http }
+            periodSeconds: 10
+            failureThreshold: 3
+---
+# No base é ClusterIP (só dentro do cluster). Os overlays expõem para fora:
+# kind -> NodePort 30080 (mapeado para localhost:8080); EKS -> LoadBalancer.
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+  labels: { app: gateway }
+spec:
+  selector: { app: gateway }
+  ports:
+    - { name: http, port: 8080, targetPort: http }
+---
+# Load test (rubrica): escala o gateway entre 1 e 10 pods mantendo a CPU média em 50% do request.
+# Equivale a: kubectl autoscale deployment gateway --cpu-percent=50 --min=1 --max=10
+# Precisa do metrics-server (k8s/addons/metrics-server).
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: gateway
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: gateway
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
