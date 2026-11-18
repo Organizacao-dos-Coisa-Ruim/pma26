@@ -10,3 +10,6 @@
 target/
 
 CLAUDE.local.md
+# resultados brutos do load test (os usados como evidência vão para docs/)
+load/results/
+__pycache__/

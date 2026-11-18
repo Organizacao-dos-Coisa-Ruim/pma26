@@ -124,6 +124,7 @@ Repositório próprio com MkDocs publicado, contendo:
 - [ ] EKS + VPC + Node Group + RDS
 - [ ] CI/CD: Docker Hub → EKS
 - [ ] Load test + HPA + vídeo
+  - [x] Script (Locust) e execução no kind com análise ([docs](docs/load-test.md)); faltam EKS e vídeo
 - [ ] Plano de custos + PaaS + SLA
 - [ ] MkDocs (grupo e individual) com registro do uso de IA
 - [ ] Slides + vídeo de 1–2 min
