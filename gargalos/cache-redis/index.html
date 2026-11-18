@@ -1,0 +1,1304 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Projeto de Plataformas, Microsserviços e APIs (Insper, 2026.2)">
+      
+      
+      
+        <link rel="canonical" href="https://organizacao-dos-coisa-ruim.github.io/pma26/gargalos/cache-redis/">
+      
+      
+        <link rel="prev" href="../rbac/">
+      
+      
+        <link rel="next" href="../scan-vulnerabilidades/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>Cache com Redis - pma26 · E-commerce em microsserviços</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+    html.glightbox-open { overflow: initial; height: 100%; }
+    .gslide-title { margin-top: 0px; user-select: text; }
+    .gslide-desc { color: #666; user-select: text; }
+    .gslide-image img { background: white; }
+    .gscrollbar-fixer { padding-right: 15px; }
+    .gdesc-inner { font-size: 0.75rem; }
+    body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+    body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="../../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#gargalo-cache-das-cotacoes-com-redis-exchange" class="md-skip">
+          Pular para conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="pma26 · E-commerce em microsserviços" class="md-header__button md-logo" aria-label="pma26 · E-commerce em microsserviços" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pma26 · E-commerce em microsserviços
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Cache com Redis
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="indigo"  aria-label="Modo claro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Modo claro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="indigo"  aria-label="Modo escuro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Modo escuro" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="grey" data-md-color-accent="indigo"  aria-label="Preferência do sistema"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Preferência do sistema" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando busca
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Organizacao-dos-Coisa-Ruim/pma26" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Organizacao-dos-Coisa-Ruim/pma26
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="pma26 · E-commerce em microsserviços" class="md-nav__button md-logo" aria-label="pma26 · E-commerce em microsserviços" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    pma26 · E-commerce em microsserviços
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Organizacao-dos-Coisa-Ruim/pma26" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Organizacao-dos-Coisa-Ruim/pma26
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Início
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../arquitetura/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Arquitetura
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../servicos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Microsserviços
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API (OpenAPI)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Gargalos
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Gargalos
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gargalos
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observabilidade/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Observabilidade (Prometheus + Grafana)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rbac/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RBAC
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Cache com Redis
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Cache com Redis
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#problema" class="md-nav__link">
+    <span class="md-ellipsis">
+      Problema
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#solucao" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solução
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Solução">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#decisoes-e-por-que" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decisões (e por quê)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#problema-extra-encontrado-durante-a-medicao" class="md-nav__link">
+    <span class="md-ellipsis">
+      Problema extra encontrado durante a medição
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#como-reproduzir" class="md-nav__link">
+    <span class="md-ellipsis">
+      Como reproduzir
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evidência
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evidência">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#grafana-sem-cache-x-com-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      Grafana: sem cache x com cache
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scan-vulnerabilidades/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Scan de vulnerabilidades
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Infraestrutura
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Infraestrutura
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../kubernetes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cicd/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../load-test/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Load test + HPA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../eks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EKS e AWS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../custos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Custos, PaaS e SLA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Equipe
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Equipe
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../onboarding/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Onboarding
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ia/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Uso de IA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#problema" class="md-nav__link">
+    <span class="md-ellipsis">
+      Problema
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#solucao" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solução
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Solução">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#decisoes-e-por-que" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decisões (e por quê)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#problema-extra-encontrado-durante-a-medicao" class="md-nav__link">
+    <span class="md-ellipsis">
+      Problema extra encontrado durante a medição
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#como-reproduzir" class="md-nav__link">
+    <span class="md-ellipsis">
+      Como reproduzir
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evidência
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evidência">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#grafana-sem-cache-x-com-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      Grafana: sem cache x com cache
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="gargalo-cache-das-cotacoes-com-redis-exchange">Gargalo: cache das cotações com Redis (Exchange)</h1>
+<p>Issue #76 · responsável: Felipe · serviço: <code>exchange-service</code></p>
+<h2 id="problema">Problema</h2>
+<p>Cada <code>GET /exchange/{from}/{to}</code> fazia uma chamada HTTP à <a href="https://docs.awesomeapi.com.br/api-de-moedas">AwesomeAPI</a>,
+mesmo a cotação de um par sendo <strong>igual para todos os usuários</strong> e mudando só a cada ~30 segundos. Isso traz três problemas:</p>
+<ul>
+<li><strong>Latência:</strong> toda requisição espera uma ida e volta pela internet até a API externa.</li>
+<li><strong>Dependência e rate limit:</strong> a API é pública e gratuita, com limite de requisições. No load test (e com o HPA criando
+  mais pods), o número de chamadas cresce junto com o tráfego, e qualquer lentidão ou bloqueio dela vira erro no Exchange.</li>
+<li><strong>Desperdício:</strong> em 500 requisições de USD→BRL, as 500 iam buscar exatamente o mesmo valor.</li>
+</ul>
+<p>O rate limit não é hipotético: no CI do GitHub Actions, a AwesomeAPI respondeu <strong>429 Too Many Requests</strong> já na
+primeira cotação (os runners usam IPs compartilhados), e o Exchange devolveu 503. Ver
+<a href="../scan-vulnerabilidades/#primeira-execucao-no-ci-503-por-rate-limit-da-api-externa">scan-vulnerabilidades.md</a>.</p>
+<h2 id="solucao">Solução</h2>
+<p>Guardar a cotação de cada par no <strong>Redis</strong> por <strong>5 minutos</strong> (TTL configurável). A primeira requisição do par busca
+na API e grava no Redis; as seguintes leem do Redis até o TTL vencer.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>                          hit (até 5 min)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>ExchangeResource ─► ExchangeService ─► RateProvider.fetch() ──► Redis  "exchange:rates::USD-BRL"
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>                                        @Cacheable   │ miss
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                                                     └──► AwesomeAPI ──► grava no Redis
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Peça</th>
+<th>Onde</th>
+<th>O que faz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@Cacheable(cacheNames = "rates", key = "#from + '-' + #to", sync = true)</code></td>
+<td><code>RateProvider.fetch</code></td>
+<td>a anotação que liga o cache ao método</td>
+</tr>
+<tr>
+<td><code>spring.cache.type: redis</code>, <code>time-to-live: 5m</code></td>
+<td><code>application.yaml</code></td>
+<td>Redis como cache, com TTL (<code>EXCHANGE_CACHE_TTL</code>)</td>
+</tr>
+<tr>
+<td><code>CacheConfig</code></td>
+<td><code>exchange-service</code></td>
+<td><code>@EnableCaching</code>, fallback se o Redis cair e writer com lock</td>
+</tr>
+<tr>
+<td><code>redis:7.4-alpine</code></td>
+<td><code>docker/compose.yml</code></td>
+<td>64 MB, descarte LRU, sem persistência (é só cache)</td>
+</tr>
+<tr>
+<td>contador <code>exchange_external_calls_total</code></td>
+<td><code>RateProvider</code></td>
+<td>quantas vezes fomos <strong>de fato</strong> à API (é a evidência)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="decisoes-e-por-que">Decisões (e por quê)</h3>
+<ul>
+<li><strong>O que vai para o cache é a <code>Rate</code> (sell, buy, date), não a resposta inteira.</strong> O <code>id-account</code> muda por usuário e
+  é colocado depois, fora do cache. A cotação é compartilhada; a resposta não.</li>
+<li><strong><code>RateProvider</code> é uma classe separada do <code>ExchangeService</code>.</strong> O cache do Spring funciona por <em>proxy</em>: só intercepta
+  chamadas vindas de outra classe. Uma chamada <code>this.fetch()</code> dentro da mesma classe ignoraria o <code>@Cacheable</code>.</li>
+<li><strong>Erros não são cacheados.</strong> Um 404 (par inexistente) ou 503 (API fora do ar) não vai para o Redis; a próxima
+  requisição tenta de novo.</li>
+<li><strong><code>sync = true</code> + writer com lock (<em>cache stampede</em>).</strong> Com o cache vazio, 10 requisições simultâneas do mesmo par
+  fariam 10 chamadas à API. Medimos isso: mesmo com <code>sync = true</code>, o writer padrão do Redis não usa lock e as 10
+  passavam. Com <code>RedisCacheWriter.lockingRedisCacheWriter</code>, só uma busca na API e as outras esperam. A trava fica no
+  próprio Redis, então vale também entre <strong>vários pods</strong> do exchange quando o HPA escalar.</li>
+<li><strong>Se o Redis cair, o Exchange não cai.</strong> O padrão do Spring seria propagar o erro (500). O <code>LoggingCacheErrorHandler</code>
+  só registra um aviso e a chamada segue direto para a API, como se não houvesse cache. O cache é otimização, não
+  dependência obrigatória. Custo: enquanto o Redis está fora, cada requisição espera o timeout dele (500 ms).</li>
+<li><strong>TTL de 5 minutos:</strong> a AwesomeAPI atualiza a cada ~30 s, mas para exibir preços num e-commerce 5 minutos de
+  defasagem é aceitável. É configurável por <code>EXCHANGE_CACHE_TTL</code>.</li>
+<li><strong>Serialização Java padrão</strong> (<code>Rate implements Serializable</code>) em vez de JSON: zero configuração e fácil de explicar.</li>
+</ul>
+<h2 id="problema-extra-encontrado-durante-a-medicao">Problema extra encontrado durante a medição</h2>
+<p>Na primeira medição <strong>sem cache</strong>, 8 de 300 requisições deram <code>503</code>, todas no mesmo milissegundo, logo após a subida.
+O log mostrou <code>'messageConverters' must not be empty</code>: uma <strong>condição de corrida no Spring Cloud OpenFeign 5.0.2</strong>.
+Ele monta a lista de conversores JSON só na primeira chamada, criando a lista vazia e preenchendo depois; requisições
+simultâneas pegavam a lista ainda vazia. Corrigido com o <code>FeignWarmup</code>, que monta a lista na subida, antes de o Tomcat
+aceitar requisições. Isso apareceria em todo pod novo criado pelo HPA no load test.</p>
+<blockquote>
+<p>O <code>auth-service</code> usa a mesma versão do OpenFeign (cliente do Account), então provavelmente tem o mesmo problema
+no login sob carga. Não foi testado ainda.</p>
+</blockquote>
+<h2 id="como-reproduzir">Como reproduzir</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>docker/compose.yml<span class="w"> </span>up<span class="w"> </span>--build<span class="w"> </span>-d
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">set</span><span class="w"> </span>-a<span class="p">;</span><span class="w"> </span>.<span class="w"> </span>docker/.env<span class="p">;</span><span class="w"> </span><span class="nb">set</span><span class="w"> </span>+a
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># com cache (padrão)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>./docker/load-exchange.sh<span class="w"> </span><span class="m">500</span><span class="w"> </span><span class="m">10</span><span class="w"> </span>USD/BRL
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1"># sem cache: mesma imagem, cache desligado por variável de ambiente</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nv">EXCHANGE_CACHE_TYPE</span><span class="o">=</span>none<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>docker/compose.yml<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>exchange
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>docker/compose.yml<span class="w"> </span>restart<span class="w"> </span>gateway<span class="w">   </span><span class="c1"># o gateway guarda o IP antigo do exchange</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>./docker/load-exchange.sh<span class="w"> </span><span class="m">500</span><span class="w"> </span><span class="m">10</span><span class="w"> </span>USD/BRL
+</code></pre></div>
+<p>Para começar com o cache vazio: <code>docker compose -f docker/compose.yml exec redis redis-cli flushall</code>.
+Ver a chave e o TTL: <code>redis-cli --scan</code> e <code>redis-cli ttl "exchange:rates::USD-BRL"</code>.</p>
+<p><strong>Grafana</strong>, dashboard "PMA26 - Visão geral": painéis <em>Exchange: requisições x chamadas à AwesomeAPI</em> e
+<em>Exchange: taxa de acerto do cache</em>, no fim da página.</p>
+<table>
+<thead>
+<tr>
+<th>Métrica</th>
+<th>PromQL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chamadas à API externa</td>
+<td><code>sum(rate(exchange_external_calls_total{application="exchange"}[1m]))</code></td>
+</tr>
+<tr>
+<td>Requisições de cotação</td>
+<td><code>sum(rate(http_server_requests_seconds_count{application="exchange", uri="/exchange/{from}/{to}"}[1m]))</code></td>
+</tr>
+<tr>
+<td>Taxa de acerto</td>
+<td><code>sum(rate(cache_gets_total{cache="rates", result="hit"}[1m])) / sum(rate(cache_gets_total{cache="rates", result=~"hit\|miss"}[1m]))</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="evidencia">Evidência</h2>
+<p>Medição local (Docker Compose no Windows, 2026-11-15) pelo gateway, com JWT, usando <code>hey</code>: 500 requisições de
+<code>GET /exchange/USD/BRL</code> com concorrência 10. Mesma imagem nos dois modos (<code>EXCHANGE_CACHE_TYPE=none</code> x <code>redis</code>),
+300 requisições de aquecimento antes e <strong>cache vazio no início</strong> de cada medição. Mediana de 3 execuções:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>sem cache</th>
+<th>com Redis</th>
+<th>diferença</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Chamadas à AwesomeAPI</strong></td>
+<td>500</td>
+<td><strong>1</strong></td>
+<td><strong>−99,8%</strong></td>
+</tr>
+<tr>
+<td>Requisições/s</td>
+<td>167</td>
+<td><strong>303</strong></td>
+<td>+81%</td>
+</tr>
+<tr>
+<td>Latência p50</td>
+<td>48 ms</td>
+<td><strong>21 ms</strong></td>
+<td>−56%</td>
+</tr>
+<tr>
+<td>Latência p95</td>
+<td>112 ms</td>
+<td><strong>42 ms</strong></td>
+<td>−63%</td>
+</tr>
+<tr>
+<td>Latência p99</td>
+<td>170 ms</td>
+<td>287 ms</td>
+<td>pior (ver abaixo)</td>
+</tr>
+<tr>
+<td>Erros</td>
+<td>0</td>
+<td>0</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<details><summary>As 3 execuções</summary>
+
+| modo | req/s | p50 | p95 | p99 | chamadas à API |
+|------|-------|-----|-----|-----|----------------|
+| sem cache | 164,9 | 48 ms | 120 ms | 156 ms | 500 |
+| sem cache | 167,3 | 48 ms | 113 ms | 175 ms | 500 |
+| sem cache | 191,8 | 42 ms | 103 ms | 170 ms | 500 |
+| Redis | 270,4 | 31 ms | 49 ms | 228 ms | 1 |
+| Redis | 303,5 | 21 ms | 42 ms | 393 ms | 1 |
+| Redis | 389,2 | 16 ms | 37 ms | 287 ms | 1 |
+
+</details>
+
+<p>Leitura dos resultados:
+- <strong>O ganho principal é a dependência externa:</strong> de 500 para 1 chamada. Com 5 minutos de TTL, o Exchange faz no máximo
+  1 chamada por par a cada 5 minutos, independente do tráfego e do número de pods.
+- <strong>p99 pior com Redis:</strong> a medição começa com o cache vazio, então a primeira leva de requisições espera o lock
+  enquanto uma delas busca a cotação. É o custo de fazer 1 chamada em vez de 10. Com o cache já preenchido, o p99
+  medido foi de 48 ms.
+- <strong>Por que a latência não cai mais:</strong> o piso é o próprio caminho pelo gateway, que valida o JWT chamando o Auth
+  (<code>POST /auth/solve</code>) em toda requisição. A AwesomeAPI responde rápido a partir do Brasil (a diferença das medianas
+  é ~27 ms); o ganho seria maior com uma API externa mais lenta ou sob rate limit.
+- <strong>Redis fora do ar</strong> (<code>docker compose stop redis</code>): o Exchange continuou respondendo <code>200</code> (~0,58 s por requisição,
+  esperando o timeout do Redis), com o aviso <code>Cache 'rates' failed to get entry</code> no log. Ao religar o Redis,
+  voltou a ~15 ms.</p>
+<h3 id="grafana-sem-cache-x-com-cache">Grafana: sem cache x com cache</h3>
+<p>Mesma carga nas duas fases (3 × 500 requisições de USD/BRL pelo gateway, com 15 s entre as rodadas). Primeiro com
+<code>EXCHANGE_CACHE_TYPE=none</code>, depois com o Redis. Compose local, 2026-11-15.</p>
+<p><a class="glightbox" href="../img/cache-chamadas.png" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="Requisições de cotação x chamadas à AwesomeAPI" src="../img/cache-chamadas.png" /></a></p>
+<ul>
+<li><strong>20:08–20:10, sem cache:</strong> a linha amarela (chamadas à AwesomeAPI) acompanha a verde (requisições de cotação): cada
+  requisição vai à API externa. A pequena defasagem no início vem do reinício do exchange, porque o Prometheus precisa
+  de duas coletas para calcular a taxa.</li>
+<li><strong>A partir de 20:12, com cache:</strong> a verde sobe e a amarela fica em zero. O Redis responde e a API externa não é chamada.</li>
+</ul>
+<p><a class="glightbox" href="../img/cache-hit-ratio.png" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="Taxa de acerto do cache" src="../img/cache-hit-ratio.png" /></a></p>
+<ul>
+<li>Sem cache, o painel fica vazio, porque não há cache para consultar. Com o Redis, a taxa de acerto fica perto de
+  <strong>100%</strong>: só a primeira requisição de cada par, a cada 5 minutos, vai à API. O trecho de 20:05 é de requisições de
+  teste anteriores à medição.</li>
+</ul>
+<p>Contadores no Prometheus ao final de cada fase:</p>
+<table>
+<thead>
+<tr>
+<th>fase</th>
+<th>requisições de cotação</th>
+<th>chamadas à AwesomeAPI (<code>exchange_external_calls_total</code>)</th>
+<th>hits / misses do cache</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sem cache</td>
+<td>1500</td>
+<td><strong>1500</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>com Redis</td>
+<td>1500</td>
+<td><strong>1</strong></td>
+<td>1499 / 11</td>
+</tr>
+</tbody>
+</table>
+<p>Os 11 misses e 1 chamada mostram o <code>sync = true</code> com lock funcionando: as requisições simultâneas da primeira leva
+encontraram o cache vazio (miss), mas só uma foi à API; as outras esperaram o valor.</p>
+<p>Testes automatizados (<code>ExchangeResourceIntegrationTest</code>, cache em memória no perfil <code>test</code>):
+- duas cotações do mesmo par → 1 chamada à API (<code>segundaCotacaoVemDoCache</code>);
+- 10 requisições simultâneas com a API lenta → 1 chamada (<code>requisicoesSimultaneasComCacheVazioChamamAApiUmaVez</code>);
+- erro 404 não é cacheado → 2 chamadas (<code>erroNaoECacheado</code>).</p>
+<blockquote>
+<p>TODO: repetir a medição no EKS.</p>
+</blockquote>
+
+
+
+
+
+
+
+  
+    
+  
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Última atualização">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">15 de novembro de 2026</span>
+  </span>
+
+    
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "content.code.select", "content.code.annotate", "content.tooltips", "navigation.instant", "navigation.instant.progress", "navigation.top", "navigation.path", "navigation.tracking", "navigation.expand"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "mais 1 nesta p\u00e1gina", "search.result.more.other": "# mais nesta p\u00e1gina", "search.result.none": "Nenhum documento encontrado", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+    
+  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(() => { lightbox.reload() });
+</script></body>
+</html>

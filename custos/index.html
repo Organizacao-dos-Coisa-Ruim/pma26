@@ -1,0 +1,1473 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Projeto de Plataformas, Microsserviços e APIs (Insper, 2026.2)">
+      
+      
+      
+        <link rel="canonical" href="https://organizacao-dos-coisa-ruim.github.io/pma26/custos/">
+      
+      
+        <link rel="prev" href="../eks/">
+      
+      
+        <link rel="next" href="../onboarding/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>Custos, PaaS e SLA - pma26 · E-commerce em microsserviços</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+    html.glightbox-open { overflow: initial; height: 100%; }
+    .gslide-title { margin-top: 0px; user-select: text; }
+    .gslide-desc { color: #666; user-select: text; }
+    .gslide-image img { background: white; }
+    .gscrollbar-fixer { padding-right: 15px; }
+    .gdesc-inner { font-size: 0.75rem; }
+    body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+    body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#custos-paas-e-sla" class="md-skip">
+          Pular para conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href=".." title="pma26 · E-commerce em microsserviços" class="md-header__button md-logo" aria-label="pma26 · E-commerce em microsserviços" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pma26 · E-commerce em microsserviços
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Custos, PaaS e SLA
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="indigo"  aria-label="Modo claro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Modo claro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="indigo"  aria-label="Modo escuro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Modo escuro" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="grey" data-md-color-accent="indigo"  aria-label="Preferência do sistema"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Preferência do sistema" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando busca
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Organizacao-dos-Coisa-Ruim/pma26" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Organizacao-dos-Coisa-Ruim/pma26
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pma26 · E-commerce em microsserviços" class="md-nav__button md-logo" aria-label="pma26 · E-commerce em microsserviços" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    pma26 · E-commerce em microsserviços
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Organizacao-dos-Coisa-Ruim/pma26" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Organizacao-dos-Coisa-Ruim/pma26
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Início
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../arquitetura/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Arquitetura
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../servicos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Microsserviços
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API (OpenAPI)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Gargalos
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Gargalos
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gargalos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gargalos
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gargalos/observabilidade/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Observabilidade (Prometheus + Grafana)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gargalos/rbac/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RBAC
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gargalos/cache-redis/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cache com Redis
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gargalos/scan-vulnerabilidades/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Scan de vulnerabilidades
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Infraestrutura
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Infraestrutura
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kubernetes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cicd/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../load-test/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Load test + HPA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../eks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EKS e AWS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Custos, PaaS e SLA
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Custos, PaaS e SLA
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#dimensionamento" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dimensionamento
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estimativa-mensal-ligado-247" class="md-nav__link">
+    <span class="md-ellipsis">
+      Estimativa mensal (ligado 24/7)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Estimativa mensal (ligado 24/7)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custo-no-projeto-uso-real-previsto" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custo no projeto (uso real previsto)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#como-reduzir-se-fosse-producao" class="md-nav__link">
+    <span class="md-ellipsis">
+      Como reduzir (se fosse produção)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#onde-usamos-paas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Onde usamos PaaS
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sla" class="md-nav__link">
+    <span class="md-ellipsis">
+      SLA
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SLA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#slas-da-aws-que-usamos" class="md-nav__link">
+    <span class="md-ellipsis">
+      SLAs da AWS que usamos
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nosso-sla-slo" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nosso SLA (SLO)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-ja-ajuda-a-disponibilidade" class="md-nav__link">
+    <span class="md-ellipsis">
+      O que já ajuda a disponibilidade
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custo-real" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custo real
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Equipe
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Equipe
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../onboarding/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Onboarding
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ia/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Uso de IA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#dimensionamento" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dimensionamento
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estimativa-mensal-ligado-247" class="md-nav__link">
+    <span class="md-ellipsis">
+      Estimativa mensal (ligado 24/7)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Estimativa mensal (ligado 24/7)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custo-no-projeto-uso-real-previsto" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custo no projeto (uso real previsto)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#como-reduzir-se-fosse-producao" class="md-nav__link">
+    <span class="md-ellipsis">
+      Como reduzir (se fosse produção)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#onde-usamos-paas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Onde usamos PaaS
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sla" class="md-nav__link">
+    <span class="md-ellipsis">
+      SLA
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SLA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#slas-da-aws-que-usamos" class="md-nav__link">
+    <span class="md-ellipsis">
+      SLAs da AWS que usamos
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nosso-sla-slo" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nosso SLA (SLO)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-ja-ajuda-a-disponibilidade" class="md-nav__link">
+    <span class="md-ellipsis">
+      O que já ajuda a disponibilidade
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custo-real" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custo real
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="custos-paas-e-sla">Custos, PaaS e SLA</h1>
+<p>Rubrica: <strong>PaaS &amp; Custos &amp; SLA (10%)</strong>. Issues #83–#87.</p>
+<div class="admonition warning">
+<p class="admonition-title">Preços</p>
+<p>Valores <strong>on-demand em <code>us-east-1</code> (N. Virginia)</strong>, em USD, considerando 730 h/mês. Conferir e salvar a
+estimativa no <a href="https://calculator.aws/" target="_blank">AWS Pricing Calculator</a> (#84). O custo real
+medido no Cost Explorer entra na seção <a href="#custo-real">Custo real</a> depois dos testes no EKS (#85).</p>
+</div>
+<h2 id="dimensionamento">Dimensionamento</h2>
+<p>Os <code>requests</code> dos manifests (<a href="../kubernetes/">Kubernetes</a>) definem quanto de CPU e memória o cluster precisa reservar:</p>
+<table>
+<thead>
+<tr>
+<th>Pods</th>
+<th style="text-align: right;">CPU (request)</th>
+<th style="text-align: right;">Memória (request)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>auth, account, exchange (1 réplica cada)</td>
+<td style="text-align: right;">3 × 250m</td>
+<td style="text-align: right;">3 × 384 Mi</td>
+</tr>
+<tr>
+<td>gateway, mínimo do HPA</td>
+<td style="text-align: right;">1 × 250m</td>
+<td style="text-align: right;">1 × 256 Mi</td>
+</tr>
+<tr>
+<td>redis</td>
+<td style="text-align: right;">50m</td>
+<td style="text-align: right;">64 Mi</td>
+</tr>
+<tr>
+<td>sistema (CoreDNS, aws-node, kube-proxy, metrics-server)</td>
+<td style="text-align: right;">~400m</td>
+<td style="text-align: right;">~400 Mi</td>
+</tr>
+<tr>
+<td><strong>Total em repouso</strong></td>
+<td style="text-align: right;"><strong>~1,45 vCPU</strong></td>
+<td style="text-align: right;"><strong>~1,9 GiB</strong></td>
+</tr>
+<tr>
+<td>gateway no máximo do HPA (+9 pods)</td>
+<td style="text-align: right;">+2,25 vCPU</td>
+<td style="text-align: right;">+2,25 GiB</td>
+</tr>
+<tr>
+<td><strong>Total no pico do load test</strong></td>
+<td style="text-align: right;"><strong>~3,7 vCPU</strong></td>
+<td style="text-align: right;"><strong>~4,2 GiB</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Escolha: 2 nós <code>t3.medium</code></strong> (2 vCPU e 4 GiB cada, ~1,9 vCPU alocável), um em cada subnet privada (2 zonas de
+disponibilidade). Isso dá ~3,8 vCPU alocáveis, que cobrem o pico. Um <code>t3.small</code> (2 GiB) não comporta 4 JVMs mais
+as réplicas do gateway.</p>
+<h2 id="estimativa-mensal-ligado-247">Estimativa mensal (ligado 24/7)</h2>
+<table>
+<thead>
+<tr>
+<th>Serviço</th>
+<th>Configuração</th>
+<th>Preço</th>
+<th style="text-align: right;">USD/mês</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EKS (control plane)</td>
+<td>1 cluster</td>
+<td>$0,10/h</td>
+<td style="text-align: right;">73,00</td>
+</tr>
+<tr>
+<td>EC2 (node group)</td>
+<td>2 × <code>t3.medium</code></td>
+<td>$0,0416/h cada</td>
+<td style="text-align: right;">60,74</td>
+</tr>
+<tr>
+<td>EBS (disco dos nós)</td>
+<td>2 × 20 GB gp3</td>
+<td>$0,08/GB-mês</td>
+<td style="text-align: right;">3,20</td>
+</tr>
+<tr>
+<td>RDS PostgreSQL</td>
+<td><code>db.t3.micro</code>, Single-AZ, 20 GB gp2</td>
+<td>$0,018/h + $0,115/GB-mês</td>
+<td style="text-align: right;">15,44</td>
+</tr>
+<tr>
+<td>NAT Gateway</td>
+<td>2 (um por subnet pública, criados pelo template da VPC)</td>
+<td>$0,045/h cada + $0,045/GB</td>
+<td style="text-align: right;">65,70</td>
+</tr>
+<tr>
+<td>Load Balancer</td>
+<td>1 Classic LB (criado pelo <code>Service</code> <code>LoadBalancer</code>)</td>
+<td>$0,025/h + $0,008/GB</td>
+<td style="text-align: right;">18,25</td>
+</tr>
+<tr>
+<td>IPv4 público</td>
+<td>2 do NAT + 2 do LB</td>
+<td>$0,005/h cada</td>
+<td style="text-align: right;">14,60</td>
+</tr>
+<tr>
+<td>Transferência de dados</td>
+<td>poucos GB (testes)</td>
+<td></td>
+<td style="text-align: right;">~1,00</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td></td>
+<td></td>
+<td style="text-align: right;"><strong>≈ 252</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Isso dá <strong>≈ $0,34 por hora</strong> com o ambiente ligado.</p>
+<p><strong>O que pesa:</strong> o control plane do EKS (29%) e os NAT Gateways (26%) custam mais que os próprios servidores. Os dois
+cobram <strong>por hora de existência</strong>, mesmo sem tráfego.</p>
+<h3 id="custo-no-projeto-uso-real-previsto">Custo no projeto (uso real previsto)</h3>
+<p>O ambiente só precisa existir durante o setup, o load test, a gravação do vídeo e a demo:</p>
+<table>
+<thead>
+<tr>
+<th>Uso</th>
+<th style="text-align: right;">Horas</th>
+<th style="text-align: right;">Custo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Setup e testes do EKS</td>
+<td style="text-align: right;">~10 h</td>
+<td style="text-align: right;">~$3,40</td>
+</tr>
+<tr>
+<td>Load test e vídeo</td>
+<td style="text-align: right;">~4 h</td>
+<td style="text-align: right;">~$1,40</td>
+</tr>
+<tr>
+<td>Demo da apresentação</td>
+<td style="text-align: right;">~4 h</td>
+<td style="text-align: right;">~$1,40</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td style="text-align: right;"><strong>~18 h</strong></td>
+<td style="text-align: right;"><strong>~$6</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Para isso ser verdade, <strong>tudo é destruído ao fim de cada sessão</strong>: cluster, node group, RDS, load balancer e a pilha
+CloudFormation da VPC, que é a que contém os NAT Gateways. Parar o RDS não basta, porque o EKS e o NAT continuam
+cobrando. Um alerta no <strong>AWS Budgets</strong> (#49) avisa se algo ficar ligado por engano (sugestão: alerta em $20).</p>
+<h3 id="como-reduzir-se-fosse-producao">Como reduzir (se fosse produção)</h3>
+<table>
+<thead>
+<tr>
+<th>Medida</th>
+<th>Economia</th>
+<th>Custo da medida</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 NAT Gateway em vez de 2</td>
+<td>~$36/mês</td>
+<td>se a zona do NAT cair, os pods da outra zona perdem a saída para a internet</td>
+</tr>
+<tr>
+<td>Nós <strong>Spot</strong> em vez de on-demand</td>
+<td>~60–70% dos nós</td>
+<td>a AWS pode retomar a instância com 2 min de aviso; ok para serviços sem estado com 2+ réplicas</td>
+</tr>
+<tr>
+<td><strong>Savings Plan / Reserved</strong> (1 ano)</td>
+<td>~30–40% dos nós e do RDS</td>
+<td>compromisso de uso</td>
+</tr>
+<tr>
+<td>Ingress (AWS Load Balancer Controller + ALB) quando houver mais de um serviço exposto</td>
+<td>1 LB para vários serviços</td>
+<td>mais um componente para manter</td>
+</tr>
+<tr>
+<td>Desligar fora do horário de uso (ambiente de dev/teste)</td>
+<td>proporcional</td>
+<td>não serve para produção</td>
+</tr>
+</tbody>
+</table>
+<h2 id="onde-usamos-paas">Onde usamos PaaS</h2>
+<p>O critério é: <strong>quem cuida da máquina, do sistema operacional e da atualização do software?</strong> Quanto mais a
+plataforma cuida, mais "PaaS" é o serviço.</p>
+<table>
+<thead>
+<tr>
+<th>Serviço</th>
+<th>Modelo</th>
+<th>O que a plataforma faz por nós</th>
+<th>O que ainda é nosso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AWS EKS</strong></td>
+<td>PaaS / CaaS (control plane gerenciado)</td>
+<td>API server, etcd, alta disponibilidade e atualização do control plane</td>
+<td>node group (tipo e quantidade de nós), manifests, HPA</td>
+</tr>
+<tr>
+<td><strong>AWS RDS</strong></td>
+<td>PaaS (DBaaS)</td>
+<td>instalação, patches, backups automáticos, monitoramento, opção Multi-AZ</td>
+<td>schema (Flyway), tamanho da instância</td>
+</tr>
+<tr>
+<td><strong>Elastic Load Balancing</strong></td>
+<td>PaaS</td>
+<td>balanceamento, health check dos nós, alta disponibilidade</td>
+<td>só declarar <code>type: LoadBalancer</code></td>
+</tr>
+<tr>
+<td><strong>GitHub Actions</strong></td>
+<td>PaaS (CI/CD como serviço)</td>
+<td>runners, cache, segredos</td>
+<td>os workflows (<a href="../cicd/">CI/CD</a>)</td>
+</tr>
+<tr>
+<td><strong>Docker Hub</strong></td>
+<td>PaaS (registry)</td>
+<td>armazenamento e distribuição das imagens</td>
+<td>tags e push</td>
+</tr>
+<tr>
+<td><strong>GitHub Pages</strong></td>
+<td>PaaS (hospedagem estática)</td>
+<td>servir este site</td>
+<td>o build do MkDocs</td>
+</tr>
+<tr>
+<td><strong>AwesomeAPI</strong></td>
+<td>SaaS (API externa)</td>
+<td>cotações de moedas</td>
+<td>o cache Redis para não depender dela a cada requisição</td>
+</tr>
+</tbody>
+</table>
+<p><strong>O que decidimos <em>não</em> usar como PaaS:</strong></p>
+<ul>
+<li><strong>Redis</strong> roda como pod no cluster, e não no ElastiCache (~$12/mês o menor nó). É só cache: se perder os dados, a
+  próxima consulta busca a cotação de novo. Pagar por alta disponibilidade gerenciada não compensa.</li>
+<li><strong>Prometheus/Grafana</strong> ficam no Compose local, e não no Amazon Managed Prometheus/Grafana. Seria mais um custo fixo
+  para um projeto acadêmico.</li>
+</ul>
+<h2 id="sla">SLA</h2>
+<h3 id="slas-da-aws-que-usamos">SLAs da AWS que usamos</h3>
+<table>
+<thead>
+<tr>
+<th>Serviço</th>
+<th style="text-align: right;">SLA mensal da AWS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EKS (control plane)</td>
+<td style="text-align: right;">99,95%</td>
+</tr>
+<tr>
+<td>Elastic Load Balancing</td>
+<td style="text-align: right;">99,99%</td>
+</tr>
+<tr>
+<td>EC2 (nível de região, instâncias em 2+ zonas)</td>
+<td style="text-align: right;">99,99%</td>
+</tr>
+<tr>
+<td>RDS <strong>Single-AZ</strong></td>
+<td style="text-align: right;">99,5%</td>
+</tr>
+<tr>
+<td>RDS <strong>Multi-AZ</strong></td>
+<td style="text-align: right;">99,95%</td>
+</tr>
+</tbody>
+</table>
+<p>Uma requisição só funciona se <strong>todos</strong> esses componentes estiverem de pé. Ou seja, eles estão em série e as
+disponibilidades se multiplicam:</p>
+<table>
+<thead>
+<tr>
+<th>Arquitetura</th>
+<th>Conta</th>
+<th style="text-align: right;">Disponibilidade</th>
+<th style="text-align: right;">Indisponibilidade/mês</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RDS Single-AZ (a do projeto)</td>
+<td>0,9995 × 0,9999 × 0,9999 × 0,995</td>
+<td style="text-align: right;"><strong>≈ 99,43%</strong></td>
+<td style="text-align: right;">≈ 4 h 10 min</td>
+</tr>
+<tr>
+<td>RDS Multi-AZ</td>
+<td>0,9995 × 0,9999 × 0,9999 × 0,9995</td>
+<td style="text-align: right;"><strong>≈ 99,88%</strong></td>
+<td style="text-align: right;">≈ 53 min</td>
+</tr>
+</tbody>
+</table>
+<p>O <strong>RDS Single-AZ é o elo mais fraco</strong>: sozinho, ele derruba o teto do sistema para menos de 99,5%. Ainda assim, o
+nosso SLA não pode prometer mais do que o teto da infraestrutura, e a nossa própria aplicação também falha
+(deploy, bug, pod reiniciando).</p>
+<h3 id="nosso-sla-slo">Nosso SLA (SLO)</h3>
+<table>
+<thead>
+<tr>
+<th>Indicador (SLI)</th>
+<th>Objetivo (SLO)</th>
+<th>Como medimos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Disponibilidade</strong> da API: % de requisições ao gateway sem erro 5xx</td>
+<td><strong>99%</strong> ao mês (≈ 7 h 18 min de falha tolerada)</td>
+<td>Prometheus: <code>http_server_requests_seconds_count</code> do gateway, <code>status=~"5.."</code> / total</td>
+</tr>
+<tr>
+<td><strong>Latência</strong> das cotações (<code>GET /exchange/*</code>)</td>
+<td><strong>p95 &lt; 300 ms</strong></td>
+<td>histograma <code>http_server_requests_seconds_bucket</code> (Grafana); no load test do kind, o p95 foi <strong>30 ms</strong> com 100 usuários</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Por que 99% e não 99,9%:</strong> com RDS Single-AZ, a infraestrutura sozinha já fica em ~99,4%. Prometer 99,9% exigiria:</p>
+<ol>
+<li><strong>RDS Multi-AZ</strong> (dobra o custo do banco: ~$15 → ~$30/mês);</li>
+<li><strong>2+ réplicas de cada serviço</strong> (hoje auth, account e exchange têm 1: se o pod cair, o serviço fica fora até o
+   Kubernetes recriá-lo, ~1 min por causa da JVM). Mais nós, mais custo;</li>
+<li><code>minReplicas: 2</code> no HPA do gateway, que também resolve o pico de latência no início do <a href="../load-test/">load test</a>;</li>
+<li>os 2 NAT Gateways (que o template já cria).</li>
+</ol>
+<p>Isso mostra a troca entre <strong>custo e disponibilidade</strong>: cada "9" a mais custa réplicas, zonas e serviços Multi-AZ.</p>
+<h3 id="o-que-ja-ajuda-a-disponibilidade">O que já ajuda a disponibilidade</h3>
+<ul>
+<li><strong>Probes</strong> (<code>startup</code>, <code>readiness</code>, <code>liveness</code>): o Service só manda tráfego para pod pronto, e pod travado é reiniciado.</li>
+<li><strong>HPA</strong> no gateway: aguenta picos sem erro (0 falhas em 30 mil requisições no load test).</li>
+<li><strong>Cache Redis</strong>: se a AwesomeAPI ficar lenta ou fora, as cotações em cache continuam saindo por até 5 min.</li>
+<li><strong>Nós em 2 zonas</strong>: a queda de uma zona derruba só metade dos nós.</li>
+</ul>
+<h2 id="custo-real">Custo real</h2>
+<p><em>A preencher depois dos testes no EKS (#85): print do Cost Explorer filtrado pelo período, comparado com a estimativa acima.</em></p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Última atualização">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">18 de novembro de 2026</span>
+  </span>
+
+    
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy", "content.code.select", "content.code.annotate", "content.tooltips", "navigation.instant", "navigation.instant.progress", "navigation.top", "navigation.path", "navigation.tracking", "navigation.expand"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "mais 1 nesta p\u00e1gina", "search.result.more.other": "# mais nesta p\u00e1gina", "search.result.none": "Nenhum documento encontrado", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+    
+  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(() => { lightbox.reload() });
+</script></body>
+</html>

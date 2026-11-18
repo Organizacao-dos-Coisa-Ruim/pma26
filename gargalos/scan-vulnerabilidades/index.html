@@ -1,0 +1,1331 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Projeto de Plataformas, Microsserviços e APIs (Insper, 2026.2)">
+      
+      
+      
+        <link rel="canonical" href="https://organizacao-dos-coisa-ruim.github.io/pma26/gargalos/scan-vulnerabilidades/">
+      
+      
+        <link rel="prev" href="../cache-redis/">
+      
+      
+        <link rel="next" href="../../kubernetes/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>Scan de vulnerabilidades - pma26 · E-commerce em microsserviços</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+    html.glightbox-open { overflow: initial; height: 100%; }
+    .gslide-title { margin-top: 0px; user-select: text; }
+    .gslide-desc { color: #666; user-select: text; }
+    .gslide-image img { background: white; }
+    .gscrollbar-fixer { padding-right: 15px; }
+    .gdesc-inner { font-size: 0.75rem; }
+    body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+    body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="../../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#gargalo-scan-de-vulnerabilidades-owasp-zap-dependency-check" class="md-skip">
+          Pular para conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="pma26 · E-commerce em microsserviços" class="md-header__button md-logo" aria-label="pma26 · E-commerce em microsserviços" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pma26 · E-commerce em microsserviços
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Scan de vulnerabilidades
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="indigo"  aria-label="Modo claro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Modo claro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="indigo"  aria-label="Modo escuro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Modo escuro" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="grey" data-md-color-accent="indigo"  aria-label="Preferência do sistema"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Preferência do sistema" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando busca
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Organizacao-dos-Coisa-Ruim/pma26" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Organizacao-dos-Coisa-Ruim/pma26
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="pma26 · E-commerce em microsserviços" class="md-nav__button md-logo" aria-label="pma26 · E-commerce em microsserviços" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    pma26 · E-commerce em microsserviços
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Organizacao-dos-Coisa-Ruim/pma26" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Organizacao-dos-Coisa-Ruim/pma26
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Início
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../arquitetura/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Arquitetura
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../servicos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Microsserviços
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API (OpenAPI)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Gargalos
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Gargalos
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gargalos
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observabilidade/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Observabilidade (Prometheus + Grafana)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rbac/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RBAC
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cache-redis/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cache com Redis
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Scan de vulnerabilidades
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Scan de vulnerabilidades
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#problema" class="md-nav__link">
+    <span class="md-ellipsis">
+      Problema
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#solucao" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solução
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Solução">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#como-o-zap-funciona-aqui" class="md-nav__link">
+    <span class="md-ellipsis">
+      Como o ZAP funciona aqui
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidencia-o-que-o-zap-encontrou-e-o-que-foi-corrigido" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evidência: o que o ZAP encontrou e o que foi corrigido
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evidência: o que o ZAP encontrou e o que foi corrigido">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primeira-execucao-no-ci-503-por-rate-limit-da-api-externa" class="md-nav__link">
+    <span class="md-ellipsis">
+      Primeira execução no CI: 503 por rate limit da API externa
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-o-zap-testou-e-nao-encontrou" class="md-nav__link">
+    <span class="md-ellipsis">
+      O que o ZAP testou e não encontrou
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidencia-dependency-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evidência: Dependency-Check
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evidência: Dependency-Check">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#baixando-a-base-da-nvd" class="md-nav__link">
+    <span class="md-ellipsis">
+      Baixando a base da NVD
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resultado-11-cves-com-nota-7-0" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resultado: 11 CVEs com nota ≥ 7 → 0
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#como-reproduzir" class="md-nav__link">
+    <span class="md-ellipsis">
+      Como reproduzir
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitacoes-e-proximos-passos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Limitações e próximos passos
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Infraestrutura
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Infraestrutura
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../kubernetes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cicd/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../load-test/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Load test + HPA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../eks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EKS e AWS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../custos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Custos, PaaS e SLA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Equipe
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Equipe
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../onboarding/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Onboarding
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ia/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Uso de IA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#problema" class="md-nav__link">
+    <span class="md-ellipsis">
+      Problema
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#solucao" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solução
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Solução">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#como-o-zap-funciona-aqui" class="md-nav__link">
+    <span class="md-ellipsis">
+      Como o ZAP funciona aqui
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidencia-o-que-o-zap-encontrou-e-o-que-foi-corrigido" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evidência: o que o ZAP encontrou e o que foi corrigido
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evidência: o que o ZAP encontrou e o que foi corrigido">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primeira-execucao-no-ci-503-por-rate-limit-da-api-externa" class="md-nav__link">
+    <span class="md-ellipsis">
+      Primeira execução no CI: 503 por rate limit da API externa
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-o-zap-testou-e-nao-encontrou" class="md-nav__link">
+    <span class="md-ellipsis">
+      O que o ZAP testou e não encontrou
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidencia-dependency-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evidência: Dependency-Check
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evidência: Dependency-Check">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#baixando-a-base-da-nvd" class="md-nav__link">
+    <span class="md-ellipsis">
+      Baixando a base da NVD
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resultado-11-cves-com-nota-7-0" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resultado: 11 CVEs com nota ≥ 7 → 0
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#como-reproduzir" class="md-nav__link">
+    <span class="md-ellipsis">
+      Como reproduzir
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitacoes-e-proximos-passos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Limitações e próximos passos
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="gargalo-scan-de-vulnerabilidades-owasp-zap-dependency-check">Gargalo: scan de vulnerabilidades (OWASP ZAP + Dependency-Check)</h1>
+<p>Issue #78 · responsável: Felipe · onde: CI do <code>pma26</code> (ZAP) e do <code>exchange-service</code> (Dependency-Check)</p>
+<h2 id="problema">Problema</h2>
+<p>Ninguém verificava a segurança do que o grupo entrega. Os testes conferem se a API <strong>funciona</strong>, não se ela
+<strong>resiste a entradas maliciosas</strong>, se responde com os headers de proteção ou se as bibliotecas usadas têm falhas
+conhecidas. Qualquer PR podia introduzir uma vulnerabilidade sem ninguém perceber.</p>
+<h2 id="solucao">Solução</h2>
+<p>Dois scans automáticos no CI, que olham lados diferentes:</p>
+<table>
+<thead>
+<tr>
+<th>Ferramenta</th>
+<th>Tipo</th>
+<th>O que analisa</th>
+<th>Onde roda</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OWASP ZAP</strong> (API Scan)</td>
+<td>DAST: ataca o sistema rodando</td>
+<td>as rotas do gateway, com e sem token: injeção (SQL, comando, path traversal...), erros de servidor, headers de segurança, vazamento de informação</td>
+<td>workflow do <code>pma26</code>, depois do smoke test, em todo PR e push</td>
+</tr>
+<tr>
+<td><strong>OWASP Dependency-Check</strong></td>
+<td>SCA: analisa as dependências</td>
+<td>CVEs conhecidas (base da NVD) nas bibliotecas do <code>pom.xml</code></td>
+<td>workflow do <code>exchange-service</code>, quando o <code>pom.xml</code> muda e toda segunda-feira</td>
+</tr>
+</tbody>
+</table>
+<h3 id="como-o-zap-funciona-aqui">Como o ZAP funciona aqui</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>smoke test OK ──► docker/zap-scan.sh ──► cria um usuário e faz login (JWT)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                                     ──► zap-api-scan.py lê docs/openapi.yaml (as rotas do gateway)
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>                                     ──► ataca cada rota com o token no header Authorization
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                                     ──► relatório HTML/JSON (artefato do workflow)
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>                                     ──► qualquer alerta WARN/FAIL quebra o CI
+</code></pre></div>
+<ul>
+<li><strong><code>docs/openapi.yaml</code></strong>: o ZAP não descobre rotas de uma API REST sozinho (não há links para seguir); a especificação
+  diz quais rotas existem e o formato dos corpos. Também serve como documentação da API.</li>
+<li><strong>Com token:</strong> um usuário comum é criado e o JWT dele vai em todas as requisições, para o ZAP testar as rotas
+  protegidas e não só os 401.</li>
+<li><strong>Sem <code>-I</code>:</strong> todo alerta de nível WARN quebra o job. Se algum alerta for aceito pelo grupo, ele vai em
+  <code>.zap/rules.tsv</code> com justificativa, em vez de ser ignorado em silêncio.</li>
+<li><strong>Sem segredos:</strong> o ZAP não precisa de conta nem token, por isso funciona também em PRs vindos de fork.</li>
+</ul>
+<h2 id="evidencia-o-que-o-zap-encontrou-e-o-que-foi-corrigido">Evidência: o que o ZAP encontrou e o que foi corrigido</h2>
+<p>Primeiro scan (2026-11-15, sistema inteiro no compose, 54 URLs testadas): <strong>3 alertas</strong>. Relatório: <a href="../zap/antes.html">zap/antes.html</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Alerta</th>
+<th>Risco</th>
+<th>Causa</th>
+<th>Correção</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>A Server Error response code was returned</em> em <code>POST /auth/register</code></td>
+<td>Baixo</td>
+<td>O Account não validava o tamanho dos campos. Nome ou email com mais de 256 caracteres quebravam no Postgres (<code>value too long for type character varying(256)</code>); senha com mais de 72 bytes quebrava no BCrypt (<code>password cannot be more than 72 bytes</code>). O Account respondia 500 e o Auth devolvia 503</td>
+<td><code>account-service</code>: validação no <code>AccountService.create</code>, devolve <strong>400</strong></td>
+</tr>
+<tr>
+<td><em>X-Content-Type-Options Header Missing</em> (<code>/auth/login</code>, <code>/exchange/USD/BRL</code>)</td>
+<td>Baixo</td>
+<td>Sem esse header o navegador pode "adivinhar" o tipo do conteúdo e tratar JSON como HTML/script</td>
+<td><code>gateway-service</code>: <code>SecurityHeadersFilter</code></td>
+</tr>
+<tr>
+<td><em>Cross-Origin-Resource-Policy Header Missing</em> (5 rotas)</td>
+<td>Baixo</td>
+<td>Outros sites podiam embutir as respostas da API</td>
+<td><code>gateway-service</code>: <code>SecurityHeadersFilter</code></td>
+</tr>
+</tbody>
+</table>
+<p>O 503 é o achado mais importante: qualquer pessoa conseguia gerar <strong>erros de servidor</strong> à vontade, o que suja os
+alertas de 5xx, consome recursos e esconde problemas reais. Os três casos foram reproduzidos à mão antes da correção
+(<code>POST /auth/register</code> com nome de 300 caracteres, email de 300 caracteres e senha de 100 caracteres → 503 nos três).</p>
+<p><strong>Correções:</strong>
+- <strong><code>gateway-service</code> → <code>SecurityHeadersFilter</code>:</strong> um <code>WebFilter</code> que adiciona em <strong>toda</strong> resposta
+  <code>X-Content-Type-Options: nosniff</code>, <code>Cross-Origin-Resource-Policy: same-origin</code>, <code>X-Frame-Options: DENY</code> e
+  <code>Referrer-Policy: no-referrer</code>. É um <code>WebFilter</code> (e não um filtro de rota do Gateway) para cobrir também o
+  <code>/health-check</code> do próprio gateway e as respostas 401/403 do <code>AuthorizationFilter</code>. Ele grava os headers em
+  <code>beforeCommit</code>, para não serem sobrescritos pelo serviço de destino. A correção é feita no gateway porque ele é o
+  único ponto de entrada: protege todos os serviços de uma vez, inclusive os que ainda vão ser criados.
+- <strong><code>account-service</code> → <code>AccountService.create</code>:</strong> limites de 256 caracteres para nome e email (o tamanho da coluna)
+  e de 72 <strong>bytes</strong> para a senha (limite do BCrypt; em bytes porque <code>ç</code> ocupa 2 bytes em UTF-8). Valores maiores
+  devolvem 400 com a mensagem do limite.</p>
+<p>Segundo scan, com as correções: <strong>0 alertas, 120 regras passando</strong> (antes: 3 alertas, 118 passando).
+Relatório: <a href="../zap/depois.html">zap/depois.html</a>. Os três cadastros que davam 503 agora dão 400.</p>
+<p><strong>O CI realmente quebra?</strong> Sim. Rodando o mesmo scan direto contra o Account (sem passar pelo gateway, portanto sem
+os headers), o <code>zap-api-scan.py</code> encontrou 3 alertas e saiu com código 2, o que falha o passo do workflow.</p>
+<h3 id="primeira-execucao-no-ci-503-por-rate-limit-da-api-externa">Primeira execução no CI: 503 por rate limit da API externa</h3>
+<p>Na primeira execução no GitHub Actions, o ZAP quebrou o job com um único alerta: <code>GET /exchange/USD/BRL</code> →
+<strong>503</strong>. O log do exchange mostrou a causa: <code>AwesomeAPI falhou para USD-BRL: status 429 Too Many Requests</code>. Os
+runners do GitHub usam IPs compartilhados por milhares de projetos, e a AwesomeAPI pública limita esses IPs.</p>
+<p>Não era vulnerabilidade: o Exchange fez o certo (API externa falhou → 503). Mas um CI que depende de uma API externa
+fora do nosso controle fica instável. <strong>Correção:</strong> no CI, <code>docker/compose.ci.yml</code> troca a AwesomeAPI por um mock
+(nginx com uma cotação fixa, <code>docker/ci/awesomeapi-mock.conf</code>). O scan continua atacando todo o nosso código e o
+resultado fica determinístico. Com o mock, o smoke test também passou a conferir uma cotação com 200.</p>
+<h3 id="o-que-o-zap-testou-e-nao-encontrou">O que o ZAP testou e não encontrou</h3>
+<p>Entre as 120 regras que passaram (lista completa no relatório):
+- <strong>Injeção:</strong> SQL Injection (genérica e <em>time-based</em> para PostgreSQL, MySQL, Oracle, MsSQL), Remote OS Command
+  Injection, Server Side Code Injection, Server Side Template Injection, XPath, XSLT, CRLF, XML External Entity;
+- <strong>XSS:</strong> refletido, persistente e DOM;
+- <strong>Arquivos e servidor:</strong> Path Traversal, Remote File Inclusion, Buffer Overflow, Format String Error;
+- <strong>CVEs famosas:</strong> Log4Shell e Spring4Shell;
+- <strong>Vazamento de informação:</strong> Application Error Disclosure, Debug Error Messages, Spring Actuator Information Leak,
+  <code>.env</code> Information Leak, Cloud Metadata Potentially Exposed (<code>/latest/meta-data/</code>, usado para roubar credenciais na AWS).</p>
+<h2 id="evidencia-dependency-check">Evidência: Dependency-Check</h2>
+<p>Configurado no <code>exchange-service</code>: plugin <code>dependency-check-maven</code> 12.2.2 no <code>pom.xml</code> (quebra com CVSS ≥ 7, ignora
+dependências de teste, falsos positivos em <code>dependency-check-suppressions.xml</code> com justificativa) e workflow
+<code>.github/workflows/dependency-check.yml</code>.</p>
+<h3 id="baixando-a-base-da-nvd">Baixando a base da NVD</h3>
+<p>A base tem ~425 mil CVEs (~213 páginas da API da NVD), e o download deu trabalho:
+- <strong>Sem chave:</strong> a NVD bloqueia por rate limit (<code>NVD Returned Status Code: 429</code>). Por isso o workflow exige o secret
+  <code>NVD_API_KEY</code> (chave gratuita); sem ele, o job só emite um aviso e termina.
+- <strong>Com chave:</strong> a NVD ainda devolve <strong>503</strong> de vez em quando no meio do download, e com a configuração padrão o
+  plugin desistia (aconteceu localmente e no GitHub Actions). Com <code>nvdApiDelay=3000</code> e <code>nvdMaxRetryCount=50</code> no
+  <code>pom.xml</code>, o download completo terminou (~36 min na primeira vez; depois, só as atualizações).
+- <strong>Cuidado com falso negativo:</strong> rodando com a base incompleta (<code>-DautoUpdate=false</code> depois do 429), o plugin
+  terminou com <code>BUILD SUCCESS</code> em 3 segundos, sem ter checado quase nada. Um resultado verde só vale se a base
+  estiver completa; conferimos no relatório (<code>scanInfo.dataSource</code> e número de dependências analisadas).</p>
+<h3 id="resultado-11-cves-com-nota-7-0">Resultado: 11 CVEs com nota ≥ 7 → 0</h3>
+<p>Primeira execução com a base completa (2026-11-15, <code>exchange-service</code> no Spring Boot 4.1.1): <strong>build quebrado</strong>.
+54 dependências analisadas, CVEs em 4 bibliotecas:</p>
+<table>
+<thead>
+<tr>
+<th>Biblioteca</th>
+<th>Versão</th>
+<th>CVEs (CVSS)</th>
+<th>Afeta o projeto?</th>
+<th>Corrigida em</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tomcat-embed-core</code></td>
+<td>11.0.24</td>
+<td>CVE-2026-65637 (9.8), CVE-2026-65905 (9.8), CVE-2026-65182 (9.1), CVE-2026-68525 (9.1), CVE-2026-65183 (8.1), CVE-2026-66422 (8.1), CVE-2026-68569 (8.1), CVE-2026-65927 (7.5), CVE-2026-68763 (7.5) + 2 abaixo de 7</td>
+<td>A maioria não: autenticação DIGEST/FORM/CLIENT-CERT do próprio Tomcat, rewrite valve, sockets Unix e security-role-ref, que não usamos (a autenticação é JWT no gateway). CVE-2026-65637 ("validação de entrada", correção incompleta de outra CVE) e CVE-2026-68763 (HTTP/2) são vagas demais para descartar</td>
+<td>11.0.25</td>
+</tr>
+<tr>
+<td><code>spring-cloud-commons</code> / <code>spring-cloud-context</code></td>
+<td>5.0.2</td>
+<td>CVE-2026-59284 (7.6)</td>
+<td>Não: exige o endpoint <code>/actuator/env</code> gravável exposto; os serviços expõem só <code>health</code>, <code>info</code> e <code>prometheus</code>, e o gateway não roteia <code>/actuator</code></td>
+<td>5.0.3</td>
+</tr>
+<tr>
+<td><code>netty-transport</code></td>
+<td>4.2.17</td>
+<td>CVE-2026-89044 (6.5)</td>
+<td>Abaixo do limite (não quebra o build); validação do header <code>Transfer-Encoding</code></td>
+<td>4.2.18</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Correção:</strong> em vez de forçar cada biblioteca, atualizar o que as traz. <strong>Spring Boot 4.1.1 → 4.1.2</strong> (Tomcat 11.0.27,
+Netty 4.2.19) e <strong>Spring Cloud → 2025.1.4</strong> (Commons 5.0.4), em <strong>todos os serviços</strong>, para manter as versões
+alinhadas (o gateway já estava no Spring Cloud 2025.1.4 e os outros no 2025.1.2). Um PR por repositório.</p>
+<p><strong>Depois:</strong> o Dependency-Check, com a mesma base completa, analisou as mesmas 54 dependências e encontrou
+<strong>0 vulnerabilidades</strong>. Com as versões novas, o sistema inteiro passou no smoke test (20 cenários) e no ZAP
+(0 alertas), rodando no Kubernetes local (kind).</p>
+<p>Mesmo sem exploração prática na maioria dos casos, atualizar foi a decisão certa: custou duas linhas de <code>pom.xml</code>,
+e o próximo scan não fica poluído com CVEs conhecidas, então uma CVE nova e relevante aparece.</p>
+<h2 id="como-reproduzir">Como reproduzir</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>docker/compose.yml<span class="w"> </span>up<span class="w"> </span>--build<span class="w"> </span>-d
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>./docker/zap-scan.sh<span class="w"> </span>zap-report<span class="w">          </span><span class="c1"># relatório em zap-report/zap-report.html</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># dependências do exchange-service (a primeira execução baixa a base da NVD e demora)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nb">cd</span><span class="w"> </span>api/exchange-service<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./mvnw<span class="w"> </span>dependency-check:check<span class="w">   </span><span class="c1"># relatório em target/dependency-check-report.html</span>
+</code></pre></div>
+<p>No GitHub: aba <strong>Actions</strong> → workflow "Smoke test (compose)" → artefato <code>zap-report</code>; e no <code>exchange-service</code>,
+workflow "Dependency-Check" → artefato <code>dependency-check-report</code>.</p>
+<h2 id="limitacoes-e-proximos-passos">Limitações e próximos passos</h2>
+<ul>
+<li><strong>CORS <code>*</code>:</strong> o gateway aceita qualquer origem (<code>CORS_ALLOWED_ORIGINS</code>, padrão <code>*</code>). O ZAP não apontou porque só
+  detecta isso em requisições com <code>Origin</code>, mas em produção (EKS) a variável deve ter só o domínio do front-end.</li>
+<li><strong>Sem HTTPS local:</strong> o compose usa HTTP. No EKS, o TLS fica no load balancer; aí vale adicionar
+  <code>Strict-Transport-Security</code> no <code>SecurityHeadersFilter</code>.</li>
+<li><strong>Dependency-Check só no <code>exchange-service</code>:</strong> o mesmo plugin e workflow podem ser copiados para os outros serviços.</li>
+<li><strong>Auth sem limite de tentativas:</strong> o ZAP API Scan não testa força bruta no login; um rate limit no gateway seria
+  o próximo passo.</li>
+</ul>
+<blockquote>
+<p>TODO: anexar print do workflow do GitHub Actions com o passo do ZAP verde e o artefato do relatório.</p>
+</blockquote>
+
+
+
+
+
+
+
+  
+    
+  
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Última atualização">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">15 de novembro de 2026</span>
+  </span>
+
+    
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "content.code.select", "content.code.annotate", "content.tooltips", "navigation.instant", "navigation.instant.progress", "navigation.top", "navigation.path", "navigation.tracking", "navigation.expand"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "mais 1 nesta p\u00e1gina", "search.result.more.other": "# mais nesta p\u00e1gina", "search.result.none": "Nenhum documento encontrado", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+    
+  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(() => { lightbox.reload() });
+</script></body>
+</html>

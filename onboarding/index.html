@@ -1,0 +1,1288 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Projeto de Plataformas, Microsserviços e APIs (Insper, 2026.2)">
+      
+      
+      
+        <link rel="canonical" href="https://organizacao-dos-coisa-ruim.github.io/pma26/onboarding/">
+      
+      
+        <link rel="prev" href="../custos/">
+      
+      
+        <link rel="next" href="../ia/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>Onboarding - pma26 · E-commerce em microsserviços</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+    html.glightbox-open { overflow: initial; height: 100%; }
+    .gslide-title { margin-top: 0px; user-select: text; }
+    .gslide-desc { color: #666; user-select: text; }
+    .gslide-image img { background: white; }
+    .gscrollbar-fixer { padding-right: 15px; }
+    .gdesc-inner { font-size: 0.75rem; }
+    body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+    body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#onboarding-como-comecar-a-contribuir" class="md-skip">
+          Pular para conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href=".." title="pma26 · E-commerce em microsserviços" class="md-header__button md-logo" aria-label="pma26 · E-commerce em microsserviços" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pma26 · E-commerce em microsserviços
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Onboarding
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="indigo"  aria-label="Modo claro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Modo claro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="indigo"  aria-label="Modo escuro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Modo escuro" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="grey" data-md-color-accent="indigo"  aria-label="Preferência do sistema"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Preferência do sistema" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando busca
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Organizacao-dos-Coisa-Ruim/pma26" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Organizacao-dos-Coisa-Ruim/pma26
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pma26 · E-commerce em microsserviços" class="md-nav__button md-logo" aria-label="pma26 · E-commerce em microsserviços" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    pma26 · E-commerce em microsserviços
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Organizacao-dos-Coisa-Ruim/pma26" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Organizacao-dos-Coisa-Ruim/pma26
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Início
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../arquitetura/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Arquitetura
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../servicos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Microsserviços
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API (OpenAPI)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Gargalos
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Gargalos
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gargalos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gargalos
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gargalos/observabilidade/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Observabilidade (Prometheus + Grafana)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gargalos/rbac/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RBAC
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gargalos/cache-redis/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cache com Redis
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gargalos/scan-vulnerabilidades/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Scan de vulnerabilidades
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Infraestrutura
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Infraestrutura
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kubernetes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cicd/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../load-test/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Load test + HPA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../eks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EKS e AWS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Custos, PaaS e SLA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Equipe
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Equipe
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Onboarding
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Onboarding
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-subir-o-sistema-15-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Subir o sistema (15 min)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-como-o-sistema-funciona-o-que-voce-precisa-saber" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Como o sistema funciona (o que você precisa saber)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-criar-um-servico-novo-padrao-interface-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Criar um serviço novo (padrão interface + service)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Criar um serviço novo (padrão interface + service)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-repositorios" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.1 Repositórios
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-interface-pma26-dominio" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2 Interface (pma26-&lt;dominio&gt;)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-service-pma26-dominio-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.3 Service (pma26-&lt;dominio&gt;-service)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-plugar-no-pma26" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.4 Plugar no pma26
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-gargalos" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Gargalos
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-fluxo-de-trabalho" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Fluxo de trabalho
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-issues-por-frente-kanban" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Issues por frente (Kanban)
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ia/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Uso de IA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-subir-o-sistema-15-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Subir o sistema (15 min)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-como-o-sistema-funciona-o-que-voce-precisa-saber" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Como o sistema funciona (o que você precisa saber)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-criar-um-servico-novo-padrao-interface-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Criar um serviço novo (padrão interface + service)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Criar um serviço novo (padrão interface + service)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-repositorios" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.1 Repositórios
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-interface-pma26-dominio" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2 Interface (pma26-&lt;dominio&gt;)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-service-pma26-dominio-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.3 Service (pma26-&lt;dominio&gt;-service)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-plugar-no-pma26" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.4 Plugar no pma26
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-gargalos" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Gargalos
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-fluxo-de-trabalho" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Fluxo de trabalho
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-issues-por-frente-kanban" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Issues por frente (Kanban)
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="onboarding-como-comecar-a-contribuir">Onboarding: como começar a contribuir</h1>
+<p>Guia rápido para quem vai criar um serviço novo (Exchange, Product, Order) ou um gargalo.
+Leia antes o <a href="https://github.com/Organizacao-dos-Coisa-Ruim/pma26/blob/main/README.md">README</a> e a <a href="https://github.com/Organizacao-dos-Coisa-Ruim/pma26/blob/main/RUBRICA.md">RUBRICA</a>.</p>
+<h2 id="1-subir-o-sistema-15-min">1. Subir o sistema (15 min)</h2>
+<p>Precisa de <strong>Docker Desktop</strong> e <strong>git</strong>. Java 21 só se for rodar testes fora do Docker.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>--recurse-submodules<span class="w"> </span>https://github.com/Organizacao-dos-Coisa-Ruim/pma26.git
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>pma26
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>cp<span class="w"> </span>docker/.env.example<span class="w"> </span>docker/.env<span class="w">          </span><span class="c1"># preencha as senhas (qualquer valor local serve)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>docker/compose.yml<span class="w"> </span>up<span class="w"> </span>--build
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>O quê</th>
+<th>Onde</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API (só pelo gateway)</td>
+<td>http://localhost:8080</td>
+</tr>
+<tr>
+<td>Grafana</td>
+<td>http://localhost:3000 (<code>admin</code> / <code>GRAFANA_ADMIN_PASSWORD</code>)</td>
+</tr>
+<tr>
+<td>Prometheus</td>
+<td>http://localhost:9090</td>
+</tr>
+<tr>
+<td>Requisições prontas</td>
+<td><a href="https://github.com/Organizacao-dos-Coisa-Ruim/pma26/blob/main/docs/requests.http"><code>docs/requests.http</code></a> (extensão REST Client do VS Code)</td>
+</tr>
+</tbody>
+</table>
+<p>Teste rápido: rode os blocos 1, 2 e 6 do <code>requests.http</code> (registrar, logar e ver o 403 de listar contas).</p>
+<h2 id="2-como-o-sistema-funciona-o-que-voce-precisa-saber">2. Como o sistema funciona (o que você precisa saber)</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>cliente ─▶ gateway :8080 ──(valida JWT no auth)──▶ serviço
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>                │  repassa os headers  id-account  e  role-account
+</code></pre></div>
+<ul>
+<li><strong>Só o gateway é público.</strong> Ele já tem rotas para <code>/products/**</code>, <code>/orders/**</code> e <code>/exchange/**</code> apontando para <code>http://product:8080</code>, <code>http://order:8080</code> e <code>http://exchange:8080</code>. Seu serviço só precisa se chamar assim no compose.</li>
+<li><strong>Toda rota é protegida por padrão</strong> (precisa de token). Para abrir uma rota sem token, adicione-a em <code>OPEN_ROUTES</code> no <code>RouterValidator</code> do gateway.</li>
+<li><strong>Quem chamou:</strong> leia os headers <code>id-account</code> e <code>role-account</code> (<code>user</code> ou <code>admin</code>). Nunca leia o token no seu serviço. Exemplo pronto: <code>Requester</code> e <code>AccountResource</code> no account-service.</li>
+<li><strong>Só admin</strong> (ex.: cadastrar produto): o gateway pode barrar a rota inteira (<code>ADMIN_ROUTES</code> no <code>RouterValidator</code>), ou o serviço checa <code>role-account</code> e devolve 403. Ver <a href="../gargalos/rbac/">docs/gargalos/rbac.md</a>.</li>
+<li><strong>Chamar outro serviço:</strong> importe a interface dele (ex.: <code>pma:account</code>) e use o <code>@FeignClient</code>. Exemplo: o auth-service chamando o account (<code>@EnableFeignClients(clients = AccountController.class)</code>).</li>
+</ul>
+<h2 id="3-criar-um-servico-novo-padrao-interface-service">3. Criar um serviço novo (padrão interface + service)</h2>
+<p>Use o <strong>Account</strong> como modelo: <a href="https://github.com/Organizacao-dos-Coisa-Ruim/pma-26-account"><code>pma-26-account</code></a> (interface) e <a href="https://github.com/Organizacao-dos-Coisa-Ruim/pma26-account-service"><code>pma26-account-service</code></a> (implementação).</p>
+<h3 id="31-repositorios">3.1 Repositórios</h3>
+<p>Crie na organização, públicos: <code>pma26-&lt;dominio&gt;</code> (interface) e <code>pma26-&lt;dominio&gt;-service</code>. O jeito mais rápido é copiar a estrutura do account (<code>pom.xml</code>, <code>mvnw</code>, <code>.mvn/</code>, <code>.gitignore</code>, <code>.gitattributes</code>) e renomear.</p>
+<h3 id="32-interface-pma26-dominio">3.2 Interface (<code>pma26-&lt;dominio&gt;</code>)</h3>
+<ul>
+<li><code>pom.xml</code>: <code>artifactId</code> = <code>&lt;dominio&gt;</code>, <strong>sem</strong> <code>spring-boot-maven-plugin</code> (é uma lib).</li>
+<li>Pacote <code>pma.&lt;dominio&gt;</code>.</li>
+<li><code>&lt;Dominio&gt;Controller</code>: interface com <code>@FeignClient(name = "&lt;dominio&gt;", url = "${pma.&lt;dominio&gt;.url:http://&lt;dominio&gt;:8080}")</code> e as rotas (<code>@GetMapping</code>...). Inclua <code>GET /&lt;recurso&gt;/health-check</code>.</li>
+<li>DTOs <code>*In</code> / <code>*Out</code> como <code>record</code> com <code>@Builder</code>.</li>
+<li><code>./mvnw clean install</code>.</li>
+</ul>
+<h3 id="33-service-pma26-dominio-service">3.3 Service (<code>pma26-&lt;dominio&gt;-service</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Arquivo</th>
+<th>Copiar de / observação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pom.xml</code></td>
+<td>account-service; troque <code>artifactId</code> e a dependência da interface</td>
+</tr>
+<tr>
+<td><code>&lt;Dominio&gt;ServiceApplication</code></td>
+<td>pacote <code>pma.&lt;dominio&gt;</code></td>
+</tr>
+<tr>
+<td><code>&lt;Dominio&gt;Resource implements &lt;Dominio&gt;Controller</code></td>
+<td><code>@RestController</code>; só chama o service</td>
+</tr>
+<tr>
+<td><code>&lt;Dominio&gt;Service</code></td>
+<td>regras; erros com <code>ResponseStatusException(HttpStatus.X)</code></td>
+</tr>
+<tr>
+<td><code>&lt;Dominio&gt;Model</code> + <code>&lt;Dominio&gt;Repository</code> + <code>&lt;Dominio&gt;Parser</code></td>
+<td>entidade JPA ≠ DTO</td>
+</tr>
+<tr>
+<td><code>db/migration/V&lt;data&gt;.001__create_table_&lt;x&gt;.sql</code></td>
+<td>Flyway</td>
+</tr>
+<tr>
+<td><code>application.yaml</code></td>
+<td>porta 8080, datasource por env, <code>flyway.schemas: &lt;dominio&gt;</code>, <code>hibernate.default_schema: &lt;dominio&gt;</code>, bloco <code>management</code> (métricas)</td>
+</tr>
+<tr>
+<td><code>Dockerfile</code>, <code>.dockerignore</code></td>
+<td>iguais aos do account-service (troque o nome do jar)</td>
+</tr>
+<tr>
+<td>testes</td>
+<td><code>*ServiceTest</code> (Mockito) e <code>*ResourceIntegrationTest</code> (<code>@SpringBootTest</code> + MockMvc + H2, perfil <code>test</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Cada serviço usa <strong>o mesmo Postgres, num schema próprio</strong> (o Flyway cria o schema).</p>
+<p>Sem banco (ex.: Exchange consumindo API externa)? Tire JPA, Flyway e Postgres do pom, como no auth-service.</p>
+<h3 id="34-plugar-no-pma26">3.4 Plugar no <code>pma26</code></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>git<span class="w"> </span>submodule<span class="w"> </span>add<span class="w"> </span>https://github.com/Organizacao-dos-Coisa-Ruim/pma26-&lt;dominio&gt;.git<span class="w"> </span>api/&lt;dominio&gt;
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>git<span class="w"> </span>submodule<span class="w"> </span>add<span class="w"> </span>https://github.com/Organizacao-dos-Coisa-Ruim/pma26-&lt;dominio&gt;-service.git<span class="w"> </span>api/&lt;dominio&gt;-service
+</code></pre></div>
+<p><strong><code>docker/compose.yml</code></strong>: copie o bloco do <code>account</code> e ajuste:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="w">  </span><span class="nt">product</span><span class="p">:</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">product</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nt">build</span><span class="p">:</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">      </span><span class="nt">&lt;&lt;</span><span class="p">:</span><span class="w"> </span><span class="nv">*java-build</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">      </span><span class="nt">args</span><span class="p">:</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">        </span><span class="nt">INTERFACES</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">product</span><span class="w">            </span><span class="c1"># interfaces que o service usa (ex.: "order product account")</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">        </span><span class="nt">SERVICE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">product-service</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">      </span><span class="nt">DATABASE_HOST</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">      </span><span class="nt">DATABASE_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${DATABASE_PASSWORD:?defina DATABASE_PASSWORD em docker/.env}</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">      </span><span class="nt">db</span><span class="p">:</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+</code></pre></div>
+<p><strong><code>docker/observability/prometheus.yml</code></strong>: adicione um job, e ele aparece sozinho nos dashboards:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">product</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="nt">metrics_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/actuator/prometheus</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"product:8080"</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">product</span>
+</code></pre></div>
+<p>Depois: <code>docker compose -f docker/compose.yml up --build -d product</code> e teste pelo gateway (<code>http://localhost:8080/products/...</code>).</p>
+<h2 id="4-gargalos">4. Gargalos</h2>
+<p>Cada integrante precisa de <strong>2 gargalos</strong> com evidência. Já existem: observabilidade e RBAC. Para cada novo:
+1. Implemente (ex.: Redis no compose + <code>@Cacheable</code> no service).
+2. <strong>Meça antes e depois</strong> no Grafana (dashboard "PMA26 - Visão geral": req/s, p95, erros).
+3. Documente em <code>docs/gargalos/&lt;nome&gt;.md</code> no mesmo formato de <a href="../gargalos/observabilidade/">observabilidade.md</a>: problema, solução, como reproduzir, evidência (prints).</p>
+<h2 id="5-fluxo-de-trabalho">5. Fluxo de trabalho</h2>
+<ul>
+<li>Branch <code>feat/&lt;algo&gt;</code> → PR → merge, em <strong>cada repositório</strong> que mudou. Depois, no <code>pma26</code>, atualize o ponteiro do submodule (<code>git submodule update --remote api/&lt;x&gt;</code>) e abra o PR dele.</li>
+<li>Commits no padrão <code>feat:</code>, <code>fix:</code>, <code>docs:</code>, <code>chore:</code>.</li>
+<li><strong>Nunca comite segredos.</strong> O <code>docker/.env</code> está no <code>.gitignore</code>.</li>
+<li><strong>Uso de IA:</strong> registre em <a href="../ia/"><code>docs/ia.md</code></a> o que a IA fez e o que você fez. Você precisa conseguir explicar qualquer linha na apresentação.</li>
+</ul>
+<h2 id="6-issues-por-frente-kanban">6. Issues por frente (Kanban)</h2>
+<table>
+<thead>
+<tr>
+<th>Frente</th>
+<th>Issues</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Exchange</td>
+<td>#35 (#36–#40)</td>
+</tr>
+<tr>
+<td>Product</td>
+<td>#24 (#25–#28)</td>
+</tr>
+<tr>
+<td>Order</td>
+<td>#29 (#30–#34)</td>
+</tr>
+<tr>
+<td>Gargalos</td>
+<td>#74: cache Redis #76, mensageria #77, scan de vulnerabilidades #78, load balancing #80, Stripe #81, documentação #82</td>
+</tr>
+<tr>
+<td>Custos / PaaS / SLA</td>
+<td>#83 (#84–#87)</td>
+</tr>
+<tr>
+<td>MkDocs</td>
+<td>#88 (#89–#92)</td>
+</tr>
+<tr>
+<td>Apresentação</td>
+<td>#93 (#94–#96)</td>
+</tr>
+<tr>
+<td>AWS / EKS / CI/CD / Load test</td>
+<td>#46, #51, #61, #68</td>
+</tr>
+</tbody>
+</table>
+<p>Prazo: <strong>segunda-feira, 23:59</strong>.</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Última atualização">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">18 de novembro de 2026</span>
+  </span>
+
+    
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy", "content.code.select", "content.code.annotate", "content.tooltips", "navigation.instant", "navigation.instant.progress", "navigation.top", "navigation.path", "navigation.tracking", "navigation.expand"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "mais 1 nesta p\u00e1gina", "search.result.more.other": "# mais nesta p\u00e1gina", "search.result.none": "Nenhum documento encontrado", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+    
+  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(() => { lightbox.reload() });
+</script></body>
+</html>
