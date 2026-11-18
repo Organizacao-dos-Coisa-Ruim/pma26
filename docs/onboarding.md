@@ -1,7 +1,7 @@
 # Onboarding: como começar a contribuir
 
 Guia rápido para quem vai criar um serviço novo (Exchange, Product, Order) ou um gargalo.
-Leia antes o [README](../README.md) e a [RUBRICA](../RUBRICA.md).
+Leia antes o [README](https://github.com/Organizacao-dos-Coisa-Ruim/pma26/blob/main/README.md) e a [RUBRICA](https://github.com/Organizacao-dos-Coisa-Ruim/pma26/blob/main/RUBRICA.md).
 
 ## 1. Subir o sistema (15 min)
 
@@ -19,7 +19,7 @@ docker compose -f docker/compose.yml up --build
 | API (só pelo gateway) | http://localhost:8080 |
 | Grafana | http://localhost:3000 (`admin` / `GRAFANA_ADMIN_PASSWORD`) |
 | Prometheus | http://localhost:9090 |
-| Requisições prontas | [`docs/requests.http`](requests.http) (extensão REST Client do VS Code) |
+| Requisições prontas | [`docs/requests.http`](https://github.com/Organizacao-dos-Coisa-Ruim/pma26/blob/main/docs/requests.http) (extensão REST Client do VS Code) |
 
 Teste rápido: rode os blocos 1, 2 e 6 do `requests.http` (registrar, logar e ver o 403 de listar contas).
 

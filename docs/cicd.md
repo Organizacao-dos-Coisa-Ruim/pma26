@@ -10,7 +10,7 @@ e é gratuito para repositórios públicos.
 | `pma-26-account`, `pma26-auth` (interfaces) | `ci.yml` | push/PR | `mvn install` |
 | `pma26-account-service`, `pma26-auth-service`, `gateway-service` | `ci.yml` | push/PR | checkout + `mvn install` das interfaces de que dependem, `mvn verify` (testes) |
 | | | push na `main` | build da imagem com o `Dockerfile` do repo e **push no Docker Hub** (`<usuario>/<servico>:latest` e `:<sha do commit>`) |
-| `pma26` | `smoke-test.yml` | push/PR | builda todos os serviços pelo compose (submodules), sobe tudo e roda [`docker/smoke-test.sh`](../docker/smoke-test.sh) |
+| `pma26` | `smoke-test.yml` | push/PR | builda todos os serviços pelo compose (submodules), sobe tudo e roda [`docker/smoke-test.sh`](https://github.com/Organizacao-dos-Coisa-Ruim/pma26/blob/main/docker/smoke-test.sh) |
 
 ```
 PR no service ──▶ testes ──(merge)──▶ main ──▶ testes ──▶ imagem no Docker Hub ──▶ (deploy no EKS, #65)
@@ -50,10 +50,17 @@ Sem estes secrets, o passo de publicar a imagem é **pulado** e o CI continua ve
    Em *Repository access*, libere para os repositórios de service (ou todos).
 3. Rode de novo o último workflow da `main` de cada service (*Actions → CI → Re-run*) ou faça um merge qualquer. As imagens aparecem como `<usuario>/account`, `<usuario>/auth` e `<usuario>/gateway`.
 
-## Próximo passo: deploy no EKS (#65)
+## Deploy no EKS (#65)
 
-Quando o cluster existir: um job depois do push da imagem que configura credenciais AWS (secrets `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY`),
-roda `aws eks update-kubeconfig` e `kubectl set image deployment/<servico> <servico>=<usuario>/<servico>:<sha>`.
+Job `deploy`, depois do push da imagem, em push na `main` (modelo no
+[exchange-service](https://github.com/Organizacao-dos-Coisa-Ruim/pma26-exchange-service/pull/4); falta replicar nos outros):
+
+1. configura as credenciais AWS (secrets `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`);
+2. verifica se o cluster `pma26` existe. Ele só fica de pé durante os testes ([EKS](eks.md)); sem ele, o job pula sem erro;
+3. `aws eks update-kubeconfig` + `kubectl set image deployment/<servico> <servico>=<usuario>/<servico>:<sha>` + `rollout status`.
+
+Usar a **tag do commit** (e não `latest`) faz o Kubernetes perceber a mudança e fazer o rolling update, além de deixar
+claro qual versão está rodando (`kubectl get deploy -o wide`).
 
 ## Evidências (#67)
 

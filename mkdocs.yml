@@ -1,0 +1,112 @@
+# Documentação do projeto (rubrica: MkDocs, 10%).
+# Baseado no template do curso: https://hsandmann.github.io/documentation.template/
+# Mantidos o tema, a paleta e as extensões do template; removidos os plugins que não usamos
+# (Jupyter, MathJax, yfinance...).
+#
+#   Local:  docker run --rm -it -p 8000:8000 -v "$PWD:/docs" -w /docs python:3.12-slim \
+#             sh -c "pip install -q -r docs/requirements.txt && mkdocs serve -a 0.0.0.0:8000"
+#   Deploy: .github/workflows/docs.yml publica no GitHub Pages a cada push na main.
+
+site_name: pma26 · E-commerce em microsserviços
+site_description: Projeto de Plataformas, Microsserviços e APIs (Insper, 2026.2)
+site_url: https://organizacao-dos-coisa-ruim.github.io/pma26/
+repo_url: https://github.com/Organizacao-dos-Coisa-Ruim/pma26
+repo_name: Organizacao-dos-Coisa-Ruim/pma26
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: pt-BR
+  palette:
+    - media: "(prefers-color-scheme)"
+      primary: grey
+      toggle:
+        icon: material/toggle-switch
+        name: Modo claro
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: grey
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Modo escuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: grey
+      toggle:
+        icon: material/toggle-switch
+        name: Preferência do sistema
+  features:
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - content.tooltips
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.top
+    - navigation.path
+    - navigation.tracking
+    - navigation.expand
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      # permite incluir arquivos de fora da docs/ (ex.: k8s/README.md) com --8<--
+      base_path: ["."]
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - footnotes
+  - tables
+
+plugins:
+  - search:
+      lang: pt
+  - glightbox          # clicar na imagem amplia (prints e gráficos)
+  - render_swagger     # docs/api.md renderiza o docs/openapi.yaml
+  - git-revision-date-localized:
+      type: date
+      locale: pt
+      fallback_to_build_date: true
+      strict: false        # arquivo ainda sem commit não derruba o build
+
+# arquivos que ficam em docs/ mas não são páginas
+exclude_docs: |
+  requests.http
+  requirements.txt
+
+nav:
+  - Início: index.md
+  - Arquitetura: arquitetura.md
+  - Microsserviços: servicos.md
+  - API (OpenAPI): api.md
+  - Gargalos:
+      - gargalos/index.md
+      - Observabilidade (Prometheus + Grafana): gargalos/observabilidade.md
+      - RBAC: gargalos/rbac.md
+      - Cache com Redis: gargalos/cache-redis.md
+      - Scan de vulnerabilidades: gargalos/scan-vulnerabilidades.md
+  - Infraestrutura:
+      - Kubernetes: kubernetes.md
+      - CI/CD: cicd.md
+      - Load test + HPA: load-test.md
+      - EKS e AWS: eks.md
+      - Custos, PaaS e SLA: custos.md
+  - Equipe:
+      - Onboarding: onboarding.md
+      - Uso de IA: ia.md

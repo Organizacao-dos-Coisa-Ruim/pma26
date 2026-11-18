@@ -1,0 +1,5 @@
+# Dependências do site MkDocs (mkdocs.yml). Usado pelo workflow docs.yml e para rodar localmente.
+mkdocs-material==9.5.49
+mkdocs-glightbox==0.4.0
+mkdocs-render-swagger-plugin==0.1.2
+mkdocs-git-revision-date-localized-plugin==1.3.0

@@ -15,7 +15,7 @@ k8s/
 │   └── kustomization.yaml   ConfigMap (URLs, TTL...) e enableServiceLinks: false
 ├── overlays/
 │   ├── kind/                Postgres no cluster, imagens locais, gateway em localhost:8080
-│   └── eks/                 RDS, imagens do Docker Hub, gateway com LoadBalancer (esqueleto)
+│   └── eks/                 RDS, imagens do Docker Hub, gateway com LoadBalancer; up.sh/down.sh criam e destroem a AWS
 └── addons/
     └── metrics-server/      CPU/memória dos pods, necessário para o HPA
 ```
