@@ -1,6 +1,7 @@
-# Overlay da AWS (EKS) — ESQUELETO, ainda não testado (issues #51–#60).
+# Overlay da AWS (EKS), ainda não testado num cluster real (issues #51–#60).
 #
-#   kubectl apply -k k8s/overlays/eks
+# Não aplique à mão: o up.sh cria a infraestrutura, gera o rds.env e faz o deploy
+# trocando DOCKERHUB_USUARIO pelo usuário do Docker Hub. O down.sh destrói tudo.
 #
 # Diferenças em relação ao kind:
 #   - banco no RDS (sem o postgres.yaml): DATABASE_HOST aponta para o endpoint do RDS
@@ -22,12 +23,11 @@ secretGenerator:
 configMapGenerator:
   - name: pma26-config
     behavior: merge
-    literals:
-      # TODO: endpoint do RDS (saída do CloudFormation / console do RDS)
-      - DATABASE_HOST=TROCAR-PELO-ENDPOINT-DO-RDS
+    # DATABASE_HOST=<endpoint do RDS>, escrito pelo up.sh (fora do git)
+    envs: [rds.env]
 
 images:
-  # TODO: trocar DOCKERHUB_USUARIO pelo usuário do Docker Hub do grupo (mesmo do secret DOCKERHUB_USERNAME do CI)
+  # DOCKERHUB_USUARIO é trocado pelo up.sh (variável DOCKERHUB_USER)
   - { name: gateway, newName: DOCKERHUB_USUARIO/gateway, newTag: latest }
   - { name: auth, newName: DOCKERHUB_USUARIO/auth, newTag: latest }
   - { name: account, newName: DOCKERHUB_USUARIO/account, newTag: latest }
