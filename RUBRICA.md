@@ -127,4 +127,5 @@ Repositório próprio com MkDocs publicado, contendo:
   - [x] Script (Locust) e execução no kind com análise ([docs](docs/load-test.md)); faltam EKS e vídeo
 - [ ] Plano de custos + PaaS + SLA
 - [ ] MkDocs (grupo e individual) com registro do uso de IA
+  - [x] Site do grupo no `pma26` ([mkdocs.yml](mkdocs.yml), publicado pelo workflow `docs.yml`); faltam EKS, custos e os repositórios individuais
 - [ ] Slides + vídeo de 1–2 min

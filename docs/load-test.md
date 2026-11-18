@@ -36,7 +36,7 @@ A carga sobe em degraus (`StagesShape` no `locustfile.py`):
 
 ## Como rodar
 
-Com o sistema de pé no kind ([k8s/README.md](../k8s/README.md)):
+Com o sistema de pé no kind ([Kubernetes](kubernetes.md)):
 
 ```bash
 ./load/run.sh                  # 8 min de carga + 6 min registrando o HPA

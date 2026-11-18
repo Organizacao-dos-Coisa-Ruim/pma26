@@ -46,7 +46,7 @@ Decisões:
 # docker/.env com ADMIN_EMAIL e ADMIN_PASSWORD preenchidos
 docker compose -f docker/compose.yml up --build -d
 ```
-Depois rode os blocos de RBAC de [`docs/requests.http`](../requests.http).
+Depois rode os blocos de RBAC de [`docs/requests.http`](https://github.com/Organizacao-dos-Coisa-Ruim/pma26/blob/main/docs/requests.http).
 
 ## Evidência
 

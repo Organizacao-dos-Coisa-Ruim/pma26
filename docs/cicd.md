@@ -10,7 +10,7 @@ e é gratuito para repositórios públicos.
 | `pma-26-account`, `pma26-auth` (interfaces) | `ci.yml` | push/PR | `mvn install` |
 | `pma26-account-service`, `pma26-auth-service`, `gateway-service` | `ci.yml` | push/PR | checkout + `mvn install` das interfaces de que dependem, `mvn verify` (testes) |
 | | | push na `main` | build da imagem com o `Dockerfile` do repo e **push no Docker Hub** (`<usuario>/<servico>:latest` e `:<sha do commit>`) |
-| `pma26` | `smoke-test.yml` | push/PR | builda todos os serviços pelo compose (submodules), sobe tudo e roda [`docker/smoke-test.sh`](../docker/smoke-test.sh) |
+| `pma26` | `smoke-test.yml` | push/PR | builda todos os serviços pelo compose (submodules), sobe tudo e roda [`docker/smoke-test.sh`](https://github.com/Organizacao-dos-Coisa-Ruim/pma26/blob/main/docker/smoke-test.sh) |
 
 ```
 PR no service ──▶ testes ──(merge)──▶ main ──▶ testes ──▶ imagem no Docker Hub ──▶ (deploy no EKS, #65)

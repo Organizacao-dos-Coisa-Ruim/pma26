@@ -1,0 +1,50 @@
+# Microsserviços
+
+Todos rodam na porta **8080** dentro do container, expõem `GET /<recurso>/health-check` e métricas em
+`/actuator/prometheus`. Só o gateway é acessível de fora. Contrato completo das rotas: [API (OpenAPI)](api.md).
+
+## Gateway
+
+[gateway-service](https://github.com/Organizacao-dos-Coisa-Ruim/gateway-service){:target='_blank'} ·
+Spring Cloud Gateway (WebFlux)
+
+- Roteia por prefixo: `/auth/**`, `/accounts/**`, `/exchange/**`, `/products/**`, `/orders/**`.
+- `AuthorizationFilter`: nas rotas protegidas, valida o JWT chamando `POST /auth/solve` e repassa
+  `id-account` / `role-account` em headers. Também barra rotas só de admin ([RBAC](gargalos/rbac.md)).
+- `SecurityHeadersFilter`: adiciona headers de segurança em toda resposta ([scan de vulnerabilidades](gargalos/scan-vulnerabilidades.md)).
+- É o deployment escalado pelo **HPA** ([load test](load-test.md)).
+
+## Auth
+
+[pma26-auth](https://github.com/Organizacao-dos-Coisa-Ruim/pma26-auth){:target='_blank'} ·
+[pma26-auth-service](https://github.com/Organizacao-dos-Coisa-Ruim/pma26-auth-service){:target='_blank'}
+
+| Rota | O que faz |
+|------|-----------|
+| `POST /auth/register` | cria a conta (chama o Account via Feign) |
+| `POST /auth/login` | confere a senha no Account e devolve um **JWT** com `sub` = id da conta e `role` |
+| `POST /auth/solve` | valida o JWT e devolve `idAccount` e `role` (usado só pelo gateway) |
+
+O Auth não tem banco: os dados do usuário ficam no Account.
+
+## Account
+
+[pma-26-account](https://github.com/Organizacao-dos-Coisa-Ruim/pma-26-account){:target='_blank'} ·
+[pma26-account-service](https://github.com/Organizacao-dos-Coisa-Ruim/pma26-account-service){:target='_blank'}
+
+CRUD de usuários (nome, email, senha com **BCrypt**), schema `account` no PostgreSQL (Flyway).
+Um usuário só vê a própria conta; listar e apagar contas é só para admin. O admin inicial é criado a partir de
+variáveis de ambiente (`AdminBootstrap`).
+
+## Exchange
+
+[pma26-exchange](https://github.com/Organizacao-dos-Coisa-Ruim/pma26-exchange){:target='_blank'} ·
+[pma26-exchange-service](https://github.com/Organizacao-dos-Coisa-Ruim/pma26-exchange-service){:target='_blank'}
+
+`GET /exchange/{de}/{para}` devolve a cotação entre duas moedas (ex.: `USD/BRL`), consultando a
+[AwesomeAPI](https://docs.awesomeapi.com.br/){:target='_blank'}. A cotação fica **em cache no Redis por 5 minutos**
+([gargalo](gargalos/cache-redis.md)). Será usado pelo Order para mostrar o total do pedido em outra moeda.
+
+## Product e Order
+
+*Em desenvolvimento.* O gateway já tem as rotas `/products/**` e `/orders/**`.

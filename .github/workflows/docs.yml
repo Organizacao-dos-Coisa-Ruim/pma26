@@ -1,0 +1,38 @@
+# Documentação MkDocs (rubrica: MkDocs, 10%). Mesmo esquema do template do curso:
+# - em PR: só builda em modo --strict (link quebrado ou página fora do nav quebra o job);
+# - push na main: builda e publica na branch gh-pages com "mkdocs gh-deploy".
+# Pré-requisito (uma vez): Settings > Pages > Source: "Deploy from a branch", branch gh-pages.
+name: docs
+
+on:
+  push:
+    branches: [main]
+    paths: [docs/**, mkdocs.yml, k8s/README.md, .github/workflows/docs.yml]
+  pull_request:
+    paths: [docs/**, mkdocs.yml, k8s/README.md, .github/workflows/docs.yml]
+
+permissions:
+  contents: write   # o gh-deploy faz push na branch gh-pages
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # histórico completo: "última atualização" de cada página vem do git
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: docs/requirements.txt
+
+      - run: pip install -r docs/requirements.txt
+
+      - name: Build (strict)
+        run: mkdocs build --strict
+
+      - name: Publicar no GitHub Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: mkdocs gh-deploy --force
