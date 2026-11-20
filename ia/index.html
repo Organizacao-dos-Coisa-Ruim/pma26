@@ -935,6 +935,20 @@
 <td>Gerou o esqueleto dos dois repositórios a partir do padrão do Order (só boilerplate, sem CRUD), validou o build (interface → service), fez o commit inicial/push e adicionou os submodules (issue #25)</td>
 <td>Pediu a tarefa, criou os repositórios vazios no GitHub e vai revisar e commitar o ponteiro dos submodules; o CRUD (#26), o Dockerfile (#27) e os testes (#28) ficam com o grupo</td>
 </tr>
+<tr>
+<td>2026-11-20</td>
+<td><code>product</code> (interface: <code>ProductController</code>, <code>ProductIn</code> com Bean Validation, <code>ProductOut</code>, README) e <code>product-service</code> (<code>ProductModel</code>, <code>ProductRepository</code>, <code>ProductService</code>, <code>ProductResource</code>, <code>ProductParser</code>, migration Flyway, testes de integração e unitários, README)</td>
+<td>Claude Code</td>
+<td>Implementou o CRUD de produtos (issue #26) no padrão interface + service, com os campos do enunciado do curso (<code>id</code>, <code>name</code>, <code>price</code>, <code>unit</code>), validação com limites iguais aos das colunas, e escreveu os testes (adianta a #28); validou com <code>mvn verify</code> (10 testes passando)</td>
+<td>Carlos pediu a implementação da #26; revisão e commit pendentes</td>
+</tr>
+<tr>
+<td>2026-11-20</td>
+<td><code>product-service</code>: <code>Dockerfile</code>, <code>.dockerignore</code>, README; <code>pma26</code>: <code>docker/compose.yml</code> (serviço <code>product</code>), <code>docker/observability/prometheus.yml</code>, <code>docker/smoke-test.sh</code> (cenários do Product), <code>.github/workflows/smoke-test.yml</code> (logs), <code>docs/requests.http</code>, <code>docs/servicos.md</code></td>
+<td>Claude Code</td>
+<td>Fez a #27: Dockerfile no padrão do Account, Product no compose e no Prometheus, cenários no smoke test; subiu o sistema pelo compose e rodou o smoke test pelo gateway. Também revisou o estado dos repositórios (ponteiros de submodule e PRs abertos)</td>
+<td>Carlos pediu a #27 e a revisão dos commits; revisão e commit pendentes</td>
+</tr>
 </tbody>
 </table>
 
