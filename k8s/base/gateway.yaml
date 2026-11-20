@@ -49,8 +49,9 @@ spec:
   ports:
     - { name: http, port: 8080, targetPort: http }
 ---
-# Load test (rubrica): escala o gateway entre 1 e 10 pods mantendo a CPU média em 50% do request.
-# Equivale a: kubectl autoscale deployment gateway --cpu-percent=50 --min=1 --max=10
+# Load test (rubrica): escala o gateway entre 1 e 8 pods mantendo a CPU média em 50% do request.
+# Equivale a: kubectl autoscale deployment gateway --cpu-percent=50 --min=1 --max=8
+# Máximo 8 (e não 10) para caber nos 2 nós t3.medium do EKS junto com os outros serviços (docs/custos.md).
 # Precisa do metrics-server (k8s/addons/metrics-server).
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -62,7 +63,7 @@ spec:
     kind: Deployment
     name: gateway
   minReplicas: 1
-  maxReplicas: 10
+  maxReplicas: 8
   metrics:
     - type: Resource
       resource:
