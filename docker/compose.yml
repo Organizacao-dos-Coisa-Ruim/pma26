@@ -91,6 +91,24 @@ services:
       retries: 20
     restart: unless-stopped
 
+  # Catálogo de produtos (schema "products" no mesmo Postgres, criado pelo Flyway)
+  product:
+    image: product
+    build:
+      <<: *java-build
+      args:
+        INTERFACES: product
+        SERVICE: product-service
+    environment:
+      DATABASE_HOST: db
+      DATABASE_DB: ${DATABASE_DB:-store}
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-store}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:?defina DATABASE_PASSWORD em docker/.env}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
   gateway:
     image: gateway
     build:
@@ -105,6 +123,7 @@ services:
       - account
       - auth
       - exchange
+      - product
     restart: unless-stopped
 
   # --- Observabilidade ---
@@ -126,6 +145,7 @@ services:
       - auth
       - account
       - exchange
+      - product
     restart: unless-stopped
 
   grafana:

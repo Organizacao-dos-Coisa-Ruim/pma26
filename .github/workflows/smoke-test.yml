@@ -57,7 +57,7 @@ jobs:
 
       - name: Logs dos serviços (se falhar)
         if: failure()
-        run: docker compose logs --no-color account auth exchange gateway
+        run: docker compose logs --no-color account auth exchange product gateway
 
       - name: Derrubar
         if: always()
