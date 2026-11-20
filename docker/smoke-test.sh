@@ -86,18 +86,22 @@ check "código inválido"   400 "$(status -H "Authorization: Bearer $USER_TOKEN"
 
 echo "Product"
 AUTH="Authorization: Bearer $USER_TOKEN"
+# criar e apagar produto é só de admin (RBAC no gateway); consultar é para qualquer usuário logado
+ADMIN_TOKEN="$(login "$ADMIN_EMAIL" "$ADMIN_PASSWORD")"
+ADMIN_AUTH="Authorization: Bearer $ADMIN_TOKEN"
 check "produtos sem token" 401 "$(status "$GATEWAY/products")"
-check "produto inválido"   400 "$(status -X POST "$GATEWAY/products" -H "$AUTH" -H "$JSON" -d '{"name":"Smoke","price":0,"unit":"un"}')"
-PRODUCT_ID="$(curl -s -X POST "$GATEWAY/products" -H "$AUTH" -H "$JSON" \
+check "user cria produto"  403 "$(status -X POST "$GATEWAY/products" -H "$AUTH" -H "$JSON" -d '{"name":"Smoke","price":10.12,"unit":"kg"}')"
+check "produto inválido"   400 "$(status -X POST "$GATEWAY/products" -H "$ADMIN_AUTH" -H "$JSON" -d '{"name":"Smoke","price":0,"unit":"un"}')"
+PRODUCT_ID="$(curl -s -X POST "$GATEWAY/products" -H "$ADMIN_AUTH" -H "$JSON" \
   -d '{"name":"Smoke","price":10.12,"unit":"kg"}' | sed -n 's/.*"id":"\([^"]*\)".*/\1/p')"
 check "cria produto (devolve id)" yes "$([ -n "$PRODUCT_ID" ] && echo yes || echo no)"
 check "consulta produto"   200 "$(status -H "$AUTH" "$GATEWAY/products/$PRODUCT_ID")"
 check "lista produtos"     200 "$(status -H "$AUTH" "$GATEWAY/products")"
-check "apaga produto"      204 "$(status -X DELETE -H "$AUTH" "$GATEWAY/products/$PRODUCT_ID")"
+check "user apaga produto" 403 "$(status -X DELETE -H "$AUTH" "$GATEWAY/products/$PRODUCT_ID")"
+check "apaga produto"      204 "$(status -X DELETE -H "$ADMIN_AUTH" "$GATEWAY/products/$PRODUCT_ID")"
 check "produto apagado"    404 "$(status -H "$AUTH" "$GATEWAY/products/$PRODUCT_ID")"
 
 echo "RBAC"
-ADMIN_TOKEN="$(login "$ADMIN_EMAIL" "$ADMIN_PASSWORD")"
 check "admin recebe role admin"     admin "$(jwt_field "$ADMIN_TOKEN" role)"
 check "user lista contas"           403 "$(status -H "Authorization: Bearer $USER_TOKEN" "$GATEWAY/accounts")"
 check "user com header forjado"     403 "$(status -H "Authorization: Bearer $USER_TOKEN" -H 'role-account: admin' "$GATEWAY/accounts")"
@@ -105,7 +109,7 @@ check "user vê conta de outro"      403 "$(status -H "Authorization: Bearer $US
 check "admin lista contas"          200 "$(status -H "Authorization: Bearer $ADMIN_TOKEN" "$GATEWAY/accounts")"
 echo "Order"
 # produto próprio para o pedido (o do bloco Product já foi apagado)
-request -X POST "$GATEWAY/products" -H "$AUTH" -H "$JSON" -d '{"name":"Tomate","price":10.12,"unit":"kg"}'
+request -X POST "$GATEWAY/products" -H "$ADMIN_AUTH" -H "$JSON" -d '{"name":"Tomate","price":10.12,"unit":"kg"}'
 PRODUCT_ID="$(json_id)"
 check "pedidos sem token"   401 "$(status "$GATEWAY/orders")"
 request -X POST "$GATEWAY/orders" -H "$AUTH" -H "$JSON" \
@@ -119,7 +123,7 @@ check "produto inexistente" 404 "$(status -X POST "$GATEWAY/orders" -H "$AUTH" -
 check "consulta o pedido"   200 "$(status -H "$AUTH" "$GATEWAY/orders/$ORDER_ID")"
 check "lista meus pedidos"  200 "$(status -H "$AUTH" "$GATEWAY/orders")"
 check "pedido de outro"     403 "$(status -H "Authorization: Bearer $ADMIN_TOKEN" "$GATEWAY/orders/$ORDER_ID")"
-status -X DELETE -H "$AUTH" "$GATEWAY/products/$PRODUCT_ID" >/dev/null  # limpeza, sem check
+status -X DELETE -H "$ADMIN_AUTH" "$GATEWAY/products/$PRODUCT_ID" >/dev/null  # limpeza, sem check
 
 check "admin apaga a conta de teste" 204 "$(status -X DELETE -H "Authorization: Bearer $ADMIN_TOKEN" "$GATEWAY/accounts/$USER_ID")"
 
