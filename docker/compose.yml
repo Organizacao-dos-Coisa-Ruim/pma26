@@ -109,6 +109,27 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  # Pedidos (schema "orders"). Consulta preço e nome no product via Feign (http://product:8080).
+  order:
+    image: order
+    build:
+      <<: *java-build
+      args:
+        INTERFACES: order
+        SERVICE: order-service
+    environment:
+      DATABASE_HOST: db
+      DATABASE_DB: ${DATABASE_DB:-store}
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-store}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:?defina DATABASE_PASSWORD em docker/.env}
+      PMA_PRODUCT_URL: http://product:8080
+    depends_on:
+      db:
+        condition: service_healthy
+      product:
+        condition: service_started
+    restart: unless-stopped
+
   gateway:
     image: gateway
     build:
@@ -124,6 +145,7 @@ services:
       - auth
       - exchange
       - product
+      - order
     restart: unless-stopped
 
   # --- Observabilidade ---
@@ -146,6 +168,7 @@ services:
       - account
       - exchange
       - product
+      - order
     restart: unless-stopped
 
   grafana:

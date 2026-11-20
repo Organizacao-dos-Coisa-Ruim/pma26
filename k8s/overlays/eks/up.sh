@@ -18,7 +18,7 @@ set -euo pipefail
 
 export AWS_REGION="${AWS_REGION:-us-east-1}"
 NAME="${NAME:-pma26}"
-DOCKERHUB_USER="${DOCKERHUB_USER:?defina DOCKERHUB_USER (usuário do Docker Hub com as imagens gateway, auth, account, exchange)}"
+DOCKERHUB_USER="${DOCKERHUB_USER:?defina DOCKERHUB_USER (usuário do Docker Hub com as imagens gateway, auth, account, exchange, product, order)}"
 NODE_TYPE="${NODE_TYPE:-t3.medium}"
 DIR="$(cd "$(dirname "$0")" && pwd)"
 # template oficial da AWS indicado na rubrica: 2 subnets públicas + 2 privadas, NAT, rotas
@@ -127,7 +127,7 @@ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/down
 # --- 7. Deploy ------------------------------------------------------------------------------
 step "7/7 Deploy do sistema (imagens $DOCKERHUB_USER/*)"
 kubectl kustomize "$DIR" | sed "s#DOCKERHUB_USUARIO/#$DOCKERHUB_USER/#g" | kubectl apply -f -
-kubectl -n pma26 rollout status deploy/account deploy/auth deploy/exchange deploy/gateway --timeout=10m
+kubectl -n pma26 rollout status deploy/account deploy/auth deploy/exchange deploy/product deploy/order deploy/gateway --timeout=10m
 
 echo "Aguardando o endereço do LoadBalancer..."
 until LB=$(kubectl -n pma26 get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].hostname}') && [ -n "$LB" ]; do sleep 10; done

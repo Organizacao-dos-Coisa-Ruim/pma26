@@ -52,7 +52,7 @@ O `run.sh` salva tudo em `load/results/<data-hora>/` (fora do git): relatório H
 
 ## Resultado no kind (2026-11-18)
 
-Ambiente: kind (1 nó) no Docker Desktop, num notebook. O HPA do gateway vai de 1 a 10 pods, com alvo de 50% de CPU
+Ambiente: kind (1 nó) no Docker Desktop, num notebook. O HPA do gateway ia de 1 a 10 pods (hoje o máximo é 8, para caber no EKS; ver [custos](custos.md)), com alvo de 50% de CPU
 sobre o `request` de 250m.
 
 ![Carga x pods do gateway x CPU x latência](load-test/grafico-kind.png)

@@ -14,7 +14,7 @@ e é gratuito para repositórios públicos.
 
 ```
 PR no service ──▶ testes ──(merge)──▶ main ──▶ testes ──▶ imagem no Docker Hub ──▶ (deploy no EKS, #65)
-PR no pma26 (novo ponteiro de submodule) ──▶ compose up ──▶ smoke test (15 cenários)
+PR no pma26 (novo ponteiro de submodule) ──▶ compose up ──▶ smoke test (37 cenários)
 ```
 
 ### Por que as interfaces são instaladas no CI
@@ -26,10 +26,14 @@ igual ao que o `docker/java-service.Dockerfile` faz no compose.
 ### Smoke test
 
 O `smoke-test.yml` gera um `docker/.env` com segredos aleatórios **só para o job** (`openssl rand`), sobe o sistema e verifica:
-- health-check do auth e do account;
+- health-check do auth, account, exchange, product e order;
 - register (201) e repetido (409); login errado (401); JWT com `role: user`;
 - rota protegida sem token e com token inválido (401); a própria conta (200);
-- RBAC: admin recebe `role: admin`; user listar (403), header forjado (403), conta de outro (403); admin listar (200) e apagar (204).
+- RBAC: admin recebe `role: admin`; user listar (403), header forjado (403), conta de outro (403); admin listar (200) e apagar (204);
+- cotação do Exchange com e sem token e com códigos inválidos;
+- produto: sem token (401), inválido (400), criar, consultar, listar, apagar (204) e consultar apagado (404);
+- pedido: criar (201) com **total calculado a partir do preço do Product** (3 × 10,12 = 30,36); pedido vazio (400);
+  produto inexistente (404); consultar e listar os próprios (200); pedido de outra conta (403).
 
 Se falhar, mostra os logs dos serviços. Sempre derruba tudo no fim. Para rodar localmente, com o compose de pé:
 

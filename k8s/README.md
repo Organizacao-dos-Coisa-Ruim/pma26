@@ -9,6 +9,8 @@ k8s/
 │   ├── account.yaml         Deployment + Service
 │   ├── auth.yaml            Deployment + Service
 │   ├── exchange.yaml        Deployment + Service
+│   ├── product.yaml         Deployment + Service
+│   ├── order.yaml           Deployment + Service
 │   ├── gateway.yaml         Deployment + Service + HPA
 │   ├── redis.yaml           Deployment + Service (cache do Exchange)
 │   ├── namespace.yaml       namespace pma26
@@ -31,7 +33,7 @@ docker compose -f docker/compose.yml build
 
 # 2. cluster com a porta 8080 ligada ao gateway
 kind create cluster --name pma26 --config k8s/overlays/kind/kind-cluster.yaml
-kind load docker-image gateway auth account exchange --name pma26
+kind load docker-image gateway auth account exchange product order --name pma26
 
 # 3. segredos (pode copiar os valores do docker/.env)
 cp k8s/overlays/kind/secrets.env.example k8s/overlays/kind/secrets.env   # e preencha
@@ -61,7 +63,7 @@ e `kubectl -n pma26 rollout restart deploy/<serviço>`.
 
 ## HPA (load test)
 
-O gateway escala de 1 a 10 pods mantendo a CPU média em 50% do `request` (250m). Para ver escalar:
+O gateway escala de 1 a 8 pods mantendo a CPU média em 50% do `request` (250m). Para ver escalar:
 
 ```bash
 kubectl -n pma26 get hpa gateway -w          # num terminal
@@ -79,7 +81,7 @@ Sem carga, o HPA espera 5 minutos estável antes de reduzir as réplicas (evita 
 
 | Decisão | Por quê |
 |---------|---------|
-| Nomes `gateway`, `auth`, `account`, `exchange` | iguais ao compose, à imagem e ao que o HPA e o load test usam |
+| Nomes `gateway`, `auth`, `account`, `exchange`, `product`, `order` | iguais ao compose, à imagem e ao que o HPA e o load test usam |
 | `requests` de CPU e memória em todo Deployment | o HPA mede a CPU como % do `request`; sem ele, não escala |
 | `startupProbe` + `readinessProbe` + `livenessProbe` em `/actuator/health/*` | a JVM demora a subir (até 150 s de tolerância); o Service só manda tráfego para pod pronto; pod travado é reiniciado |
 | `enableServiceLinks: false` | o Kubernetes injetaria `REDIS_PORT=tcp://10.96.x.x:6379`, que colide com a variável `REDIS_PORT` do exchange (o pod não subia) |
@@ -94,7 +96,7 @@ Sem carga, o HPA espera 5 minutos estável antes de reduzir as réplicas (evita 
 - Todos os pods `Running` e `Ready`.
 - `docker/smoke-test.sh`: 20 cenários OK, inclusive cotação real e RBAC.
 - `docker/zap-scan.sh`: 0 alertas, 120 regras passando (mesmo resultado do compose).
-- HPA: com 50 conexões contínuas, o gateway foi de 2 para 10 pods em ~90 s
+- HPA: com 50 conexões contínuas, o gateway foi de 2 para 10 pods em ~90 s (teste feito com `maxReplicas: 10`; hoje o máximo é 8)
   (eventos `SuccessfulRescale`: 2 → 3 → 4 → 8 → 10). Sem carga, voltou a 1 (10 → 3 → 1,
   "All metrics below target") depois dos 5 minutos de estabilização.
 

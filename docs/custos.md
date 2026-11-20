@@ -14,17 +14,21 @@ Os `requests` dos manifests ([Kubernetes](kubernetes.md)) definem quanto de CPU 
 
 | Pods | CPU (request) | Memória (request) |
 |------|--------------:|------------------:|
-| auth, account, exchange (1 réplica cada) | 3 × 250m | 3 × 384 Mi |
+| auth, account, exchange, product, order (1 réplica cada) | 5 × 250m | 5 × 384 Mi |
 | gateway, mínimo do HPA | 1 × 250m | 1 × 256 Mi |
 | redis | 50m | 64 Mi |
 | sistema (CoreDNS, aws-node, kube-proxy, metrics-server) | ~400m | ~400 Mi |
-| **Total em repouso** | **~1,45 vCPU** | **~1,9 GiB** |
-| gateway no máximo do HPA (+9 pods) | +2,25 vCPU | +2,25 GiB |
-| **Total no pico do load test** | **~3,7 vCPU** | **~4,2 GiB** |
+| **Total em repouso** | **~1,95 vCPU** | **~2,6 GiB** |
+| gateway no máximo do HPA (`maxReplicas: 8`, +7 pods) | +1,75 vCPU | +1,75 GiB |
+| **Total no pico do load test** | **~3,7 vCPU** | **~4,4 GiB** |
 
 **Escolha: 2 nós `t3.medium`** (2 vCPU e 4 GiB cada, ~1,9 vCPU alocável), um em cada subnet privada (2 zonas de
-disponibilidade). Isso dá ~3,8 vCPU alocáveis, que cobrem o pico. Um `t3.small` (2 GiB) não comporta 4 JVMs mais
-as réplicas do gateway.
+disponibilidade). Isso dá ~3,8 vCPU alocáveis, que cobrem o pico. Um `t3.small` (2 GiB) não comporta 6 JVMs mais as réplicas do gateway.
+
+> **Decisão (2026-11-20):** com Product e Order no cluster, o HPA com máximo de 10 réplicas pediria ~4,2 vCPU, mais
+> que os ~3,8 alocáveis (as réplicas extras ficariam `Pending`). O grupo escolheu **`maxReplicas: 8`** em vez de um
+> 3º nó (+~$30/mês): o custo fica igual e o load test ainda mostra o HPA escalando (no kind, com 100 usuários, o
+> gateway estabilizou em 7 pods).
 
 ## Estimativa mensal (ligado 24/7)
 

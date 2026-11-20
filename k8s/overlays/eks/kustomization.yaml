@@ -32,6 +32,8 @@ images:
   - { name: auth, newName: DOCKERHUB_USUARIO/auth, newTag: latest }
   - { name: account, newName: DOCKERHUB_USUARIO/account, newTag: latest }
   - { name: exchange, newName: DOCKERHUB_USUARIO/exchange, newTag: latest }
+  - { name: product, newName: DOCKERHUB_USUARIO/product, newTag: latest }
+  - { name: order, newName: DOCKERHUB_USUARIO/order, newTag: latest }
 
 patches:
   - target: { kind: Service, name: gateway }
