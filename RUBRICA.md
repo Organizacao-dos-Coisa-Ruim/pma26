@@ -117,7 +117,7 @@ Repositório próprio com MkDocs publicado, contendo:
 - [x] Exchange (falta só a integração com o Order, #39, que depende do Order existir)
 - [x] Product / Order (domínio do e-commerce)
 - [x] Todos os serviços como submodules do `pma26`
-- [x] Docker Compose local subindo o sistema inteiro (smoke test com 37 cenários)
+- [x] Docker Compose local subindo o sistema inteiro (smoke test com 39 cenários)
 - [ ] 2 gargalos por integrante, com evidência
   - [x] Felipe: cache Redis no Exchange ([docs](docs/gargalos/cache-redis.md)) e scan de vulnerabilidades com OWASP ZAP ([docs](docs/gargalos/scan-vulnerabilidades.md)); faltam os prints do Grafana e do Actions
 - [ ] AWS CLI configurado
