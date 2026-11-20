@@ -7,14 +7,14 @@ e é gratuito para repositórios públicos.
 
 | Repositório | Workflow | Quando | O que faz |
 |-------------|----------|--------|-----------|
-| `pma-26-account`, `pma26-auth` (interfaces) | `ci.yml` | push/PR | `mvn install` |
-| `pma26-account-service`, `pma26-auth-service`, `gateway-service` | `ci.yml` | push/PR | checkout + `mvn install` das interfaces de que dependem, `mvn verify` (testes) |
+| `pma-26-account`, `pma26-auth`, `pma26-exchange`, `product`, `order` (interfaces) | `ci.yml` | push/PR | `mvn install` |
+| `pma26-account-service`, `pma26-auth-service`, `pma26-exchange-service`, `gateway-service`, `product-service`, `order-service` | `ci.yml` | push/PR | checkout + `mvn install` das interfaces de que dependem, `mvn verify` (testes) |
 | | | push na `main` | build da imagem com o `Dockerfile` do repo e **push no Docker Hub** (`<usuario>/<servico>:latest` e `:<sha do commit>`) |
 | `pma26` | `smoke-test.yml` | push/PR | builda todos os serviços pelo compose (submodules), sobe tudo e roda [`docker/smoke-test.sh`](https://github.com/Organizacao-dos-Coisa-Ruim/pma26/blob/main/docker/smoke-test.sh) |
 
 ```
 PR no service ──▶ testes ──(merge)──▶ main ──▶ testes ──▶ imagem no Docker Hub ──▶ (deploy no EKS, #65)
-PR no pma26 (novo ponteiro de submodule) ──▶ compose up ──▶ smoke test (37 cenários)
+PR no pma26 (novo ponteiro de submodule) ──▶ compose up ──▶ smoke test (39 cenários) ──▶ scan do ZAP
 ```
 
 ### Por que as interfaces são instaladas no CI
@@ -33,7 +33,8 @@ O `smoke-test.yml` gera um `docker/.env` com segredos aleatórios **só para o j
 - cotação do Exchange com e sem token e com códigos inválidos;
 - produto: sem token (401), inválido (400), criar, consultar, listar, apagar (204) e consultar apagado (404);
 - pedido: criar (201) com **total calculado a partir do preço do Product** (3 × 10,12 = 30,36); pedido vazio (400);
-  produto inexistente (404); consultar e listar os próprios (200); pedido de outra conta (403).
+  produto inexistente (404), id fora do formato UUID e id que tentaria mudar o caminho da chamada ao Product
+  (`health-check`, achado do ZAP), ambos 404; consultar e listar os próprios (200); pedido de outra conta (403).
 
 Se falhar, mostra os logs dos serviços. Sempre derruba tudo no fim. Para rodar localmente, com o compose de pé:
 
@@ -52,7 +53,10 @@ Sem estes secrets, o passo de publicar a imagem é **pulado** e o CI continua ve
    - `DOCKERHUB_TOKEN`: o token do passo 1
 
    Em *Repository access*, libere para os repositórios de service (ou todos).
-3. Rode de novo o último workflow da `main` de cada service (*Actions → CI → Re-run*) ou faça um merge qualquer. As imagens aparecem como `<usuario>/account`, `<usuario>/auth` e `<usuario>/gateway`.
+3. Rode de novo o último workflow da `main` de cada service (*Actions → CI → Re-run all jobs*) ou faça um merge qualquer. As imagens aparecem como `<usuario>/account`, `<usuario>/auth`, `<usuario>/exchange`, `<usuario>/gateway`, `<usuario>/product` e `<usuario>/order`.
+
+> O *Run workflow* manual (`workflow_dispatch`) **não** publica a imagem: o passo só roda em evento `push` na `main`.
+> O *Re-run* de um workflow que veio de um push funciona, porque mantém o evento original.
 
 ## Deploy no EKS (#65)
 

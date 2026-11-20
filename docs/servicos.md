@@ -71,3 +71,8 @@ Ao criar um pedido, o Order **não confia no preço enviado pelo cliente**: para
 Feign (`GET http://product:8080/products/{id}`), guarda nome e preço unitário daquele momento e calcula subtotal e
 total. Produto inexistente ou id recusado pelo Product → 404; Product fora do ar → 503. O dono do pedido vem do
 header `id-account`, que o gateway preenche a partir do JWT.
+
+Antes de chamar o Product, o Order confere se o `productId` tem o formato **UUID** (o formato dos ids que o Product
+gera). Como o id vira parte do caminho da chamada interna, sem essa checagem um valor como `health-check` ou `..%2f`
+mudava a requisição ao Product e o pedido respondia 502/503 (achado do scan do ZAP). Id fora do formato → 404, sem
+chamar o Product.
