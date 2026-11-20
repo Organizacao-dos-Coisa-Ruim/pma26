@@ -963,6 +963,20 @@
 <td>Corrigiu o 503 achado pelo OWASP ZAP (gargalo #78): erro 4xx do Product (ex.: <code>productId</code> "%00" → 400) virava "Product indisponível"; agora 4xx → 404 e só 5xx/sem resposta → 503. Validou com <code>mvn verify</code> (14 testes), smoke test e ZAP sem o alerta em <code>/orders</code></td>
 <td>Felipe pediu a correção e escolheu 404 para id recusado; código do Order feito pelo Carlos; revisão do PR pendente</td>
 </tr>
+<tr>
+<td>2026-11-20</td>
+<td><code>product-service</code> e <code>order-service</code>: <code>.github/workflows/ci.yml</code>; <code>pma26</code>: <code>docs/cicd.md</code></td>
+<td>Claude Code</td>
+<td>Adicionou o push da imagem no Docker Hub ao CI do Product e do Order (#64), no mesmo padrão dos outros services; simulou o build do CI e da imagem localmente; atualizou a documentação do CI/CD</td>
+<td>Carlos pediu a tarefa, fez os commits e configura os secrets do Docker Hub (#66)</td>
+</tr>
+<tr>
+<td>2026-11-20</td>
+<td><code>order-service</code>: <code>OrderService.findProduct</code>, <code>OrderServiceTest</code>, <code>OrderResourceIntegrationTest</code>; <code>pma26</code>: cenários no <code>docker/smoke-test.sh</code>, <code>servicos.md</code>, <code>cicd.md</code></td>
+<td>Claude Code</td>
+<td>Revisou o order-service#1 e achou um caso que ele não cobria (<code>productId</code> "health-check" → 502); validou o <code>productId</code> como UUID antes de chamar o Product, removeu as checagens mortas depois do Feign e ajustou os testes (20 passando); reproduziu 20 ids maliciosos no compose (todos 404/400) e incluiu 3 cenários no smoke test</td>
+<td>Carlos pediu a correção e fez os commits; Felipe sugeriu cobrir o cenário de produto inexistente no smoke test</td>
+</tr>
 </tbody>
 </table>
 

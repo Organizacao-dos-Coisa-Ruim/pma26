@@ -950,13 +950,13 @@ e é gratuito para repositórios públicos.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>pma-26-account</code>, <code>pma26-auth</code> (interfaces)</td>
+<td><code>pma-26-account</code>, <code>pma26-auth</code>, <code>pma26-exchange</code>, <code>product</code>, <code>order</code> (interfaces)</td>
 <td><code>ci.yml</code></td>
 <td>push/PR</td>
 <td><code>mvn install</code></td>
 </tr>
 <tr>
-<td><code>pma26-account-service</code>, <code>pma26-auth-service</code>, <code>gateway-service</code></td>
+<td><code>pma26-account-service</code>, <code>pma26-auth-service</code>, <code>pma26-exchange-service</code>, <code>gateway-service</code>, <code>product-service</code>, <code>order-service</code></td>
 <td><code>ci.yml</code></td>
 <td>push/PR</td>
 <td>checkout + <code>mvn install</code> das interfaces de que dependem, <code>mvn verify</code> (testes)</td>
@@ -976,7 +976,7 @@ e é gratuito para repositórios públicos.</p>
 </tbody>
 </table>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>PR no service ──▶ testes ──(merge)──▶ main ──▶ testes ──▶ imagem no Docker Hub ──▶ (deploy no EKS, #65)
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>PR no pma26 (novo ponteiro de submodule) ──▶ compose up ──▶ smoke test (37 cenários)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>PR no pma26 (novo ponteiro de submodule) ──▶ compose up ──▶ smoke test (39 cenários) ──▶ scan do ZAP
 </code></pre></div>
 <h3 id="por-que-as-interfaces-sao-instaladas-no-ci">Por que as interfaces são instaladas no CI</h3>
 <p>Cada service depende das interfaces (<code>pma:account</code>, <code>pma:auth</code>), que não estão em nenhum repositório Maven público.
@@ -991,7 +991,8 @@ igual ao que o <code>docker/java-service.Dockerfile</code> faz no compose.</p>
 - cotação do Exchange com e sem token e com códigos inválidos;
 - produto: sem token (401), inválido (400), criar, consultar, listar, apagar (204) e consultar apagado (404);
 - pedido: criar (201) com <strong>total calculado a partir do preço do Product</strong> (3 × 10,12 = 30,36); pedido vazio (400);
-  produto inexistente (404); consultar e listar os próprios (200); pedido de outra conta (403).</p>
+  produto inexistente (404), id fora do formato UUID e id que tentaria mudar o caminho da chamada ao Product
+  (<code>health-check</code>, achado do ZAP), ambos 404; consultar e listar os próprios (200); pedido de outra conta (403).</p>
 <p>Se falhar, mostra os logs dos serviços. Sempre derruba tudo no fim. Para rodar localmente, com o compose de pé:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">set</span><span class="w"> </span>-a<span class="p">;</span><span class="w"> </span>.<span class="w"> </span>docker/.env<span class="p">;</span><span class="w"> </span><span class="nb">set</span><span class="w"> </span>+a
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>bash<span class="w"> </span>docker/smoke-test.sh
@@ -1005,7 +1006,11 @@ igual ao que o <code>docker/java-service.Dockerfile</code> faz no compose.</p>
 <li><code>DOCKERHUB_TOKEN</code>: o token do passo 1</li>
 </ol>
 <p>Em <em>Repository access</em>, libere para os repositórios de service (ou todos).
-3. Rode de novo o último workflow da <code>main</code> de cada service (<em>Actions → CI → Re-run</em>) ou faça um merge qualquer. As imagens aparecem como <code>&lt;usuario&gt;/account</code>, <code>&lt;usuario&gt;/auth</code> e <code>&lt;usuario&gt;/gateway</code>.</p>
+3. Rode de novo o último workflow da <code>main</code> de cada service (<em>Actions → CI → Re-run all jobs</em>) ou faça um merge qualquer. As imagens aparecem como <code>&lt;usuario&gt;/account</code>, <code>&lt;usuario&gt;/auth</code>, <code>&lt;usuario&gt;/exchange</code>, <code>&lt;usuario&gt;/gateway</code>, <code>&lt;usuario&gt;/product</code> e <code>&lt;usuario&gt;/order</code>.</p>
+<blockquote>
+<p>O <em>Run workflow</em> manual (<code>workflow_dispatch</code>) <strong>não</strong> publica a imagem: o passo só roda em evento <code>push</code> na <code>main</code>.
+O <em>Re-run</em> de um workflow que veio de um push funciona, porque mantém o evento original.</p>
+</blockquote>
 <h2 id="deploy-no-eks-65">Deploy no EKS (#65)</h2>
 <p>Job <code>deploy</code>, depois do push da imagem, em push na <code>main</code> (modelo no
 <a href="https://github.com/Organizacao-dos-Coisa-Ruim/pma26-exchange-service/pull/4">exchange-service</a>; falta replicar nos outros):</p>
