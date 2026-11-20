@@ -45,6 +45,16 @@ variáveis de ambiente (`AdminBootstrap`).
 [AwesomeAPI](https://docs.awesomeapi.com.br/){:target='_blank'}. A cotação fica **em cache no Redis por 5 minutos**
 ([gargalo](gargalos/cache-redis.md)). Será usado pelo Order para mostrar o total do pedido em outra moeda.
 
-## Product e Order
+## Product
 
-*Em desenvolvimento.* O gateway já tem as rotas `/products/**` e `/orders/**`.
+[product](https://github.com/Organizacao-dos-Coisa-Ruim/product){:target='_blank'} ·
+[product-service](https://github.com/Organizacao-dos-Coisa-Ruim/product-service){:target='_blank'}
+
+Catálogo de produtos no formato do enunciado (`id`, `name`, `price`, `unit`), schema `products` no PostgreSQL (Flyway).
+Rotas: `POST /products`, `GET /products`, `GET /products/{id}` e `DELETE /products/{id}`. Os campos são validados
+com Bean Validation (`@Valid` na interface), com limites iguais aos das colunas, então dado inválido vira `400` e não
+`500`. O Order consulta `GET /products/{id}` via Feign para montar o pedido.
+
+## Order
+
+*Em desenvolvimento.* O gateway já tem a rota `/orders/**`.

@@ -37,7 +37,7 @@ login() {
 echo "Aguardando o gateway em $GATEWAY ..."
 for _ in $(seq 1 90); do
   if [ "$(status "$GATEWAY/auth/health-check")" = 200 ] && [ "$(status "$GATEWAY/accounts/health-check")" = 200 ] \
-     && [ "$(status "$GATEWAY/exchange/health-check")" = 200 ]; then
+     && [ "$(status "$GATEWAY/exchange/health-check")" = 200 ] && [ "$(status "$GATEWAY/products/health-check")" = 200 ]; then
     break
   fi
   sleep 2
@@ -47,6 +47,7 @@ echo "Health-check"
 check "auth"    200 "$(status "$GATEWAY/auth/health-check")"
 check "account" 200 "$(status "$GATEWAY/accounts/health-check")"
 check "exchange" 200 "$(status "$GATEWAY/exchange/health-check")"
+check "product" 200 "$(status "$GATEWAY/products/health-check")"
 
 echo "Registro e login"
 check "register"           201 "$(status -X POST "$GATEWAY/auth/register" -H "$JSON" -d "{\"name\":\"Smoke\",\"email\":\"$EMAIL\",\"password\":\"123456\"}")"
@@ -67,6 +68,18 @@ check "cotação sem token" 401 "$(status "$GATEWAY/exchange/USD/BRL")"
 check "cotação com token" 200 "$(status -H "Authorization: Bearer $USER_TOKEN" "$GATEWAY/exchange/USD/BRL")"
 check "moedas iguais"     400 "$(status -H "Authorization: Bearer $USER_TOKEN" "$GATEWAY/exchange/BRL/BRL")"
 check "código inválido"   400 "$(status -H "Authorization: Bearer $USER_TOKEN" "$GATEWAY/exchange/US/BRL")"
+
+echo "Product"
+AUTH="Authorization: Bearer $USER_TOKEN"
+check "produtos sem token" 401 "$(status "$GATEWAY/products")"
+check "produto inválido"   400 "$(status -X POST "$GATEWAY/products" -H "$AUTH" -H "$JSON" -d '{"name":"Smoke","price":0,"unit":"un"}')"
+PRODUCT_ID="$(curl -s -X POST "$GATEWAY/products" -H "$AUTH" -H "$JSON" \
+  -d '{"name":"Smoke","price":10.12,"unit":"kg"}' | sed -n 's/.*"id":"\([^"]*\)".*/\1/p')"
+check "cria produto (devolve id)" yes "$([ -n "$PRODUCT_ID" ] && echo yes || echo no)"
+check "consulta produto"   200 "$(status -H "$AUTH" "$GATEWAY/products/$PRODUCT_ID")"
+check "lista produtos"     200 "$(status -H "$AUTH" "$GATEWAY/products")"
+check "apaga produto"      204 "$(status -X DELETE -H "$AUTH" "$GATEWAY/products/$PRODUCT_ID")"
+check "produto apagado"    404 "$(status -H "$AUTH" "$GATEWAY/products/$PRODUCT_ID")"
 
 echo "RBAC"
 ADMIN_TOKEN="$(login "$ADMIN_EMAIL" "$ADMIN_PASSWORD")"

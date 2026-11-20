@@ -105,3 +105,58 @@ Authorization: Bearer {{login.response.body.jwt}}
 ### 16. Par inexistente -> 404
 GET {{gateway}}/exchange/USD/XYZ
 Authorization: Bearer {{login.response.body.jwt}}
+
+# --- Product ----------------------------------------------------------------
+
+### 17. Criar produto -> 201
+# @name produto
+POST {{gateway}}/products
+Authorization: Bearer {{login.response.body.jwt}}
+Content-Type: application/json
+
+{
+  "name": "Tomato",
+  "price": 10.12,
+  "unit": "kg"
+}
+
+### 18. Produto inválido (preço <= 0, campo faltando, mais de 2 casas decimais) -> 400
+POST {{gateway}}/products
+Authorization: Bearer {{login.response.body.jwt}}
+Content-Type: application/json
+
+{
+  "name": "Tomato",
+  "price": 0,
+  "unit": "kg"
+}
+
+### 19. Listar produtos (ordenados por nome)
+GET {{gateway}}/products
+Authorization: Bearer {{login.response.body.jwt}}
+
+### 20. Consultar produto por id (id inexistente -> 404)
+GET {{gateway}}/products/{{produto.response.body.id}}
+Authorization: Bearer {{login.response.body.jwt}}
+
+# --- Order ------------------------------------------------------------------
+
+### 21. Criar pedido com o produto criado no passo 17
+# @name pedido
+POST {{gateway}}/orders
+Authorization: Bearer {{login.response.body.jwt}}
+Content-Type: application/json
+
+{
+  "items": [
+    { "productId": "{{produto.response.body.id}}", "quantity": 2 }
+  ]
+}
+
+### 22. Listar somente os pedidos do usuário autenticado
+GET {{gateway}}/orders
+Authorization: Bearer {{login.response.body.jwt}}
+
+### 23. Consultar um pedido próprio (pedido do outro usuário -> 403)
+GET {{gateway}}/orders/{{pedido.response.body.id}}
+Authorization: Bearer {{login.response.body.jwt}}

@@ -33,3 +33,10 @@ scrape_configs:
       - targets: ["exchange:8080"]
         labels:
           application: exchange
+
+  - job_name: product
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["product:8080"]
+        labels:
+          application: product
