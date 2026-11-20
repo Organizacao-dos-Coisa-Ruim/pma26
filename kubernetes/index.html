@@ -914,15 +914,17 @@ Organizados com <strong>Kustomize</strong>, que já vem no <code>kubectl</code> 
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│   ├── account.yaml         Deployment + Service
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│   ├── auth.yaml            Deployment + Service
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│   ├── exchange.yaml        Deployment + Service
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   ├── gateway.yaml         Deployment + Service + HPA
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│   ├── redis.yaml           Deployment + Service (cache do Exchange)
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   ├── namespace.yaml       namespace pma26
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│   └── kustomization.yaml   ConfigMap (URLs, TTL...) e enableServiceLinks: false
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>├── overlays/
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│   ├── kind/                Postgres no cluster, imagens locais, gateway em localhost:8080
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│   └── eks/                 RDS, imagens do Docker Hub, gateway com LoadBalancer; up.sh/down.sh criam e destroem a AWS
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>└── addons/
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    └── metrics-server/      CPU/memória dos pods, necessário para o HPA
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   ├── product.yaml         Deployment + Service
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│   ├── order.yaml           Deployment + Service
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   ├── gateway.yaml         Deployment + Service + HPA
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│   ├── redis.yaml           Deployment + Service (cache do Exchange)
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│   ├── namespace.yaml       namespace pma26
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│   └── kustomization.yaml   ConfigMap (URLs, TTL...) e enableServiceLinks: false
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>├── overlays/
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│   ├── kind/                Postgres no cluster, imagens locais, gateway em localhost:8080
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│   └── eks/                 RDS, imagens do Docker Hub, gateway com LoadBalancer; up.sh/down.sh criam e destroem a AWS
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>└── addons/
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    └── metrics-server/      CPU/memória dos pods, necessário para o HPA
 </code></pre></div>
 <h2 id="rodar-no-kind">Rodar no kind</h2>
 <p>Pré-requisitos: Docker, <code>kubectl</code> e <a href="https://kind.sigs.k8s.io/">kind</a> (<code>winget install Kubernetes.kind</code>).
@@ -932,7 +934,7 @@ Não suba junto com o compose: os dois usam a porta 8080.</p>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># 2. cluster com a porta 8080 ligada ao gateway</span>
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>kind<span class="w"> </span>create<span class="w"> </span>cluster<span class="w"> </span>--name<span class="w"> </span>pma26<span class="w"> </span>--config<span class="w"> </span>k8s/overlays/kind/kind-cluster.yaml
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>kind<span class="w"> </span>load<span class="w"> </span>docker-image<span class="w"> </span>gateway<span class="w"> </span>auth<span class="w"> </span>account<span class="w"> </span>exchange<span class="w"> </span>--name<span class="w"> </span>pma26
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>kind<span class="w"> </span>load<span class="w"> </span>docker-image<span class="w"> </span>gateway<span class="w"> </span>auth<span class="w"> </span>account<span class="w"> </span>exchange<span class="w"> </span>product<span class="w"> </span>order<span class="w"> </span>--name<span class="w"> </span>pma26
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="c1"># 3. segredos (pode copiar os valores do docker/.env)</span>
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>cp<span class="w"> </span>k8s/overlays/kind/secrets.env.example<span class="w"> </span>k8s/overlays/kind/secrets.env<span class="w">   </span><span class="c1"># e preencha</span>
@@ -955,7 +957,7 @@ Não suba junto com o compose: os dois usam a porta 8080.</p>
 e <code>kubectl -n pma26 rollout restart deploy/&lt;serviço&gt;</code>.</p>
 <p><strong>Derrubar:</strong> <code>kind delete cluster --name pma26</code>.</p>
 <h2 id="hpa-load-test">HPA (load test)</h2>
-<p>O gateway escala de 1 a 10 pods mantendo a CPU média em 50% do <code>request</code> (250m). Para ver escalar:</p>
+<p>O gateway escala de 1 a 8 pods mantendo a CPU média em 50% do <code>request</code> (250m). Para ver escalar:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>pma26<span class="w"> </span>get<span class="w"> </span>hpa<span class="w"> </span>gateway<span class="w"> </span>-w<span class="w">          </span><span class="c1"># num terminal</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># noutro: 2 minutos de carga com 50 conexões</span>
@@ -975,7 +977,7 @@ e <code>kubectl -n pma26 rollout restart deploy/&lt;serviço&gt;</code>.</p>
 </thead>
 <tbody>
 <tr>
-<td>Nomes <code>gateway</code>, <code>auth</code>, <code>account</code>, <code>exchange</code></td>
+<td>Nomes <code>gateway</code>, <code>auth</code>, <code>account</code>, <code>exchange</code>, <code>product</code>, <code>order</code></td>
 <td>iguais ao compose, à imagem e ao que o HPA e o load test usam</td>
 </tr>
 <tr>
@@ -1017,7 +1019,7 @@ e <code>kubectl -n pma26 rollout restart deploy/&lt;serviço&gt;</code>.</p>
 <li>Todos os pods <code>Running</code> e <code>Ready</code>.</li>
 <li><code>docker/smoke-test.sh</code>: 20 cenários OK, inclusive cotação real e RBAC.</li>
 <li><code>docker/zap-scan.sh</code>: 0 alertas, 120 regras passando (mesmo resultado do compose).</li>
-<li>HPA: com 50 conexões contínuas, o gateway foi de 2 para 10 pods em ~90 s
+<li>HPA: com 50 conexões contínuas, o gateway foi de 2 para 10 pods em ~90 s (teste feito com <code>maxReplicas: 10</code>; hoje o máximo é 8)
   (eventos <code>SuccessfulRescale</code>: 2 → 3 → 4 → 8 → 10). Sem carga, voltou a 1 (10 → 3 → 1,
   "All metrics below target") depois dos 5 minutos de estabilização.</li>
 </ul>

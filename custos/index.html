@@ -1039,9 +1039,9 @@ medido no Cost Explorer entra na seção <a href="#custo-real">Custo real</a> de
 </thead>
 <tbody>
 <tr>
-<td>auth, account, exchange (1 réplica cada)</td>
-<td style="text-align: right;">3 × 250m</td>
-<td style="text-align: right;">3 × 384 Mi</td>
+<td>auth, account, exchange, product, order (1 réplica cada)</td>
+<td style="text-align: right;">5 × 250m</td>
+<td style="text-align: right;">5 × 384 Mi</td>
 </tr>
 <tr>
 <td>gateway, mínimo do HPA</td>
@@ -1060,24 +1060,29 @@ medido no Cost Explorer entra na seção <a href="#custo-real">Custo real</a> de
 </tr>
 <tr>
 <td><strong>Total em repouso</strong></td>
-<td style="text-align: right;"><strong>~1,45 vCPU</strong></td>
-<td style="text-align: right;"><strong>~1,9 GiB</strong></td>
+<td style="text-align: right;"><strong>~1,95 vCPU</strong></td>
+<td style="text-align: right;"><strong>~2,6 GiB</strong></td>
 </tr>
 <tr>
-<td>gateway no máximo do HPA (+9 pods)</td>
-<td style="text-align: right;">+2,25 vCPU</td>
-<td style="text-align: right;">+2,25 GiB</td>
+<td>gateway no máximo do HPA (<code>maxReplicas: 8</code>, +7 pods)</td>
+<td style="text-align: right;">+1,75 vCPU</td>
+<td style="text-align: right;">+1,75 GiB</td>
 </tr>
 <tr>
 <td><strong>Total no pico do load test</strong></td>
 <td style="text-align: right;"><strong>~3,7 vCPU</strong></td>
-<td style="text-align: right;"><strong>~4,2 GiB</strong></td>
+<td style="text-align: right;"><strong>~4,4 GiB</strong></td>
 </tr>
 </tbody>
 </table>
 <p><strong>Escolha: 2 nós <code>t3.medium</code></strong> (2 vCPU e 4 GiB cada, ~1,9 vCPU alocável), um em cada subnet privada (2 zonas de
-disponibilidade). Isso dá ~3,8 vCPU alocáveis, que cobrem o pico. Um <code>t3.small</code> (2 GiB) não comporta 4 JVMs mais
-as réplicas do gateway.</p>
+disponibilidade). Isso dá ~3,8 vCPU alocáveis, que cobrem o pico. Um <code>t3.small</code> (2 GiB) não comporta 6 JVMs mais as réplicas do gateway.</p>
+<blockquote>
+<p><strong>Decisão (2026-11-20):</strong> com Product e Order no cluster, o HPA com máximo de 10 réplicas pediria ~4,2 vCPU, mais
+que os ~3,8 alocáveis (as réplicas extras ficariam <code>Pending</code>). O grupo escolheu <strong><code>maxReplicas: 8</code></strong> em vez de um
+3º nó (+~$30/mês): o custo fica igual e o load test ainda mostra o HPA escalando (no kind, com 100 usuários, o
+gateway estabilizou em 7 pods).</p>
+</blockquote>
 <h2 id="estimativa-mensal-ligado-247">Estimativa mensal (ligado 24/7)</h2>
 <table>
 <thead>
@@ -1406,7 +1411,7 @@ nosso SLA não pode prometer mais do que o teto da infraestrutura, e a nossa pr�
     <span class="md-icon" title="Última atualização">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">18 de novembro de 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">20 de novembro de 2026</span>
   </span>
 
     

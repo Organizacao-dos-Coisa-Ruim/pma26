@@ -949,6 +949,20 @@
 <td>Fez a #27: Dockerfile no padrão do Account, Product no compose e no Prometheus, cenários no smoke test; subiu o sistema pelo compose e rodou o smoke test pelo gateway. Também revisou o estado dos repositórios (ponteiros de submodule e PRs abertos)</td>
 <td>Carlos pediu a #27 e a revisão dos commits; revisão e commit pendentes</td>
 </tr>
+<tr>
+<td>2026-11-20</td>
+<td><code>pma26</code>: Order no <code>docker/compose.yml</code> e no <code>prometheus.yml</code>, cenários do Order no <code>docker/smoke-test.sh</code>, <code>smoke-test.yml</code> (logs); <code>k8s/base/product.yaml</code> e <code>order.yaml</code>, <code>kustomization.yaml</code> (base e eks), <code>up.sh</code>, <code>k8s/README.md</code>; <code>docs/openapi.yaml</code> (rotas de Product e Order para o ZAP), <code>servicos.md</code> (Order), <code>cicd.md</code>, <code>custos.md</code>; checklist da <code>RUBRICA.md</code></td>
+<td>Claude Code</td>
+<td>Completou a integração de Product e Order em cima da #115 do Carlos (que já tinha os submodules e o Product no compose): Order no compose, Kubernetes, OpenAPI e docs; validou no compose (smoke test, Prometheus e ZAP com as rotas novas, que achou o 503 no <code>order-service</code>)</td>
+<td>Felipe aprovou o plano (sem a regra de admin em <code>/products</code>, que fica para o grupo decidir); Product e Order foram feitos pelo Carlos; revisão pendente</td>
+</tr>
+<tr>
+<td>2026-11-20</td>
+<td><code>order-service</code>: <code>OrderService.findProduct</code> e 2 testes em <code>OrderServiceTest</code> (PR order-service#1, via fork)</td>
+<td>Claude Code</td>
+<td>Corrigiu o 503 achado pelo OWASP ZAP (gargalo #78): erro 4xx do Product (ex.: <code>productId</code> "%00" → 400) virava "Product indisponível"; agora 4xx → 404 e só 5xx/sem resposta → 503. Validou com <code>mvn verify</code> (14 testes), smoke test e ZAP sem o alerta em <code>/orders</code></td>
+<td>Felipe pediu a correção e escolheu 404 para id recusado; código do Order feito pelo Carlos; revisão do PR pendente</td>
+</tr>
 </tbody>
 </table>
 
