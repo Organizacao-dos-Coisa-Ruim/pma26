@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Smoke test do sistema inteiro, pelo gateway: register -> login -> rotas protegidas -> exchange -> RBAC.
+# Smoke test do sistema inteiro, pelo gateway: register -> login -> rotas protegidas -> exchange -> product
+# -> RBAC -> pedido (order chamando o product).
 # Usado no CI do pma26 e também localmente, com o compose de pé:
 #
 #   ADMIN_EMAIL=... ADMIN_PASSWORD=... ./docker/smoke-test.sh
@@ -29,6 +30,18 @@ jwt_field() { # extrai um campo do payload do JWT
   echo "$1" | cut -d. -f2 | tr '_-' '/+' | base64 -d 2>/dev/null | sed -n "s/.*\"$2\":\"\([^\"]*\)\".*/\1/p"
 }
 
+# faz a requisição e separa corpo e status: define BODY e CODE
+request() {
+  local out
+  out="$(curl -s -w '\n%{http_code}' "$@")"
+  CODE="${out##*$'\n'}"
+  BODY="${out%$'\n'*}"
+}
+
+json_id() { # campo "id" do BODY (no pedido, "productId" não casa: o padrão exige aspas antes de id)
+  echo "$BODY" | sed -n 's/.*"id":"\([^"]*\)".*/\1/p'
+}
+
 login() {
   curl -s -X POST "$GATEWAY/auth/login" -H "$JSON" \
     -d "{\"email\":\"$1\",\"password\":\"$2\"}" | sed -n 's/.*"jwt":"\([^"]*\)".*/\1/p'
@@ -37,7 +50,8 @@ login() {
 echo "Aguardando o gateway em $GATEWAY ..."
 for _ in $(seq 1 90); do
   if [ "$(status "$GATEWAY/auth/health-check")" = 200 ] && [ "$(status "$GATEWAY/accounts/health-check")" = 200 ] \
-     && [ "$(status "$GATEWAY/exchange/health-check")" = 200 ] && [ "$(status "$GATEWAY/products/health-check")" = 200 ]; then
+     && [ "$(status "$GATEWAY/exchange/health-check")" = 200 ] && [ "$(status "$GATEWAY/products/health-check")" = 200 ] \
+     && [ "$(status "$GATEWAY/orders/health-check")" = 200 ]; then
     break
   fi
   sleep 2
@@ -48,6 +62,7 @@ check "auth"    200 "$(status "$GATEWAY/auth/health-check")"
 check "account" 200 "$(status "$GATEWAY/accounts/health-check")"
 check "exchange" 200 "$(status "$GATEWAY/exchange/health-check")"
 check "product" 200 "$(status "$GATEWAY/products/health-check")"
+check "order"   200 "$(status "$GATEWAY/orders/health-check")"
 
 echo "Registro e login"
 check "register"           201 "$(status -X POST "$GATEWAY/auth/register" -H "$JSON" -d "{\"name\":\"Smoke\",\"email\":\"$EMAIL\",\"password\":\"123456\"}")"
@@ -88,6 +103,24 @@ check "user lista contas"           403 "$(status -H "Authorization: Bearer $USE
 check "user com header forjado"     403 "$(status -H "Authorization: Bearer $USER_TOKEN" -H 'role-account: admin' "$GATEWAY/accounts")"
 check "user vê conta de outro"      403 "$(status -H "Authorization: Bearer $USER_TOKEN" "$GATEWAY/accounts/$(jwt_field "$ADMIN_TOKEN" sub)")"
 check "admin lista contas"          200 "$(status -H "Authorization: Bearer $ADMIN_TOKEN" "$GATEWAY/accounts")"
+echo "Order"
+# produto próprio para o pedido (o do bloco Product já foi apagado)
+request -X POST "$GATEWAY/products" -H "$AUTH" -H "$JSON" -d '{"name":"Tomate","price":10.12,"unit":"kg"}'
+PRODUCT_ID="$(json_id)"
+check "pedidos sem token"   401 "$(status "$GATEWAY/orders")"
+request -X POST "$GATEWAY/orders" -H "$AUTH" -H "$JSON" \
+  -d "{\"items\":[{\"productId\":\"$PRODUCT_ID\",\"quantity\":3}]}"
+check "cria pedido"         201 "$CODE"
+ORDER_ID="$(json_id)"
+# 3 x 10.12: o order busca o preço no product (Feign) e calcula o total
+check "total do pedido"     30.36 "$(echo "$BODY" | sed -n 's/.*"total":\([0-9.]*\).*/\1/p')"
+check "pedido sem itens"    400 "$(status -X POST "$GATEWAY/orders" -H "$AUTH" -H "$JSON" -d '{"items":[]}')"
+check "produto inexistente" 404 "$(status -X POST "$GATEWAY/orders" -H "$AUTH" -H "$JSON" -d '{"items":[{"productId":"nao-existe","quantity":1}]}')"
+check "consulta o pedido"   200 "$(status -H "$AUTH" "$GATEWAY/orders/$ORDER_ID")"
+check "lista meus pedidos"  200 "$(status -H "$AUTH" "$GATEWAY/orders")"
+check "pedido de outro"     403 "$(status -H "Authorization: Bearer $ADMIN_TOKEN" "$GATEWAY/orders/$ORDER_ID")"
+status -X DELETE -H "$AUTH" "$GATEWAY/products/$PRODUCT_ID" >/dev/null  # limpeza, sem check
+
 check "admin apaga a conta de teste" 204 "$(status -X DELETE -H "Authorization: Bearer $ADMIN_TOKEN" "$GATEWAY/accounts/$USER_ID")"
 
 if [ "$FAILED" -ne 0 ]; then

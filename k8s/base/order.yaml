@@ -1,0 +1,50 @@
+# Order: pedidos. Usa o Postgres (schema "orders"; no EKS, o RDS) e consulta o product
+# via Feign (PMA_PRODUCT_URL=http://product:8080, no ConfigMap).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order
+  labels: { app: order }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: order }
+  template:
+    metadata:
+      labels: { app: order }
+    spec:
+      containers:
+        - name: order
+          image: order
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8080 }
+          envFrom:
+            - configMapRef: { name: pma26-config }
+          env:
+            - name: DATABASE_PASSWORD
+              valueFrom: { secretKeyRef: { name: pma26-secrets, key: DATABASE_PASSWORD } }
+          resources:
+            requests: { cpu: 250m, memory: 384Mi }
+            limits: { cpu: "1", memory: 768Mi }
+          startupProbe:
+            httpGet: { path: /actuator/health/liveness, port: http }
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: http }
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: http }
+            periodSeconds: 10
+            failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order
+  labels: { app: order }
+spec:
+  selector: { app: order }
+  ports:
+    - { name: http, port: 8080, targetPort: http }

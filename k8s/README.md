@@ -9,6 +9,8 @@ k8s/
 │   ├── account.yaml         Deployment + Service
 │   ├── auth.yaml            Deployment + Service
 │   ├── exchange.yaml        Deployment + Service
+│   ├── product.yaml         Deployment + Service
+│   ├── order.yaml           Deployment + Service
 │   ├── gateway.yaml         Deployment + Service + HPA
 │   ├── redis.yaml           Deployment + Service (cache do Exchange)
 │   ├── namespace.yaml       namespace pma26
@@ -31,7 +33,7 @@ docker compose -f docker/compose.yml build
 
 # 2. cluster com a porta 8080 ligada ao gateway
 kind create cluster --name pma26 --config k8s/overlays/kind/kind-cluster.yaml
-kind load docker-image gateway auth account exchange --name pma26
+kind load docker-image gateway auth account exchange product order --name pma26
 
 # 3. segredos (pode copiar os valores do docker/.env)
 cp k8s/overlays/kind/secrets.env.example k8s/overlays/kind/secrets.env   # e preencha
@@ -79,7 +81,7 @@ Sem carga, o HPA espera 5 minutos estável antes de reduzir as réplicas (evita 
 
 | Decisão | Por quê |
 |---------|---------|
-| Nomes `gateway`, `auth`, `account`, `exchange` | iguais ao compose, à imagem e ao que o HPA e o load test usam |
+| Nomes `gateway`, `auth`, `account`, `exchange`, `product`, `order` | iguais ao compose, à imagem e ao que o HPA e o load test usam |
 | `requests` de CPU e memória em todo Deployment | o HPA mede a CPU como % do `request`; sem ele, não escala |
 | `startupProbe` + `readinessProbe` + `livenessProbe` em `/actuator/health/*` | a JVM demora a subir (até 150 s de tolerância); o Service só manda tráfego para pod pronto; pod travado é reiniciado |
 | `enableServiceLinks: false` | o Kubernetes injetaria `REDIS_PORT=tcp://10.96.x.x:6379`, que colide com a variável `REDIS_PORT` do exchange (o pod não subia) |

@@ -57,4 +57,17 @@ com Bean Validation (`@Valid` na interface), com limites iguais aos das colunas,
 
 ## Order
 
-*Em desenvolvimento.* O gateway já tem a rota `/orders/**`.
+[order](https://github.com/Organizacao-dos-Coisa-Ruim/order){:target='_blank'} ·
+[order-service](https://github.com/Organizacao-dos-Coisa-Ruim/order-service){:target='_blank'}
+
+Pedidos, schema `orders` no PostgreSQL (Flyway).
+
+| Rota | O que faz |
+|------|-----------|
+| `POST /orders` | cria um pedido: `{"items": [{"productId": "...", "quantity": 3}]}` |
+| `GET /orders`, `GET /orders/{id}` | pedidos **da conta logada** (pedido de outra conta → 403) |
+
+Ao criar um pedido, o Order **não confia no preço enviado pelo cliente**: para cada item ele chama o Product via
+Feign (`GET http://product:8080/products/{id}`), guarda nome e preço unitário daquele momento e calcula subtotal e
+total. Produto inexistente ou id recusado pelo Product → 404; Product fora do ar → 503. O dono do pedido vem do
+header `id-account`, que o gateway preenche a partir do JWT.
