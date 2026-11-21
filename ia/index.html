@@ -508,6 +508,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gargalos/mensageria/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Mensageria (RabbitMQ)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1039,6 +1060,13 @@
 <td>Claude Code</td>
 <td>Revisou a mensageria (#77): rodou os 26 testes do order-service e listou o que faltava. Corrigiu o smoke test do CI (o <code>.env</code> gerado não tinha <code>RABBITMQ_PASSWORD</code> e o compose não subia). Levou o RabbitMQ e o order-worker para o Kubernetes com <code>requests</code> baixos, para caber no dimensionamento do <code>custos.md</code>, e atualizou essa tabela. Validou o render dos overlays kind e eks e a interpolação do compose do CI, <strong>sem rodar num cluster</strong></td>
 <td>Carlos fez a mensageria (order-service, compose, <code>mq-test.sh</code>) e pediu as correções; aceitou a recomendação de manter o RabbitMQ no cluster em vez do Amazon MQ; revisão pendente</td>
+</tr>
+<tr>
+<td>2026-11-20</td>
+<td><code>pma26</code>: <code>docs/gargalos/mensageria.md</code>, <code>gargalos/index.md</code>, <code>mkdocs.yml</code>, checklist da <code>RUBRICA.md</code></td>
+<td>Claude Code</td>
+<td>Documentou o gargalo de mensageria (#77) a partir do código do Carlos, com a medição de um protótipo equivalente feito pela IA a pedido do Pedro (identificada como tal)</td>
+<td>Carlos implementou a mensageria; Pedro pediu a documentação; revisão pendente</td>
 </tr>
 </tbody>
 </table>

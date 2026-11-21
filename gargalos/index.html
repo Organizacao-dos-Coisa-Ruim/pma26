@@ -520,6 +520,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="mensageria/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Mensageria (RabbitMQ)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -847,11 +868,11 @@
 <td>100/100/100 na distribuição; queda de uma réplica: 100% de erro antes, 0 a 1 erro depois</td>
 </tr>
 <tr>
-<td><em>a definir</em></td>
+<td><a href="mensageria/">Mensageria (RabbitMQ)</a></td>
 <td>Carlos</td>
-<td></td>
-<td></td>
-<td></td>
+<td>o POST /orders esperava o envio da confirmação ao cliente (~2 s) e prendia uma thread por pedido</td>
+<td>fila <code>order-created</code> no RabbitMQ + order-worker separado, retry + DLQ, worker idempotente</td>
+<td>POST de ~1 s para ~50 ms e 19 → 349 pedidos/s (protótipo); worker parado: pedidos aceitos e confirmados quando ele volta</td>
 </tr>
 </tbody>
 </table>
