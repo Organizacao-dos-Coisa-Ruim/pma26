@@ -118,9 +118,10 @@ Repositório próprio com MkDocs publicado, contendo:
 - [x] Product / Order (domínio do e-commerce)
 - [x] Todos os serviços como submodules do `pma26`
 - [x] Docker Compose local subindo o sistema inteiro (smoke test com 41 cenários)
-- [ ] 2 gargalos por integrante, com evidência
+- [x] 2 gargalos por integrante, com evidência
   - [x] Felipe: cache Redis no Exchange ([docs](docs/gargalos/cache-redis.md)) e scan de vulnerabilidades com OWASP ZAP ([docs](docs/gargalos/scan-vulnerabilidades.md)); faltam os prints do Grafana e do Actions
-  - [ ] Carlos: load balancing com Nginx + 3 réplicas do gateway ([docs](docs/gargalos/load-balancing.md)), com prints do Grafana. Segundo gargalo a definir
+  - [x] Carlos: load balancing com Nginx + 3 réplicas do gateway ([docs](docs/gargalos/load-balancing.md)), com prints do Grafana, e mensageria com RabbitMQ + order-worker ([docs](docs/gargalos/mensageria.md)); faltam os prints do RabbitMQ
+  - [x] Pedro: observabilidade com Prometheus + Grafana ([docs](docs/gargalos/observabilidade.md)) e RBAC ([docs](docs/gargalos/rbac.md))
 - [ ] AWS CLI configurado
 - [ ] EKS + VPC + Node Group + RDS
 - [ ] CI/CD: Docker Hub → EKS

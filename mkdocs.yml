@@ -102,6 +102,7 @@ nav:
       - Cache com Redis: gargalos/cache-redis.md
       - Scan de vulnerabilidades: gargalos/scan-vulnerabilidades.md
       - Load balancing: gargalos/load-balancing.md
+      - Mensageria (RabbitMQ): gargalos/mensageria.md
   - Infraestrutura:
       - Kubernetes: kubernetes.md
       - CI/CD: cicd.md
