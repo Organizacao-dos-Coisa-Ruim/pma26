@@ -114,10 +114,10 @@ Repositório próprio com MkDocs publicado, contendo:
 - [x] Gateway
 - [x] Auth
 - [x] Account
-- [x] Exchange (falta só a integração com o Order, #39, que depende do Order existir)
+- [x] Exchange (falta só a integração com o Order, #39)
 - [x] Product / Order (domínio do e-commerce)
 - [x] Todos os serviços como submodules do `pma26`
-- [x] Docker Compose local subindo o sistema inteiro (smoke test com 39 cenários)
+- [x] Docker Compose local subindo o sistema inteiro (smoke test com 41 cenários)
 - [ ] 2 gargalos por integrante, com evidência
   - [x] Felipe: cache Redis no Exchange ([docs](docs/gargalos/cache-redis.md)) e scan de vulnerabilidades com OWASP ZAP ([docs](docs/gargalos/scan-vulnerabilidades.md)); faltam os prints do Grafana e do Actions
   - [ ] Carlos: load balancing com Nginx + 3 réplicas do gateway ([docs](docs/gargalos/load-balancing.md)), com prints do Grafana. Segundo gargalo a definir
@@ -129,5 +129,5 @@ Repositório próprio com MkDocs publicado, contendo:
 - [ ] Plano de custos + PaaS + SLA
   - [x] Estimativa, PaaS e SLA ([docs](docs/custos.md)); faltam o link do Pricing Calculator e o custo real (Cost Explorer)
 - [ ] MkDocs (grupo e individual) com registro do uso de IA
-  - [x] Site do grupo no `pma26` ([mkdocs.yml](mkdocs.yml), publicado pelo workflow `docs.yml`); faltam EKS, custos e os repositórios individuais
+  - [x] Site do grupo no `pma26` ([mkdocs.yml](mkdocs.yml), publicado pelo workflow `docs.yml`); faltam ativar o GitHub Pages (Settings > Pages > branch `gh-pages`), o diagrama da infra AWS, EKS e os repositórios individuais
 - [ ] Slides + vídeo de 1–2 min
