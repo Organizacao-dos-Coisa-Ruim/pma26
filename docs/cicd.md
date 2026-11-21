@@ -67,6 +67,9 @@ exchange, product e order); só muda a variável `IMAGE`:
 2. verifica se o cluster `pma26` existe. Ele só fica de pé durante os testes ([EKS](eks.md)); sem ele, o job pula sem erro;
 3. `aws eks update-kubeconfig` + `kubectl set image deployment/<servico> <servico>=<usuario>/<servico>:<sha>` + `rollout status`.
 
+A única diferença é no **order**: o job também troca a imagem do `order-worker`, que roda a mesma imagem e consome a
+fila do RabbitMQ (gargalo de mensageria). Sem isso, a API subiria com o código novo e o worker continuaria no antigo.
+
 Usar a **tag do commit** (e não `latest`) faz o Kubernetes perceber a mudança e fazer o rolling update, além de deixar
 claro qual versão está rodando (`kubectl get deploy -o wide`).
 
