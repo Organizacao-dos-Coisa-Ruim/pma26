@@ -1012,6 +1012,13 @@
 <td>Restringiu a criação e a remoção de produtos a admin no gateway, ajustou smoke test e docs; trocou o máximo do HPA para 8 para caber nos 2 nós do EKS. Validou com <code>mvn verify</code> (16 testes) e smoke test</td>
 <td>Felipe e Carlos decidiram a regra de admin em <code>/products</code> e o <code>maxReplicas: 8</code>; Felipe pediu a implementação; revisão pendente</td>
 </tr>
+<tr>
+<td>2026-11-20</td>
+<td><code>pma26</code>: <code>docs/arquitetura.md</code> (seção "Infraestrutura na AWS" e visão geral atualizada)</td>
+<td>Claude Code</td>
+<td>Desenhou o diagrama da infra AWS (VPC, subnets públicas e privadas em 2 zonas, NAT, load balancer, nós, RDS, control plane, CI e Docker Hub) a partir do <code>up.sh</code>, com uma tabela explicando cada peça (issue #90); tirou o "em desenvolvimento" de Product e Order no diagrama geral; validou os diagramas renderizando com o mermaid-cli</td>
+<td>Felipe pediu o diagrama; revisão pendente</td>
+</tr>
 </tbody>
 </table>
 

@@ -349,6 +349,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#infraestrutura-na-aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      Infraestrutura na AWS
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#fluxo-de-uma-requisicao-autenticada" class="md-nav__link">
     <span class="md-ellipsis">
       Fluxo de uma requisição autenticada
@@ -864,6 +873,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#infraestrutura-na-aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      Infraestrutura na AWS
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#fluxo-de-uma-requisicao-autenticada" class="md-nav__link">
     <span class="md-ellipsis">
       Fluxo de uma requisição autenticada
@@ -919,8 +937,8 @@
         auth[Auth&lt;br/&gt;JWT]
         account[Account&lt;br/&gt;usuários]
         exchange[Exchange&lt;br/&gt;câmbio]
-        order[Order&lt;br/&gt;pedidos]:::pendente
-        product[Product&lt;br/&gt;produtos]:::pendente
+        order[Order&lt;br/&gt;pedidos]
+        product[Product&lt;br/&gt;produtos]
         redis[(Redis&lt;br/&gt;cache)]
     end
 
@@ -930,13 +948,93 @@
     gateway --&gt;|/auth/solve valida o token| auth
     gateway --&gt; account &amp; exchange &amp; order &amp; product
     auth --&gt;|Feign| account
-    order -.-&gt;|Feign| product &amp; exchange
+    order --&gt;|Feign| product
+    order -.-&gt;|Feign, #39| exchange
     exchange --&gt; redis
     exchange --&gt;|HTTPS| awesome
-    account &amp; order &amp; product --&gt; db
+    account &amp; order &amp; product --&gt; db</code></pre>
+<p>A linha tracejada (Order → Exchange, total do pedido em outra moeda) ainda não foi implementada (#39).
+Localmente, no Docker Compose, um <strong>Nginx</strong> distribui as requisições entre 3 réplicas do gateway
+(<a href="../gargalos/load-balancing/">load balancing</a>). No EKS, esse papel é do load balancer da AWS junto com o HPA.</p>
+<h2 id="infraestrutura-na-aws">Infraestrutura na AWS</h2>
+<p>Criada pelo <code>k8s/overlays/eks/up.sh</code> e destruída pelo <code>down.sh</code> (<a href="../eks/">EKS e AWS</a>), na região <code>us-east-1</code>.</p>
+<pre class="mermaid"><code>flowchart TB
+    cliente([Cliente]) --&gt;|HTTP| clb
+    gha[GitHub Actions] --&gt;|push da imagem| hub[(Docker Hub)]
+    gha --&gt;|kubectl set image| cp
 
-    classDef pendente stroke-dasharray: 5 5</code></pre>
-<p>As linhas tracejadas são o <strong>Order</strong> e o <strong>Product</strong>, ainda em desenvolvimento.</p>
+    subgraph aws [AWS · us-east-1]
+        cp["EKS control plane&lt;br/&gt;(gerenciado pela AWS)"]
+
+        subgraph vpc ["VPC pma26-vpc (CloudFormation)"]
+            igw[Internet Gateway]
+            clb["Classic Load Balancer&lt;br/&gt;Service gateway type LoadBalancer"]
+
+            subgraph za [Zona de disponibilidade A]
+                pubA["Subnet pública A&lt;br/&gt;NAT Gateway"]
+                privA["Subnet privada A&lt;br/&gt;nó t3.medium"]
+            end
+
+            subgraph zb [Zona de disponibilidade B]
+                pubB["Subnet pública B&lt;br/&gt;NAT Gateway"]
+                privB["Subnet privada B&lt;br/&gt;nó t3.medium"]
+            end
+
+            rds[("RDS PostgreSQL db.t3.micro&lt;br/&gt;Single-AZ, sem IP público")]
+        end
+    end
+
+    clb --- igw
+    clb --&gt;|NodePort| privA &amp; privB
+    privA --&gt;|saída para a internet| pubA
+    privB --&gt;|saída para a internet| pubB
+    pubA &amp; pubB --&gt; igw
+    igw --&gt;|imagens| hub
+    igw --&gt;|cotações| awesome[[AwesomeAPI]]
+    privA &amp; privB --&gt;|5432| rds
+    cp -.-&gt;|agenda os pods| privA &amp; privB</code></pre>
+<table>
+<thead>
+<tr>
+<th>Peça</th>
+<th>Onde fica</th>
+<th>Por quê</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>VPC</strong></td>
+<td>template oficial <code>amazon-eks-vpc-private-subnets.yaml</code> (CloudFormation)</td>
+<td>2 subnets públicas e 2 privadas, em 2 zonas de disponibilidade, como pede a rubrica</td>
+</tr>
+<tr>
+<td><strong>Load balancer</strong></td>
+<td>subnets públicas</td>
+<td>único ponto com IP público que recebe tráfego; criado pelo Kubernetes a partir do <code>Service</code> do gateway (<code>type: LoadBalancer</code>) e repassa para os nós pela porta do NodePort</td>
+</tr>
+<tr>
+<td><strong>Nós (node group)</strong></td>
+<td><strong>só nas subnets privadas</strong>, um por zona</td>
+<td>os pods (gateway, auth, account, exchange, product, order, redis) não ficam expostos na internet; se uma zona cair, a outra continua</td>
+</tr>
+<tr>
+<td><strong>NAT Gateways</strong></td>
+<td>um em cada subnet pública</td>
+<td>dão aos nós privados <strong>saída</strong> para a internet (baixar as imagens do Docker Hub e chamar a AwesomeAPI) sem permitir <strong>entrada</strong></td>
+</tr>
+<tr>
+<td><strong>RDS</strong></td>
+<td>subnets privadas, sem acesso público</td>
+<td>o security group só aceita a porta 5432 vinda do cluster; cada serviço usa o seu schema</td>
+</tr>
+<tr>
+<td><strong>Control plane</strong></td>
+<td>gerenciado pela AWS, fora da VPC do projeto</td>
+<td>a AWS cuida do API server e do etcd; o CI acessa pela API do cluster para o deploy contínuo</td>
+</tr>
+</tbody>
+</table>
+<p>Prometheus e Grafana não sobem na AWS: ficam no Docker Compose local, por custo (<a href="../custos/#onde-usamos-paas">custos</a>).</p>
 <h2 id="fluxo-de-uma-requisicao-autenticada">Fluxo de uma requisição autenticada</h2>
 <pre class="mermaid"><code>sequenceDiagram
     participant C as Cliente
@@ -1053,7 +1151,7 @@ Service do Kubernetes.</p>
     <span class="md-icon" title="Última atualização">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">18 de novembro de 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">21 de novembro de 2026</span>
   </span>
 
     
