@@ -676,6 +676,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Deploy no EKS (#65)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#acesso-do-ci-ao-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      Acesso do CI ao cluster
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -927,6 +942,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Deploy no EKS (#65)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#acesso-do-ci-ao-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      Acesso do CI ao cluster
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1033,8 +1063,8 @@ igual ao que o <code>docker/java-service.Dockerfile</code> faz no compose.</p>
 O <em>Re-run</em> de um workflow que veio de um push funciona, porque mantém o evento original.</p>
 </blockquote>
 <h2 id="deploy-no-eks-65">Deploy no EKS (#65)</h2>
-<p>Job <code>deploy</code>, depois do push da imagem, em push na <code>main</code> (modelo no
-<a href="https://github.com/Organizacao-dos-Coisa-Ruim/pma26-exchange-service/pull/4">exchange-service</a>; falta replicar nos outros):</p>
+<p>Job <code>deploy</code>, depois do push da imagem, em push na <code>main</code>. É o mesmo job nos 6 services (gateway, auth, account,
+exchange, product e order); só muda a variável <code>IMAGE</code>:</p>
 <ol>
 <li>configura as credenciais AWS (secrets <code>AWS_ACCESS_KEY_ID</code> / <code>AWS_SECRET_ACCESS_KEY</code>);</li>
 <li>verifica se o cluster <code>pma26</code> existe. Ele só fica de pé durante os testes (<a href="../eks/">EKS</a>); sem ele, o job pula sem erro;</li>
@@ -1042,6 +1072,18 @@ O <em>Re-run</em> de um workflow que veio de um push funciona, porque mantém o 
 </ol>
 <p>Usar a <strong>tag do commit</strong> (e não <code>latest</code>) faz o Kubernetes perceber a mudança e fazer o rolling update, além de deixar
 claro qual versão está rodando (<code>kubectl get deploy -o wide</code>).</p>
+<h3 id="acesso-do-ci-ao-cluster">Acesso do CI ao cluster</h3>
+<p>O <code>up.sh</code> cria o cluster sem dar acesso a mais ninguém: no EKS, <strong>só a identidade IAM que criou o cluster é admin
+dele</strong> por padrão. Se o CI usasse a access key de outro usuário IAM, o <code>kubectl</code> responderia <code>Unauthorized</code>.</p>
+<p><strong>Decisão:</strong> os secrets <code>AWS_ACCESS_KEY_ID</code> e <code>AWS_SECRET_ACCESS_KEY</code> do CI são <strong>a mesma access key do usuário IAM
+que roda o <code>up.sh</code></strong>. É a opção mais simples: nada a configurar no cluster.</p>
+<ul>
+<li><strong>Custo da escolha:</strong> o CI tem as mesmas permissões que esse usuário na AWS. Num projeto acadêmico, com o cluster
+  ligado só durante os testes, é aceitável.</li>
+<li><strong>Em produção</strong> faríamos diferente: um usuário (ou role via OIDC do GitHub) só para o CI, com acesso apenas ao
+  namespace <code>pma26</code>, liberado no cluster com <code>aws eks create-access-entry</code>.</li>
+</ul>
+<p>Os secrets podem ser da organização (precisa de owner da org) ou de cada repositório de service.</p>
 <h2 id="evidencias-67">Evidências (#67)</h2>
 <blockquote>
 <p>TODO: prints da aba Actions (CI verde nos services e smoke test verde no pma26) e das imagens no Docker Hub.</p>
@@ -1066,7 +1108,7 @@ claro qual versão está rodando (<code>kubectl get deploy -o wide</code>).</p>
     <span class="md-icon" title="Última atualização">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">20 de novembro de 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">21 de novembro de 2026</span>
   </span>
 
     

@@ -1017,13 +1017,49 @@ Issues: #68 (épico), #70 (script), #71 (execução), #73 (análise). O vídeo (
 <li>Roda <strong>em container</strong> (<code>locustio/locust</code>), então ninguém precisa instalar nada além do Docker.</li>
 </ul>
 <h2 id="cenario">Cenário</h2>
-<p>Cada usuário virtual:</p>
+<p>Antes da carga, o <strong>admin cria um catálogo</strong> de 5 produtos (só admin cria produto, pelo <a href="../gargalos/rbac/">RBAC</a>).
+No fim do teste, o admin apaga esses produtos. Essas chamadas ficam fora das estatísticas do Locust.</p>
+<p>Cada usuário virtual se comporta como um cliente da loja:</p>
 <ol>
 <li>ao entrar, <strong>cria uma conta</strong> (<code>POST /auth/register</code>) e <strong>faz login</strong> (<code>POST /auth/login</code>), guardando o JWT;</li>
 <li>depois, em loop, com pausa de 0,5 a 1,5 s entre ações:</li>
-<li><strong>consulta uma cotação</strong> (<code>GET /exchange/{par}</code>, entre USD/BRL, EUR/BRL e BTC/BRL), com peso 3;</li>
-<li><strong>consulta a própria conta</strong> (<code>GET /accounts/{id}</code>), com peso 1.</li>
 </ol>
+<table>
+<thead>
+<tr>
+<th>Ação</th>
+<th>Rota</th>
+<th style="text-align: right;">Peso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>navega no catálogo</td>
+<td><code>GET /products</code></td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td>consulta uma cotação (USD/BRL, EUR/BRL ou BTC/BRL)</td>
+<td><code>GET /exchange/{par}</code></td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>faz um pedido com 1 a 3 produtos do catálogo</td>
+<td><code>POST /orders</code> (o Order busca o preço no Product via Feign e grava no banco)</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>consulta os próprios pedidos</td>
+<td><code>GET /orders</code></td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>consulta a própria conta</td>
+<td><code>GET /accounts/{id}</code></td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
 <p>Toda requisição autenticada passa pelo filtro do gateway, que chama o Auth (<code>/auth/solve</code>) para validar o token.
 Por isso o gateway é o serviço mais exigido, e é ele que o HPA escala.</p>
 <p>A carga sobe em degraus (<code>StagesShape</code> no <code>locustfile.py</code>):</p>
@@ -1059,16 +1095,22 @@ Por isso o gateway é o serviço mais exigido, e é ele que o HPA escala.</p>
 </tbody>
 </table>
 <h2 id="como-rodar">Como rodar</h2>
-<p>Com o sistema de pé no kind (<a href="../kubernetes/">Kubernetes</a>):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>./load/run.sh<span class="w">                  </span><span class="c1"># 8 min de carga + 6 min registrando o HPA</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">LOAD_SCALE</span><span class="o">=</span><span class="m">0</span>.5<span class="w"> </span>./load/run.sh<span class="w">   </span><span class="c1"># metade do tempo</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nv">LOAD_PEAK</span><span class="o">=</span><span class="m">200</span><span class="w"> </span>./load/run.sh<span class="w">    </span><span class="c1"># pico de 200 usuários</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nv">UI</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>./load/run.sh<span class="w">             </span><span class="c1"># interface web em http://localhost:8089 (para gravar o vídeo)</span>
+<p>Com o sistema de pé no kind (<a href="../kubernetes/">Kubernetes</a>) e as credenciais do admin no ambiente:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">set</span><span class="w"> </span>-a<span class="p">;</span><span class="w"> </span>.<span class="w"> </span>docker/.env<span class="p">;</span><span class="w"> </span><span class="nb">set</span><span class="w"> </span>+a<span class="w">  </span><span class="c1"># ADMIN_EMAIL e ADMIN_PASSWORD</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>./load/run.sh<span class="w">                  </span><span class="c1"># 8 min de carga + 6 min registrando o HPA</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nv">LOAD_SCALE</span><span class="o">=</span><span class="m">0</span>.5<span class="w"> </span>./load/run.sh<span class="w">   </span><span class="c1"># metade do tempo</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nv">LOAD_PEAK</span><span class="o">=</span><span class="m">200</span><span class="w"> </span>./load/run.sh<span class="w">    </span><span class="c1"># pico de 200 usuários</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nv">UI</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>./load/run.sh<span class="w">             </span><span class="c1"># interface web em http://localhost:8089 (para gravar o vídeo)</span>
 </code></pre></div>
 <p>Para acompanhar ao vivo em outro terminal: <code>kubectl -n pma26 get hpa gateway -w</code> e <code>kubectl -n pma26 get pods -w</code>.</p>
 <p>O <code>run.sh</code> salva tudo em <code>load/results/&lt;data-hora&gt;/</code> (fora do git): relatório HTML do Locust, CSVs, <code>hpa.csv</code>
 (CPU e réplicas a cada 5 s), eventos do HPA e o gráfico gerado por <code>load/plot.py</code>.</p>
 <h2 id="resultado-no-kind-2026-11-18">Resultado no kind (2026-11-18)</h2>
+<div class="admonition note">
+<p class="admonition-title">Fluxo antigo</p>
+<p>Esta rodada usou o fluxo anterior (só cotação e conta, pesos 3 e 1). A rodada no EKS usa o fluxo de loja
+descrito acima.</p>
+</div>
 <p>Ambiente: kind (1 nó) no Docker Desktop, num notebook. O HPA do gateway ia de 1 a 10 pods (hoje o máximo é 8, para caber no EKS; ver <a href="../custos/">custos</a>), com alvo de 50% de CPU
 sobre o <code>request</code> de 250m.</p>
 <p><a class="glightbox" href="grafico-kind.png" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="Carga x pods do gateway x CPU x latência" src="grafico-kind.png" /></a></p>
@@ -1248,7 +1290,7 @@ recebeu no máximo 1 chamada por par a cada 5 min durante todo o teste.</p>
     <span class="md-icon" title="Última atualização">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">20 de novembro de 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">21 de novembro de 2026</span>
   </span>
 
     

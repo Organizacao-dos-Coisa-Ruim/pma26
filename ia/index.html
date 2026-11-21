@@ -1019,6 +1019,20 @@
 <td>Desenhou o diagrama da infra AWS (VPC, subnets públicas e privadas em 2 zonas, NAT, load balancer, nós, RDS, control plane, CI e Docker Hub) a partir do <code>up.sh</code>, com uma tabela explicando cada peça (issue #90); tirou o "em desenvolvimento" de Product e Order no diagrama geral; validou os diagramas renderizando com o mermaid-cli</td>
 <td>Felipe pediu o diagrama; revisão pendente</td>
 </tr>
+<tr>
+<td>2026-11-20</td>
+<td><code>pma26</code>: <code>load/locustfile.py</code>, <code>load/run.sh</code>, <code>docs/load-test.md</code>; checklist da <code>RUBRICA.md</code></td>
+<td>Claude Code</td>
+<td>Trocou o fluxo do load test por um de loja (#70): o admin cria e apaga o catálogo (RBAC), e os usuários navegam em produtos, fazem e consultam pedidos, consultam cotação e conta; validou com uma rodada curta no compose (3215 requisições, 1 falha: 503 do gateway ao validar o token no Auth, problema já existente)</td>
+<td>Felipe aprovou o plano e os pesos; revisão pendente</td>
+</tr>
+<tr>
+<td>2026-11-20</td>
+<td><code>gateway-service</code>, <code>pma26-auth-service</code>, <code>pma26-account-service</code>, <code>product-service</code>, <code>order-service</code>: job <code>deploy</code> no <code>ci.yml</code>; <code>pma26</code>: <code>docs/cicd.md</code>, <code>docs/eks.md</code></td>
+<td>Claude Code</td>
+<td>Replicou o job de deploy contínuo no EKS do exchange-service nos outros 5 services (#65), validou com actionlint e documentou o acesso do CI ao cluster</td>
+<td>Felipe escolheu usar no CI a mesma access key de quem cria o cluster (mais simples, com o trade-off documentado); revisão pendente</td>
+</tr>
 </tbody>
 </table>
 
