@@ -13,8 +13,8 @@ flowchart LR
         auth[Auth<br/>JWT]
         account[Account<br/>usuários]
         exchange[Exchange<br/>câmbio]
-        order[Order<br/>pedidos]:::pendente
-        product[Product<br/>produtos]:::pendente
+        order[Order<br/>pedidos]
+        product[Product<br/>produtos]
         redis[(Redis<br/>cache)]
     end
 
@@ -24,15 +24,69 @@ flowchart LR
     gateway -->|/auth/solve valida o token| auth
     gateway --> account & exchange & order & product
     auth -->|Feign| account
-    order -.->|Feign| product & exchange
+    order -->|Feign| product
+    order -.->|Feign, #39| exchange
     exchange --> redis
     exchange -->|HTTPS| awesome
     account & order & product --> db
-
-    classDef pendente stroke-dasharray: 5 5
 ```
 
-As linhas tracejadas são o **Order** e o **Product**, ainda em desenvolvimento.
+A linha tracejada (Order → Exchange, total do pedido em outra moeda) ainda não foi implementada (#39).
+Localmente, no Docker Compose, um **Nginx** distribui as requisições entre 3 réplicas do gateway
+([load balancing](gargalos/load-balancing.md)). No EKS, esse papel é do load balancer da AWS junto com o HPA.
+
+## Infraestrutura na AWS
+
+Criada pelo `k8s/overlays/eks/up.sh` e destruída pelo `down.sh` ([EKS e AWS](eks.md)), na região `us-east-1`.
+
+``` mermaid
+flowchart TB
+    cliente([Cliente]) -->|HTTP| clb
+    gha[GitHub Actions] -->|push da imagem| hub[(Docker Hub)]
+    gha -->|kubectl set image| cp
+
+    subgraph aws [AWS · us-east-1]
+        cp["EKS control plane<br/>(gerenciado pela AWS)"]
+
+        subgraph vpc ["VPC pma26-vpc (CloudFormation)"]
+            igw[Internet Gateway]
+            clb["Classic Load Balancer<br/>Service gateway type LoadBalancer"]
+
+            subgraph za [Zona de disponibilidade A]
+                pubA["Subnet pública A<br/>NAT Gateway"]
+                privA["Subnet privada A<br/>nó t3.medium"]
+            end
+
+            subgraph zb [Zona de disponibilidade B]
+                pubB["Subnet pública B<br/>NAT Gateway"]
+                privB["Subnet privada B<br/>nó t3.medium"]
+            end
+
+            rds[("RDS PostgreSQL db.t3.micro<br/>Single-AZ, sem IP público")]
+        end
+    end
+
+    clb --- igw
+    clb -->|NodePort| privA & privB
+    privA -->|saída para a internet| pubA
+    privB -->|saída para a internet| pubB
+    pubA & pubB --> igw
+    igw -->|imagens| hub
+    igw -->|cotações| awesome[[AwesomeAPI]]
+    privA & privB -->|5432| rds
+    cp -.->|agenda os pods| privA & privB
+```
+
+| Peça | Onde fica | Por quê |
+|------|-----------|---------|
+| **VPC** | template oficial `amazon-eks-vpc-private-subnets.yaml` (CloudFormation) | 2 subnets públicas e 2 privadas, em 2 zonas de disponibilidade, como pede a rubrica |
+| **Load balancer** | subnets públicas | único ponto com IP público que recebe tráfego; criado pelo Kubernetes a partir do `Service` do gateway (`type: LoadBalancer`) e repassa para os nós pela porta do NodePort |
+| **Nós (node group)** | **só nas subnets privadas**, um por zona | os pods (gateway, auth, account, exchange, product, order, redis) não ficam expostos na internet; se uma zona cair, a outra continua |
+| **NAT Gateways** | um em cada subnet pública | dão aos nós privados **saída** para a internet (baixar as imagens do Docker Hub e chamar a AwesomeAPI) sem permitir **entrada** |
+| **RDS** | subnets privadas, sem acesso público | o security group só aceita a porta 5432 vinda do cluster; cada serviço usa o seu schema |
+| **Control plane** | gerenciado pela AWS, fora da VPC do projeto | a AWS cuida do API server e do etcd; o CI acessa pela API do cluster para o deploy contínuo |
+
+Prometheus e Grafana não sobem na AWS: ficam no Docker Compose local, por custo ([custos](custos.md#onde-usamos-paas)).
 
 ## Fluxo de uma requisição autenticada
 

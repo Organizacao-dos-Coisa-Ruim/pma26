@@ -108,10 +108,10 @@ Authorization: Bearer {{login.response.body.jwt}}
 
 # --- Product ----------------------------------------------------------------
 
-### 17. Criar produto -> 201
+### 17. Criar produto (só admin; user -> 403) -> 201
 # @name produto
 POST {{gateway}}/products
-Authorization: Bearer {{login.response.body.jwt}}
+Authorization: Bearer {{adminLogin.response.body.jwt}}
 Content-Type: application/json
 
 {
@@ -122,7 +122,7 @@ Content-Type: application/json
 
 ### 18. Produto inválido (preço <= 0, campo faltando, mais de 2 casas decimais) -> 400
 POST {{gateway}}/products
-Authorization: Bearer {{login.response.body.jwt}}
+Authorization: Bearer {{adminLogin.response.body.jwt}}
 Content-Type: application/json
 
 {

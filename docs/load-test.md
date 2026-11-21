@@ -15,12 +15,21 @@ Escolhemos o **[Locust](https://locust.io/)** em vez de JMeter, Gatling ou `hey`
 
 ## Cenário
 
-Cada usuário virtual:
+Antes da carga, o **admin cria um catálogo** de 5 produtos (só admin cria produto, pelo [RBAC](gargalos/rbac.md)).
+No fim do teste, o admin apaga esses produtos. Essas chamadas ficam fora das estatísticas do Locust.
+
+Cada usuário virtual se comporta como um cliente da loja:
 
 1. ao entrar, **cria uma conta** (`POST /auth/register`) e **faz login** (`POST /auth/login`), guardando o JWT;
 2. depois, em loop, com pausa de 0,5 a 1,5 s entre ações:
-   - **consulta uma cotação** (`GET /exchange/{par}`, entre USD/BRL, EUR/BRL e BTC/BRL), com peso 3;
-   - **consulta a própria conta** (`GET /accounts/{id}`), com peso 1.
+
+| Ação | Rota | Peso |
+|------|------|-----:|
+| navega no catálogo | `GET /products` | 4 |
+| consulta uma cotação (USD/BRL, EUR/BRL ou BTC/BRL) | `GET /exchange/{par}` | 2 |
+| faz um pedido com 1 a 3 produtos do catálogo | `POST /orders` (o Order busca o preço no Product via Feign e grava no banco) | 1 |
+| consulta os próprios pedidos | `GET /orders` | 1 |
+| consulta a própria conta | `GET /accounts/{id}` | 1 |
 
 Toda requisição autenticada passa pelo filtro do gateway, que chama o Auth (`/auth/solve`) para validar o token.
 Por isso o gateway é o serviço mais exigido, e é ele que o HPA escala.
@@ -36,9 +45,10 @@ A carga sobe em degraus (`StagesShape` no `locustfile.py`):
 
 ## Como rodar
 
-Com o sistema de pé no kind ([Kubernetes](kubernetes.md)):
+Com o sistema de pé no kind ([Kubernetes](kubernetes.md)) e as credenciais do admin no ambiente:
 
 ```bash
+set -a; . docker/.env; set +a  # ADMIN_EMAIL e ADMIN_PASSWORD
 ./load/run.sh                  # 8 min de carga + 6 min registrando o HPA
 LOAD_SCALE=0.5 ./load/run.sh   # metade do tempo
 LOAD_PEAK=200 ./load/run.sh    # pico de 200 usuários
@@ -51,6 +61,11 @@ O `run.sh` salva tudo em `load/results/<data-hora>/` (fora do git): relatório H
 (CPU e réplicas a cada 5 s), eventos do HPA e o gráfico gerado por `load/plot.py`.
 
 ## Resultado no kind (2026-11-18)
+
+!!! note "Fluxo antigo"
+
+    Esta rodada usou o fluxo anterior (só cotação e conta, pesos 3 e 1). A rodada no EKS usa o fluxo de loja
+    descrito acima.
 
 Ambiente: kind (1 nó) no Docker Desktop, num notebook. O HPA do gateway ia de 1 a 10 pods (hoje o máximo é 8, para caber no EKS; ver [custos](custos.md)), com alvo de 50% de CPU
 sobre o `request` de 250m.

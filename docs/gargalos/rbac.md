@@ -34,10 +34,15 @@ cliente ─▶ gateway ──(1) rota só de admin? role != admin → 403
 | `GET /accounts` | 403 | ✅ |
 | `DELETE /accounts/{id}` | 403 | ✅ |
 | `POST /accounts`, `POST /accounts/login` | 403 | ✅ (uso interno do Auth) |
+| `GET /products`, `GET /products/{id}` | ✅ | ✅ |
+| `POST /products`, `DELETE /products/{id}` | 403 | ✅ |
 
 Decisões:
 - **Duas camadas** (defesa em profundidade): se alguém esquecer de configurar uma rota no gateway, o account ainda bloqueia.
 - **Header forjado não funciona**: o gateway sempre apaga `id-account`/`role-account` vindos do cliente e reescreve com o que está no token.
+- **Catálogo (2026-11-20)**: com o Product integrado, qualquer usuário logado criava e apagava produtos. `POST` e
+  `DELETE /products` passaram a ser rotas só de admin no gateway; o product-service não checa papel, então aqui
+  a proteção é só a camada 1.
 - **Chamada sem headers = interna**. O Auth chama o account direto pela rede interna (Feign) para registrar e logar; os serviços não são expostos fora do cluster, só o gateway.
 
 ## Como reproduzir
