@@ -124,11 +124,65 @@ services:
       DATABASE_USERNAME: ${DATABASE_USERNAME:-store}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD:?defina DATABASE_PASSWORD em docker/.env}
       PMA_PRODUCT_URL: http://product:8080
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:?defina RABBITMQ_PASSWORD em docker/.env}
+      # a API só publica o evento "pedido criado"; quem consome a fila é o order-worker
+      ORDER_WORKER_ENABLED: "false"
+      # false = o "antes" do gargalo: confirma dentro da requisição, sem fila (para comparar a latência)
+      ORDER_CONFIRMATION_ASYNC: ${ORDER_CONFIRMATION_ASYNC:-true}
     depends_on:
       db:
         condition: service_healthy
       product:
         condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Worker de confirmação dos pedidos (gargalo de mensageria, #77): mesma imagem do order, mas só consome
+  # a fila "order-created" (o gateway nunca manda requisição para ele). Dá para parar e ver a fila
+  # acumulando, ou escalar: docker compose up -d --scale order-worker=2
+  order-worker:
+    image: order
+    build:
+      <<: *java-build
+      args:
+        INTERFACES: order
+        SERVICE: order-service
+    environment:
+      DATABASE_HOST: db
+      DATABASE_DB: ${DATABASE_DB:-store}
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-store}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:?defina DATABASE_PASSWORD em docker/.env}
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:?defina RABBITMQ_PASSWORD em docker/.env}
+      ORDER_WORKER_ENABLED: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Fila de mensagens (gargalo #77). Painel web em http://localhost:15672 (usuário pma26), só nesta máquina.
+  # Com volume: as filas são duráveis e as mensagens persistentes, então sobrevivem a um restart.
+  rabbitmq:
+    image: rabbitmq:4.1-management-alpine
+    # o RabbitMQ guarda os dados pelo nome do nó (que vem do hostname): fixo, para o volume valer depois de recriar
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: pma26
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?defina RABBITMQ_PASSWORD em docker/.env}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    ports:
+      - "127.0.0.1:${RABBITMQ_UI_PORT:-15672}:15672"
+    # pronto quando a porta AMQP aceita conexão. Não usamos o "rabbitmq-diagnostics ping": ele roda como root
+    # e, se for o primeiro a criar o .erlang.cookie, o RabbitMQ (usuário rabbitmq) não consegue ler e cai.
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "5672"]
+      interval: 5s
+      retries: 30
     restart: unless-stopped
 
   # Várias réplicas do gateway atrás do load balancer (gargalo #80). Sem porta publicada:
@@ -183,6 +237,8 @@ services:
       - exchange
       - product
       - order
+      - order-worker
+      - rabbitmq
     restart: unless-stopped
 
   grafana:
@@ -203,5 +259,6 @@ services:
 
 volumes:
   db-data:
+  rabbitmq-data:
   prometheus-data:
   grafana-data:

@@ -1,0 +1,49 @@
+# Order worker: consome a fila "order-created" do RabbitMQ e confirma os pedidos (gargalo de mensageria, #77).
+# Mesma imagem do order, com ORDER_WORKER_ENABLED=true; a API (order.yaml) só publica o evento.
+# Sem Service: ninguém chama o worker por HTTP (a porta 8080 serve só para as probes do Actuator).
+#
+# Para ver a fila acumulando: kubectl -n pma26 scale deploy/order-worker --replicas=0 (e depois =1)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-worker
+  labels: { app: order-worker }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: order-worker }
+  template:
+    metadata:
+      labels: { app: order-worker }
+    spec:
+      containers:
+        - name: order-worker
+          image: order
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8080 }
+          envFrom:
+            - configMapRef: { name: pma26-config }
+          env:
+            - name: DATABASE_PASSWORD
+              valueFrom: { secretKeyRef: { name: pma26-secrets, key: DATABASE_PASSWORD } }
+            - name: RABBITMQ_PASSWORD
+              valueFrom: { secretKeyRef: { name: pma26-secrets, key: RABBITMQ_PASSWORD } }
+            - name: ORDER_WORKER_ENABLED
+              value: "true"
+          resources:
+            # passa quase todo o tempo esperando mensagem: reserva pouca CPU (o cluster está no limite, ver
+            # docs/custos.md); o limite de 1 vCPU deixa a JVM subir rápido quando o nó tem CPU livre
+            requests: { cpu: 50m, memory: 384Mi }
+            limits: { cpu: "1", memory: 768Mi }
+          startupProbe:
+            httpGet: { path: /actuator/health/liveness, port: http }
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: http }
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: http }
+            periodSeconds: 10
+            failureThreshold: 3

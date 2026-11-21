@@ -10,9 +10,11 @@ k8s/
 │   ├── auth.yaml            Deployment + Service
 │   ├── exchange.yaml        Deployment + Service
 │   ├── product.yaml         Deployment + Service
-│   ├── order.yaml           Deployment + Service
+│   ├── order.yaml           Deployment + Service (API: publica o evento "pedido criado")
+│   ├── order-worker.yaml    Deployment, mesma imagem do order (consome a fila e confirma os pedidos)
 │   ├── gateway.yaml         Deployment + Service + HPA
 │   ├── redis.yaml           Deployment + Service (cache do Exchange)
+│   ├── rabbitmq.yaml        Deployment + Service (fila dos pedidos)
 │   ├── namespace.yaml       namespace pma26
 │   └── kustomization.yaml   ConfigMap (URLs, TTL...) e enableServiceLinks: false
 ├── overlays/
@@ -77,11 +79,23 @@ docker run --rm --network kind williamyeh/hey -z 120s -c 50 \
 
 Sem carga, o HPA espera 5 minutos estável antes de reduzir as réplicas (evita ficar subindo e descendo).
 
+## Mensageria (RabbitMQ)
+
+O `order` publica o evento "pedido criado" e o `order-worker` consome a fila e confirma o pedido (#77).
+
+```bash
+kubectl -n pma26 port-forward svc/rabbitmq 15672    # painel em http://localhost:15672 (usuário pma26)
+
+# worker fora do ar: os pedidos continuam sendo aceitos (PENDENTE) e as mensagens esperam na fila
+kubectl -n pma26 scale deploy/order-worker --replicas=0
+kubectl -n pma26 scale deploy/order-worker --replicas=1   # religado, ele esvazia a fila
+```
+
 ## Decisões
 
 | Decisão | Por quê |
 |---------|---------|
-| Nomes `gateway`, `auth`, `account`, `exchange`, `product`, `order` | iguais ao compose, à imagem e ao que o HPA e o load test usam |
+| Nomes `gateway`, `auth`, `account`, `exchange`, `product`, `order`, `order-worker`, `rabbitmq` | iguais ao compose, à imagem e ao que o HPA e o load test usam |
 | `requests` de CPU e memória em todo Deployment | o HPA mede a CPU como % do `request`; sem ele, não escala |
 | `startupProbe` + `readinessProbe` + `livenessProbe` em `/actuator/health/*` | a JVM demora a subir (até 150 s de tolerância); o Service só manda tráfego para pod pronto; pod travado é reiniciado |
 | `enableServiceLinks: false` | o Kubernetes injetaria `REDIS_PORT=tcp://10.96.x.x:6379`, que colide com a variável `REDIS_PORT` do exchange (o pod não subia) |
@@ -90,6 +104,8 @@ Sem carga, o HPA espera 5 minutos estável antes de reduzir as réplicas (evita 
 | ConfigMap e Secret gerados pelo Kustomize | o nome ganha um hash do conteúdo: mudar uma configuração reinicia os pods sozinho |
 | Segredos em `secrets.env` fora do git | mesmo esquema do `docker/.env` |
 | Postgres no cluster só no kind | no EKS o banco é o RDS; o Redis fica no cluster nos dois (é só cache, não precisa de serviço gerenciado) |
+| RabbitMQ no cluster, e não no Amazon MQ | mesmo raciocínio do Redis: um pod a mais nos nós que já pagamos, em vez de um broker gerenciado cobrado por hora. Dados em `emptyDir` (sobrevivem a restart do container, não à recriação do pod) e `strategy: Recreate` (nunca dois brokers ao mesmo tempo) |
+| `order-worker` com `request` de 50m de CPU | passa quase todo o tempo esperando mensagem, e o cluster está no limite de CPU no pico do load test (ver a página de custos) |
 
 ## Validação (kind, 2026-11-15)
 
@@ -103,5 +119,4 @@ Sem carga, o HPA espera 5 minutos estável antes de reduzir as réplicas (evita 
 ## Ainda não incluído
 
 - Prometheus e Grafana no cluster (continuam no compose).
-- Product e Order (o gateway já tem as rotas; falta criar os serviços).
 - Overlay do EKS testado de verdade (depende do cluster, #51–#60).

@@ -27,6 +27,7 @@ VPC_TEMPLATE="https://s3.us-west-2.amazonaws.com/amazon-eks/cloudformation/2020-
 [ -f "$DIR/secrets.env" ] || { echo "falta $DIR/secrets.env (copie de secrets.env.example)"; exit 1; }
 set -a; . "$DIR/secrets.env"; set +a
 : "${DATABASE_PASSWORD:?preencha DATABASE_PASSWORD em secrets.env}"
+: "${RABBITMQ_PASSWORD:?preencha RABBITMQ_PASSWORD em secrets.env}"
 
 step() { echo; echo "==> $*"; }
 exists() { "$@" >/dev/null 2>&1; }
@@ -127,7 +128,8 @@ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/down
 # --- 7. Deploy ------------------------------------------------------------------------------
 step "7/7 Deploy do sistema (imagens $DOCKERHUB_USER/*)"
 kubectl kustomize "$DIR" | sed "s#DOCKERHUB_USUARIO/#$DOCKERHUB_USER/#g" | kubectl apply -f -
-kubectl -n pma26 rollout status deploy/account deploy/auth deploy/exchange deploy/product deploy/order deploy/gateway --timeout=10m
+kubectl -n pma26 rollout status deploy/rabbitmq deploy/account deploy/auth deploy/exchange deploy/product deploy/order \
+  deploy/order-worker deploy/gateway --timeout=10m
 
 echo "Aguardando o endereço do LoadBalancer..."
 until LB=$(kubectl -n pma26 get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].hostname}') && [ -n "$LB" ]; do sleep 10; done

@@ -15,15 +15,19 @@ Os `requests` dos manifests ([Kubernetes](kubernetes.md)) definem quanto de CPU 
 | Pods | CPU (request) | Memória (request) |
 |------|--------------:|------------------:|
 | auth, account, exchange, product, order (1 réplica cada) | 5 × 250m | 5 × 384 Mi |
+| order-worker (consome a fila; quase sempre ocioso) | 50m | 384 Mi |
 | gateway, mínimo do HPA | 1 × 250m | 1 × 256 Mi |
 | redis | 50m | 64 Mi |
+| rabbitmq | 50m | 128 Mi |
 | sistema (CoreDNS, aws-node, kube-proxy, metrics-server) | ~400m | ~400 Mi |
-| **Total em repouso** | **~1,95 vCPU** | **~2,6 GiB** |
+| **Total em repouso** | **~2,05 vCPU** | **~3,1 GiB** |
 | gateway no máximo do HPA (`maxReplicas: 8`, +7 pods) | +1,75 vCPU | +1,75 GiB |
-| **Total no pico do load test** | **~3,7 vCPU** | **~4,4 GiB** |
+| **Total no pico do load test** | **~3,8 vCPU** | **~4,8 GiB** |
 
 **Escolha: 2 nós `t3.medium`** (2 vCPU e 4 GiB cada, ~1,9 vCPU alocável), um em cada subnet privada (2 zonas de
-disponibilidade). Isso dá ~3,8 vCPU alocáveis, que cobrem o pico. Um `t3.small` (2 GiB) não comporta 6 JVMs mais as réplicas do gateway.
+disponibilidade). Isso dá ~3,8 vCPU alocáveis, que cobrem o pico, mas sem folga: se a última réplica do gateway
+ficar `Pending` no load test, a saída é baixar o `maxReplicas` para 7 ou subir um 3º nó. Um `t3.small` (2 GiB) não
+comporta 7 JVMs mais as réplicas do gateway.
 
 > **Decisão (2026-11-20):** com Product e Order no cluster, o HPA com máximo de 10 réplicas pediria ~4,2 vCPU, mais
 > que os ~3,8 alocáveis (as réplicas extras ficariam `Pending`). O grupo escolheu **`maxReplicas: 8`** em vez de um
@@ -93,6 +97,9 @@ plataforma cuida, mais "PaaS" é o serviço.
 
 - **Redis** roda como pod no cluster, e não no ElastiCache (~$12/mês o menor nó). É só cache: se perder os dados, a
   próxima consulta busca a cotação de novo. Pagar por alta disponibilidade gerenciada não compensa.
+- **RabbitMQ** roda como pod no cluster, e não no Amazon MQ (broker gerenciado, cobrado por hora). Custa só
+  50m de CPU e 128 Mi nos nós que já pagamos. Em troca, se o pod for recriado, as mensagens que ainda estavam na
+  fila se perdem e esses pedidos ficam `PENDENTE`.
 - **Prometheus/Grafana** ficam no Compose local, e não no Amazon Managed Prometheus/Grafana. Seria mais um custo fixo
   para um projeto acadêmico.
 
