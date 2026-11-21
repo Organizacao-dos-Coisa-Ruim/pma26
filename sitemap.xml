@@ -2,66 +2,70 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://organizacao-dos-coisa-ruim.github.io/pma26/</loc>
-         <lastmod>2026-11-20</lastmod>
+         <lastmod>2026-11-21</lastmod>
     </url>
     <url>
          <loc>https://organizacao-dos-coisa-ruim.github.io/pma26/api/</loc>
-         <lastmod>2026-11-20</lastmod>
+         <lastmod>2026-11-21</lastmod>
     </url>
     <url>
          <loc>https://organizacao-dos-coisa-ruim.github.io/pma26/arquitetura/</loc>
-         <lastmod>2026-11-20</lastmod>
+         <lastmod>2026-11-21</lastmod>
     </url>
     <url>
          <loc>https://organizacao-dos-coisa-ruim.github.io/pma26/cicd/</loc>
-         <lastmod>2026-11-20</lastmod>
+         <lastmod>2026-11-21</lastmod>
     </url>
     <url>
          <loc>https://organizacao-dos-coisa-ruim.github.io/pma26/custos/</loc>
-         <lastmod>2026-11-20</lastmod>
+         <lastmod>2026-11-21</lastmod>
     </url>
     <url>
          <loc>https://organizacao-dos-coisa-ruim.github.io/pma26/eks/</loc>
-         <lastmod>2026-11-20</lastmod>
+         <lastmod>2026-11-21</lastmod>
     </url>
     <url>
          <loc>https://organizacao-dos-coisa-ruim.github.io/pma26/ia/</loc>
-         <lastmod>2026-11-20</lastmod>
+         <lastmod>2026-11-21</lastmod>
     </url>
     <url>
          <loc>https://organizacao-dos-coisa-ruim.github.io/pma26/kubernetes/</loc>
-         <lastmod>2026-11-20</lastmod>
+         <lastmod>2026-11-21</lastmod>
     </url>
     <url>
          <loc>https://organizacao-dos-coisa-ruim.github.io/pma26/load-test/</loc>
-         <lastmod>2026-11-20</lastmod>
+         <lastmod>2026-11-21</lastmod>
     </url>
     <url>
          <loc>https://organizacao-dos-coisa-ruim.github.io/pma26/onboarding/</loc>
-         <lastmod>2026-11-20</lastmod>
+         <lastmod>2026-11-21</lastmod>
     </url>
     <url>
          <loc>https://organizacao-dos-coisa-ruim.github.io/pma26/servicos/</loc>
-         <lastmod>2026-11-20</lastmod>
+         <lastmod>2026-11-21</lastmod>
     </url>
     <url>
          <loc>https://organizacao-dos-coisa-ruim.github.io/pma26/gargalos/</loc>
-         <lastmod>2026-11-20</lastmod>
+         <lastmod>2026-11-21</lastmod>
     </url>
     <url>
          <loc>https://organizacao-dos-coisa-ruim.github.io/pma26/gargalos/cache-redis/</loc>
-         <lastmod>2026-11-20</lastmod>
+         <lastmod>2026-11-21</lastmod>
+    </url>
+    <url>
+         <loc>https://organizacao-dos-coisa-ruim.github.io/pma26/gargalos/load-balancing/</loc>
+         <lastmod>2026-11-21</lastmod>
     </url>
     <url>
          <loc>https://organizacao-dos-coisa-ruim.github.io/pma26/gargalos/observabilidade/</loc>
-         <lastmod>2026-11-20</lastmod>
+         <lastmod>2026-11-21</lastmod>
     </url>
     <url>
          <loc>https://organizacao-dos-coisa-ruim.github.io/pma26/gargalos/rbac/</loc>
-         <lastmod>2026-11-20</lastmod>
+         <lastmod>2026-11-21</lastmod>
     </url>
     <url>
          <loc>https://organizacao-dos-coisa-ruim.github.io/pma26/gargalos/scan-vulnerabilidades/</loc>
-         <lastmod>2026-11-20</lastmod>
+         <lastmod>2026-11-21</lastmod>
     </url>
 </urlset>
