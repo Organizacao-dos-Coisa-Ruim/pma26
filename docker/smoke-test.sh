@@ -119,7 +119,12 @@ ORDER_ID="$(json_id)"
 # 3 x 10.12: o order busca o preço no product (Feign) e calcula o total
 check "total do pedido"     30.36 "$(echo "$BODY" | sed -n 's/.*"total":\([0-9.]*\).*/\1/p')"
 check "pedido sem itens"    400 "$(status -X POST "$GATEWAY/orders" -H "$AUTH" -H "$JSON" -d '{"items":[]}')"
-check "produto inexistente" 404 "$(status -X POST "$GATEWAY/orders" -H "$AUTH" -H "$JSON" -d '{"items":[{"productId":"nao-existe","quantity":1}]}')"
+# id fora do formato UUID: o order responde 404 sem chamar o product
+check "id fora do formato"  404 "$(status -X POST "$GATEWAY/orders" -H "$AUTH" -H "$JSON" -d '{"items":[{"productId":"nao-existe","quantity":1}]}')"
+# achado do ZAP: "health-check" virava GET /products/health-check (200 sem corpo) e o pedido respondia 502
+check "id que muda o caminho" 404 "$(status -X POST "$GATEWAY/orders" -H "$AUTH" -H "$JSON" -d '{"items":[{"productId":"health-check","quantity":1}]}')"
+# UUID válido que não existe: o product responde 404 (via Feign) e o order repassa 404
+check "produto inexistente" 404 "$(status -X POST "$GATEWAY/orders" -H "$AUTH" -H "$JSON" -d '{"items":[{"productId":"00000000-0000-0000-0000-000000000000","quantity":1}]}')"
 check "consulta o pedido"   200 "$(status -H "$AUTH" "$GATEWAY/orders/$ORDER_ID")"
 check "lista meus pedidos"  200 "$(status -H "$AUTH" "$GATEWAY/orders")"
 check "pedido de outro"     403 "$(status -H "Authorization: Bearer $ADMIN_TOKEN" "$GATEWAY/orders/$ORDER_ID")"
