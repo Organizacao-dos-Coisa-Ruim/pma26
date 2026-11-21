@@ -625,6 +625,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#mensageria-rabbitmq" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mensageria (RabbitMQ)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#decisoes" class="md-nav__link">
     <span class="md-ellipsis">
       Decisões
@@ -882,6 +891,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#mensageria-rabbitmq" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mensageria (RabbitMQ)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#decisoes" class="md-nav__link">
     <span class="md-ellipsis">
       Decisões
@@ -936,16 +954,18 @@ Organizados com <strong>Kustomize</strong>, que já vem no <code>kubectl</code> 
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│   ├── auth.yaml            Deployment + Service
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│   ├── exchange.yaml        Deployment + Service
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   ├── product.yaml         Deployment + Service
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│   ├── order.yaml           Deployment + Service
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   ├── gateway.yaml         Deployment + Service + HPA
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│   ├── redis.yaml           Deployment + Service (cache do Exchange)
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│   ├── namespace.yaml       namespace pma26
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│   └── kustomization.yaml   ConfigMap (URLs, TTL...) e enableServiceLinks: false
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>├── overlays/
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│   ├── kind/                Postgres no cluster, imagens locais, gateway em localhost:8080
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│   └── eks/                 RDS, imagens do Docker Hub, gateway com LoadBalancer; up.sh/down.sh criam e destroem a AWS
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>└── addons/
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    └── metrics-server/      CPU/memória dos pods, necessário para o HPA
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│   ├── order.yaml           Deployment + Service (API: publica o evento "pedido criado")
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   ├── order-worker.yaml    Deployment, mesma imagem do order (consome a fila e confirma os pedidos)
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│   ├── gateway.yaml         Deployment + Service + HPA
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│   ├── redis.yaml           Deployment + Service (cache do Exchange)
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│   ├── rabbitmq.yaml        Deployment + Service (fila dos pedidos)
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│   ├── namespace.yaml       namespace pma26
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│   └── kustomization.yaml   ConfigMap (URLs, TTL...) e enableServiceLinks: false
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>├── overlays/
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>│   ├── kind/                Postgres no cluster, imagens locais, gateway em localhost:8080
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>│   └── eks/                 RDS, imagens do Docker Hub, gateway com LoadBalancer; up.sh/down.sh criam e destroem a AWS
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>└── addons/
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    └── metrics-server/      CPU/memória dos pods, necessário para o HPA
 </code></pre></div>
 <h2 id="rodar-no-kind">Rodar no kind</h2>
 <p>Pré-requisitos: Docker, <code>kubectl</code> e <a href="https://kind.sigs.k8s.io/">kind</a> (<code>winget install Kubernetes.kind</code>).
@@ -988,6 +1008,14 @@ e <code>kubectl -n pma26 rollout restart deploy/&lt;serviço&gt;</code>.</p>
 <a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">"</span><span class="w"> </span>http://pma26-control-plane:30080/exchange/USD/BRL
 </code></pre></div>
 <p>Sem carga, o HPA espera 5 minutos estável antes de reduzir as réplicas (evita ficar subindo e descendo).</p>
+<h2 id="mensageria-rabbitmq">Mensageria (RabbitMQ)</h2>
+<p>O <code>order</code> publica o evento "pedido criado" e o <code>order-worker</code> consome a fila e confirma o pedido (#77).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>pma26<span class="w"> </span>port-forward<span class="w"> </span>svc/rabbitmq<span class="w"> </span><span class="m">15672</span><span class="w">    </span><span class="c1"># painel em http://localhost:15672 (usuário pma26)</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># worker fora do ar: os pedidos continuam sendo aceitos (PENDENTE) e as mensagens esperam na fila</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>pma26<span class="w"> </span>scale<span class="w"> </span>deploy/order-worker<span class="w"> </span>--replicas<span class="o">=</span><span class="m">0</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>pma26<span class="w"> </span>scale<span class="w"> </span>deploy/order-worker<span class="w"> </span>--replicas<span class="o">=</span><span class="m">1</span><span class="w">   </span><span class="c1"># religado, ele esvazia a fila</span>
+</code></pre></div>
 <h2 id="decisoes">Decisões</h2>
 <table>
 <thead>
@@ -998,7 +1026,7 @@ e <code>kubectl -n pma26 rollout restart deploy/&lt;serviço&gt;</code>.</p>
 </thead>
 <tbody>
 <tr>
-<td>Nomes <code>gateway</code>, <code>auth</code>, <code>account</code>, <code>exchange</code>, <code>product</code>, <code>order</code></td>
+<td>Nomes <code>gateway</code>, <code>auth</code>, <code>account</code>, <code>exchange</code>, <code>product</code>, <code>order</code>, <code>order-worker</code>, <code>rabbitmq</code></td>
 <td>iguais ao compose, à imagem e ao que o HPA e o load test usam</td>
 </tr>
 <tr>
@@ -1033,6 +1061,14 @@ e <code>kubectl -n pma26 rollout restart deploy/&lt;serviço&gt;</code>.</p>
 <td>Postgres no cluster só no kind</td>
 <td>no EKS o banco é o RDS; o Redis fica no cluster nos dois (é só cache, não precisa de serviço gerenciado)</td>
 </tr>
+<tr>
+<td>RabbitMQ no cluster, e não no Amazon MQ</td>
+<td>mesmo raciocínio do Redis: um pod a mais nos nós que já pagamos, em vez de um broker gerenciado cobrado por hora. Dados em <code>emptyDir</code> (sobrevivem a restart do container, não à recriação do pod) e <code>strategy: Recreate</code> (nunca dois brokers ao mesmo tempo)</td>
+</tr>
+<tr>
+<td><code>order-worker</code> com <code>request</code> de 50m de CPU</td>
+<td>passa quase todo o tempo esperando mensagem, e o cluster está no limite de CPU no pico do load test (ver a página de custos)</td>
+</tr>
 </tbody>
 </table>
 <h2 id="validacao-kind-2026-11-15">Validação (kind, 2026-11-15)</h2>
@@ -1047,7 +1083,6 @@ e <code>kubectl -n pma26 rollout restart deploy/&lt;serviço&gt;</code>.</p>
 <h2 id="ainda-nao-incluido">Ainda não incluído</h2>
 <ul>
 <li>Prometheus e Grafana no cluster (continuam no compose).</li>
-<li>Product e Order (o gateway já tem as rotas; falta criar os serviços).</li>
 <li>Overlay do EKS testado de verdade (depende do cluster, #51–#60).</li>
 </ul>
 

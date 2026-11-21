@@ -1033,6 +1033,13 @@
 <td>Replicou o job de deploy contínuo no EKS do exchange-service nos outros 5 services (#65), validou com actionlint e documentou o acesso do CI ao cluster</td>
 <td>Felipe escolheu usar no CI a mesma access key de quem cria o cluster (mais simples, com o trade-off documentado); revisão pendente</td>
 </tr>
+<tr>
+<td>2026-11-20</td>
+<td><code>pma26</code>: <code>.github/workflows/smoke-test.yml</code>; <code>k8s/base/rabbitmq.yaml</code> e <code>order-worker.yaml</code> (novos), <code>order.yaml</code>, <code>kustomization.yaml</code>; <code>secrets.env.example</code> (kind e eks), <code>k8s/overlays/eks/up.sh</code>, <code>k8s/README.md</code>; <code>docs/custos.md</code></td>
+<td>Claude Code</td>
+<td>Revisou a mensageria (#77): rodou os 26 testes do order-service e listou o que faltava. Corrigiu o smoke test do CI (o <code>.env</code> gerado não tinha <code>RABBITMQ_PASSWORD</code> e o compose não subia). Levou o RabbitMQ e o order-worker para o Kubernetes com <code>requests</code> baixos, para caber no dimensionamento do <code>custos.md</code>, e atualizou essa tabela. Validou o render dos overlays kind e eks e a interpolação do compose do CI, <strong>sem rodar num cluster</strong></td>
+<td>Carlos fez a mensageria (order-service, compose, <code>mq-test.sh</code>) e pediu as correções; aceitou a recomendação de manter o RabbitMQ no cluster em vez do Amazon MQ; revisão pendente</td>
+</tr>
 </tbody>
 </table>
 
