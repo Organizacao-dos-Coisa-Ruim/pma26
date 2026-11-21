@@ -1,0 +1,56 @@
+# RabbitMQ: fila do evento "pedido criado" (gargalo de mensageria, #77). O order publica e o
+# order-worker consome. Roda como pod no cluster, igual ao Redis, e não no Amazon MQ (PaaS cobrado à parte).
+#
+# Os dados ficam num emptyDir: as mensagens sobrevivem a um restart do container, mas não à recriação do
+# pod (no compose há volume). Uma réplica só, com "Recreate" para nunca existirem dois brokers ao mesmo tempo.
+#
+# Painel: kubectl -n pma26 port-forward svc/rabbitmq 15672  ->  http://localhost:15672 (usuário pma26)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+  labels: { app: rabbitmq }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector:
+    matchLabels: { app: rabbitmq }
+  template:
+    metadata:
+      labels: { app: rabbitmq }
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:4.1-management-alpine
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: pma26
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom: { secretKeyRef: { name: pma26-secrets, key: RABBITMQ_PASSWORD } }
+          ports:
+            - { name: amqp, containerPort: 5672 }
+            - { name: management, containerPort: 15672 }
+          volumeMounts:
+            - { name: data, mountPath: /var/lib/rabbitmq }
+          resources:
+            requests: { cpu: 50m, memory: 128Mi }
+            limits: { cpu: 500m, memory: 512Mi }
+          # pronto quando a porta AMQP aceita conexão, o mesmo critério do compose. Não usamos o
+          # "rabbitmq-diagnostics ping": ele roda como root e pode criar um .erlang.cookie que o RabbitMQ não lê
+          readinessProbe:
+            tcpSocket: { port: amqp }
+            periodSeconds: 5
+      volumes:
+        - name: data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+  labels: { app: rabbitmq }
+spec:
+  selector: { app: rabbitmq }
+  ports:
+    - { name: amqp, port: 5672, targetPort: amqp }
+    - { name: management, port: 15672, targetPort: management }

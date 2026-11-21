@@ -1,5 +1,6 @@
 # Order: pedidos. Usa o Postgres (schema "orders"; no EKS, o RDS) e consulta o product
 # via Feign (PMA_PRODUCT_URL=http://product:8080, no ConfigMap).
+# Publica o evento "pedido criado" no RabbitMQ; quem consome a fila é o order-worker (order-worker.yaml).
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,6 +25,11 @@ spec:
           env:
             - name: DATABASE_PASSWORD
               valueFrom: { secretKeyRef: { name: pma26-secrets, key: DATABASE_PASSWORD } }
+            - name: RABBITMQ_PASSWORD
+              valueFrom: { secretKeyRef: { name: pma26-secrets, key: RABBITMQ_PASSWORD } }
+            # a API só publica o evento; o consumo da fila fica no order-worker
+            - name: ORDER_WORKER_ENABLED
+              value: "false"
           resources:
             requests: { cpu: 250m, memory: 384Mi }
             limits: { cpu: "1", memory: 768Mi }

@@ -32,6 +32,7 @@ jobs:
             echo "GRAFANA_ADMIN_PASSWORD=$(openssl rand -hex 12)"
             echo "ADMIN_EMAIL=admin@pma26.local"
             echo "ADMIN_PASSWORD=$(openssl rand -hex 12)"
+            echo "RABBITMQ_PASSWORD=$(openssl rand -hex 12)"
           } > docker/.env
 
       - name: Build e subida
@@ -57,7 +58,7 @@ jobs:
 
       - name: Logs dos serviços (se falhar)
         if: failure()
-        run: docker compose logs --no-color account auth exchange product order gateway lb
+        run: docker compose logs --no-color account auth exchange product order order-worker rabbitmq gateway lb
 
       - name: Derrubar
         if: always()

@@ -12,13 +12,16 @@ resources:
   - exchange.yaml
   - product.yaml
   - order.yaml
+  - order-worker.yaml
   - gateway.yaml
   - redis.yaml
+  - rabbitmq.yaml
 
 patches:
   # Por padrão o Kubernetes injeta em cada pod variáveis com os endereços dos Services no formato
   # antigo do Docker (REDIS_PORT=tcp://10.96.x.x:6379, AUTH_PORT=..., ACCOUNT_PORT=...). O exchange
-  # usa REDIS_PORT como número da porta e quebrava ao subir. Os serviços se acham pelo DNS
+  # usa REDIS_PORT como número da porta e quebrava ao subir (o order quebraria do mesmo jeito com o
+  # RABBITMQ_PORT do Service rabbitmq). Os serviços se acham pelo DNS
   # (http://redis, http://account:8080), então essas variáveis não são necessárias.
   - target: { kind: Deployment }
     patch: |-
@@ -46,6 +49,8 @@ configMapGenerator:
       - CORS_ALLOWED_ORIGINS=*
       # order -> product (Feign)
       - PMA_PRODUCT_URL=http://product:8080
+      # order e order-worker -> RabbitMQ (fila "pedido criado"; a senha vem do Secret)
+      - RABBITMQ_HOST=rabbitmq
       # exchange
       - REDIS_HOST=redis
       - EXCHANGE_CACHE_TTL=5m
