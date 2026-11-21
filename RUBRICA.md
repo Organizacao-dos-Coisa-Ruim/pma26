@@ -120,6 +120,7 @@ Repositório próprio com MkDocs publicado, contendo:
 - [x] Docker Compose local subindo o sistema inteiro (smoke test com 39 cenários)
 - [ ] 2 gargalos por integrante, com evidência
   - [x] Felipe: cache Redis no Exchange ([docs](docs/gargalos/cache-redis.md)) e scan de vulnerabilidades com OWASP ZAP ([docs](docs/gargalos/scan-vulnerabilidades.md)); faltam os prints do Grafana e do Actions
+  - [ ] Carlos: load balancing com Nginx + 3 réplicas do gateway ([docs](docs/gargalos/load-balancing.md)), com prints do Grafana. Segundo gargalo a definir
 - [ ] AWS CLI configurado
 - [ ] EKS + VPC + Node Group + RDS
 - [ ] CI/CD: Docker Hub → EKS
