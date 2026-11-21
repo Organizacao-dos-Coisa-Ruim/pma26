@@ -16,7 +16,7 @@ docker compose -f docker/compose.yml up --build
 
 | O quê | Onde |
 |-------|------|
-| API (só pelo gateway) | http://localhost:8080 |
+| API (pelo load balancer, que repassa ao gateway) | http://localhost:8080 |
 | Grafana | http://localhost:3000 (`admin` / `GRAFANA_ADMIN_PASSWORD`) |
 | Prometheus | http://localhost:9090 |
 | Requisições prontas | [`docs/requests.http`](https://github.com/Organizacao-dos-Coisa-Ruim/pma26/blob/main/docs/requests.http) (extensão REST Client do VS Code) |

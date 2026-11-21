@@ -5,7 +5,9 @@ E-commerce em microsserviços Spring Boot. Projeto de **Plataformas, Microsservi
 ```
               Internet
                  │
-            [ Gateway ]  :8080, único ponto de entrada; valida o JWT com o Auth
+              [ LB ]     :8080, único ponto de entrada (Nginx; no EKS, o ELB da AWS)
+           ┌─────┼─────┐
+       [Gateway] x 3 réplicas: validam o JWT com o Auth e roteiam
           ┌──────┴──────┐
        [Auth] ──Feign──▶ [Account] ──▶ PostgreSQL
 ```
@@ -94,11 +96,12 @@ O compose também sobe o **Prometheus** e o **Grafana**, acessíveis só desta m
 | Prometheus | http://localhost:9090 | `Status → Targets` mostra se os 3 serviços estão sendo coletados |
 
 Dashboards (pasta **PMA26**, provisionados automaticamente):
-- **PMA26 - Visão geral** (home): req/s, latência p95/p99, respostas por status, taxa de 5xx, CPU, heap, pool do banco e threads do Tomcat por serviço. É o dashboard para acompanhar o load test.
+- **PMA26 - Visão geral** (home): req/s, latência p95/p99, respostas por status, taxa de 5xx, CPU, heap, pool do banco e threads do Tomcat por serviço, e requisições por réplica do gateway (load balancing). É o dashboard para acompanhar o load test.
 - **SpringBoot APM Dashboard** ([12900](https://grafana.com/grafana/dashboards/12900)): detalhes de JVM, GC, HikariCP, Tomcat e logs, por serviço.
 
-O Prometheus coleta a cada 5s `gateway:8080/gateway/actuator/prometheus`, `auth:8080/actuator/prometheus`
-e `account:8080/actuator/prometheus`. O `/actuator` do auth e do account não passa pelo gateway, então não fica exposto.
+O Prometheus coleta a cada 5s `/gateway/actuator/prometheus` de **cada réplica** do gateway (descobertas pelo DNS do
+Docker) e `/actuator/prometheus` de cada serviço (`auth:8080`, `account:8080`...). O `/actuator` dos serviços não passa
+pelo gateway, então não fica exposto.
 Detalhes em [docs/gargalos/observabilidade.md](docs/gargalos/observabilidade.md).
 
 ## CI/CD

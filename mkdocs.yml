@@ -101,6 +101,7 @@ nav:
       - RBAC: gargalos/rbac.md
       - Cache com Redis: gargalos/cache-redis.md
       - Scan de vulnerabilidades: gargalos/scan-vulnerabilidades.md
+      - Load balancing: gargalos/load-balancing.md
   - Infraestrutura:
       - Kubernetes: kubernetes.md
       - CI/CD: cicd.md
