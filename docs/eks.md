@@ -16,6 +16,7 @@ Rubrica: **AWS (5%)** e **EKS (10%)**. Issues #46–#60.
 | Alerta de orçamento | #49 | AWS Budgets → alerta em US$ 20 |
 | Imagens no Docker Hub | #64, #66 | secrets `DOCKERHUB_USERNAME` e `DOCKERHUB_TOKEN` na organização do GitHub; merge na `main` de cada service publica `<usuario>/<serviço>` |
 | Segredos do deploy | | `k8s/overlays/eks/secrets.env` (modelo em `secrets.env.example`, fora do git) |
+| Acesso do CI ao EKS | #66 | secrets `AWS_ACCESS_KEY_ID` e `AWS_SECRET_ACCESS_KEY` com **a mesma access key** usada no `up.sh` ([por quê](cicd.md#acesso-do-ci-ao-cluster)) |
 
 ## Subir e derrubar
 
@@ -46,9 +47,8 @@ apagar a VPC. Por último sai a pilha da VPC, que leva junto os NAT Gateways, o 
 
 Depois do push da imagem no Docker Hub, o CI de cada service roda `kubectl set image` com a tag do commit, e o
 Kubernetes faz **rolling update** sem downtime. Se o cluster não existir no momento (ele só fica de pé durante os
-testes), o passo é pulado sem erro. Modelo implementado no
-[exchange-service](https://github.com/Organizacao-dos-Coisa-Ruim/pma26-exchange-service/pull/4){:target='_blank'};
-falta replicar nos outros services. Ver [CI/CD](cicd.md).
+testes), o passo é pulado sem erro. O job está nos 6 services. O CI usa **a mesma access key de quem roda o
+`up.sh`**, porque só quem cria o cluster tem acesso a ele por padrão ([por quê](cicd.md#acesso-do-ci-ao-cluster)).
 
 ## Evidências (a coletar)
 

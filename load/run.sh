@@ -8,7 +8,7 @@
 #   grafico.png     usuários, réplicas, RPS e latência no mesmo eixo de tempo (load/plot.py)
 #   events.txt      eventos SuccessfulRescale do HPA
 #
-# Uso (com o sistema de pé no kind, ver k8s/README.md):
+# Uso (com o sistema de pé no kind, ver k8s/README.md, e ADMIN_EMAIL/ADMIN_PASSWORD no ambiente):
 #   ./load/run.sh                 # 8 minutos, pico de 100 usuários
 #   LOAD_SCALE=0.5 ./load/run.sh  # metade do tempo (teste rápido)
 #   LOAD_PEAK=200 ./load/run.sh   # pico de 200 usuários
@@ -21,6 +21,9 @@ ROOT="$(cd "$(dirname "$0")" && pwd)"
 NETWORK="${NETWORK:-kind}"
 HOST="${HOST:-http://pma26-control-plane:30080}"
 NAMESPACE="${NAMESPACE:-pma26}"
+# o admin cria (e no fim apaga) o catálogo do teste: só admin cria produto (RBAC)
+ADMIN_EMAIL="${ADMIN_EMAIL:?defina ADMIN_EMAIL (ex.: set -a; . docker/.env; set +a)}"
+ADMIN_PASSWORD="${ADMIN_PASSWORD:?defina ADMIN_PASSWORD}"
 OUT="$ROOT/results/$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$OUT"
 
@@ -50,6 +53,7 @@ echo "Carga em $HOST (rede $NETWORK). Resultados em $OUT"
 # MSYS_NO_PATHCONV: evita o Git Bash do Windows reescrever os caminhos do container
 MSYS_NO_PATHCONV=1 docker run --rm --network "$NETWORK" \
   -e LOAD_SCALE="${LOAD_SCALE:-1}" -e LOAD_PEAK="${LOAD_PEAK:-100}" \
+  -e ADMIN_EMAIL="$ADMIN_EMAIL" -e ADMIN_PASSWORD="$ADMIN_PASSWORD" \
   -v "$ROOT:/mnt/locust" -w /mnt/locust \
   locustio/locust:2.32.4 -f locustfile.py --host "$HOST" "${MODE[@]}" \
   --csv "results/$(basename "$OUT")/stats" --csv-full-history \

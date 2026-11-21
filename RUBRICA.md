@@ -125,9 +125,9 @@ Repositório próprio com MkDocs publicado, contendo:
 - [ ] EKS + VPC + Node Group + RDS
 - [ ] CI/CD: Docker Hub → EKS
 - [ ] Load test + HPA + vídeo
-  - [x] Script (Locust) e execução no kind com análise ([docs](docs/load-test.md)); faltam EKS e vídeo
+  - [x] Script (Locust, fluxo de loja: catálogo, pedidos, cotação) e execução no kind com análise ([docs](docs/load-test.md)); faltam EKS e vídeo
 - [ ] Plano de custos + PaaS + SLA
   - [x] Estimativa, PaaS e SLA ([docs](docs/custos.md)); faltam o link do Pricing Calculator e o custo real (Cost Explorer)
 - [ ] MkDocs (grupo e individual) com registro do uso de IA
-  - [x] Site do grupo no `pma26` ([mkdocs.yml](mkdocs.yml), publicado pelo workflow `docs.yml`); faltam ativar o GitHub Pages (Settings > Pages > branch `gh-pages`), o diagrama da infra AWS, EKS e os repositórios individuais
+  - [x] Site do grupo no `pma26` ([mkdocs.yml](mkdocs.yml), publicado pelo workflow `docs.yml`); publicado em https://organizacao-dos-coisa-ruim.github.io/pma26/ com o diagrama da infra AWS; faltam EKS e os repositórios individuais
 - [ ] Slides + vídeo de 1–2 min

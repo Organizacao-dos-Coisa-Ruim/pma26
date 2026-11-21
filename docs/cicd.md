@@ -60,8 +60,8 @@ Sem estes secrets, o passo de publicar a imagem é **pulado** e o CI continua ve
 
 ## Deploy no EKS (#65)
 
-Job `deploy`, depois do push da imagem, em push na `main` (modelo no
-[exchange-service](https://github.com/Organizacao-dos-Coisa-Ruim/pma26-exchange-service/pull/4); falta replicar nos outros):
+Job `deploy`, depois do push da imagem, em push na `main`. É o mesmo job nos 6 services (gateway, auth, account,
+exchange, product e order); só muda a variável `IMAGE`:
 
 1. configura as credenciais AWS (secrets `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`);
 2. verifica se o cluster `pma26` existe. Ele só fica de pé durante os testes ([EKS](eks.md)); sem ele, o job pula sem erro;
@@ -69,6 +69,21 @@ Job `deploy`, depois do push da imagem, em push na `main` (modelo no
 
 Usar a **tag do commit** (e não `latest`) faz o Kubernetes perceber a mudança e fazer o rolling update, além de deixar
 claro qual versão está rodando (`kubectl get deploy -o wide`).
+
+### Acesso do CI ao cluster
+
+O `up.sh` cria o cluster sem dar acesso a mais ninguém: no EKS, **só a identidade IAM que criou o cluster é admin
+dele** por padrão. Se o CI usasse a access key de outro usuário IAM, o `kubectl` responderia `Unauthorized`.
+
+**Decisão:** os secrets `AWS_ACCESS_KEY_ID` e `AWS_SECRET_ACCESS_KEY` do CI são **a mesma access key do usuário IAM
+que roda o `up.sh`**. É a opção mais simples: nada a configurar no cluster.
+
+- **Custo da escolha:** o CI tem as mesmas permissões que esse usuário na AWS. Num projeto acadêmico, com o cluster
+  ligado só durante os testes, é aceitável.
+- **Em produção** faríamos diferente: um usuário (ou role via OIDC do GitHub) só para o CI, com acesso apenas ao
+  namespace `pma26`, liberado no cluster com `aws eks create-access-entry`.
+
+Os secrets podem ser da organização (precisa de owner da org) ou de cada repositório de service.
 
 ## Evidências (#67)
 
