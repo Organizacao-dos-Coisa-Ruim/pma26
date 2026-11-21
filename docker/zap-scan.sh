@@ -18,8 +18,9 @@ REPORT_DIR="${1:-zap-report}"
 # GATEWAY: endereço visto da sua máquina (cadastro e login); GATEWAY_INTERNAL: visto pelo container do ZAP
 GATEWAY="${GATEWAY:-http://localhost:8080}"
 NETWORK="${NETWORK:-pma26_default}"
-GATEWAY_INTERNAL="${GATEWAY_INTERNAL:-http://gateway:8080}"
-# host sem esquema e porta (ex.: gateway), para o ZAP só mandar o token para o próprio gateway
+# no compose, a porta de entrada é o load balancer (lb, Nginx), que repassa para as réplicas do gateway
+GATEWAY_INTERNAL="${GATEWAY_INTERNAL:-http://lb:8080}"
+# host sem esquema e porta (ex.: lb), para o ZAP só mandar o token para a própria porta de entrada
 GATEWAY_HOST="$(echo "$GATEWAY_INTERNAL" | sed -E 's#^[a-z]+://##; s#[:/].*$##')"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 JSON='Content-Type: application/json'

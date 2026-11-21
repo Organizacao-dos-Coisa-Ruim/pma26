@@ -8,4 +8,5 @@ A rubrica pede **pelo menos 2 gargalos por integrante**, cada um com **problema 
 | [RBAC](rbac.md) | Pedro Nadotti | qualquer usuário logado listava e apagava contas de outros | papel `user`/`admin` no JWT, checado no gateway e no Account | cenários 403/200 no smoke test |
 | [Cache com Redis](cache-redis.md) | Felipe Camêlo | toda cotação ia até a AwesomeAPI: lento, limitado e frágil | `@Cacheable` com Redis, TTL de 5 min | chamadas externas e latência antes/depois |
 | [Scan de vulnerabilidades](scan-vulnerabilidades.md) | Felipe Camêlo | nenhuma verificação de segurança automatizada | OWASP ZAP (DAST) + OWASP Dependency-Check no CI | relatórios do ZAP antes/depois; 11 CVEs → 0 |
+| [Load balancing](load-balancing.md) | Carlos | uma réplica só do gateway: ponto único de falha (caiu, o sistema todo caiu) | Nginx na frente de 3 réplicas do gateway (no EKS, ELB + HPA) | 100/100/100 na distribuição; queda de uma réplica: 100% de erro antes, 0 a 1 erro depois |
 | *a definir* | Carlos | | | |

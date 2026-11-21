@@ -208,6 +208,22 @@
           "legendFormat": "hit ratio"
         }
       ]
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "Gateway: requisições por réplica (load balancing)",
+      "description": "Gargalo #80. Cada linha é uma réplica do gateway atrás do Nginx: linhas parecidas mostram a carga dividida igualmente. Quando uma réplica cai, a linha dela some e as outras sobem.",
+      "gridPos": { "x": 0, "y": 48, "w": 24, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (instance) (rate(http_server_requests_seconds_count{application=\"gateway\", uri!~\".*actuator.*\"}[1m]))",
+          "legendFormat": "réplica {{instance}}"
+        }
+      ]
     }
   ]
 }
