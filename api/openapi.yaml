@@ -218,7 +218,7 @@ paths:
           description: Produtos
           content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/ProductOut" } } } }
     post:
-      summary: Cria produto
+      summary: Cria produto (só admin)
       requestBody:
         content: { application/json: { schema: { $ref: "#/components/schemas/ProductIn" } } }
       responses:
@@ -226,6 +226,7 @@ paths:
           description: Criado
           content: { application/json: { schema: { $ref: "#/components/schemas/ProductOut" } } }
         "400": { description: Dados inválidos }
+        "403": { description: Não é admin }
   /products/{id}:
     parameters:
       - { name: id, in: path, required: true, schema: { type: string } }
@@ -237,9 +238,10 @@ paths:
           content: { application/json: { schema: { $ref: "#/components/schemas/ProductOut" } } }
         "404": { description: Não existe }
     delete:
-      summary: Apaga um produto
+      summary: Apaga um produto (só admin)
       responses:
         "204": { description: Apagado }
+        "403": { description: Não é admin }
         "404": { description: Não existe }
 
   /orders/health-check:

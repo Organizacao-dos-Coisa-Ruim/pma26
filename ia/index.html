@@ -1005,6 +1005,13 @@
 <td>Implementou o gargalo de load balancing (issue #80): Nginx em round-robin na frente de 3 réplicas do gateway, com reenvio quando uma réplica cai; Prometheus coletando cada réplica; script de evidência. Mediu no compose: distribuição 100/100/100 e, com uma réplica morta no meio, 0 a 1 erro (antes, com 1 réplica, 100% de erro); documentou também as limitações observadas. Validou smoke test (39 cenários) e o build do MkDocs em <code>--strict</code></td>
 <td>Carlos escolheu o gargalo, tirou os prints do Grafana e faz os commits</td>
 </tr>
+<tr>
+<td>2026-11-20</td>
+<td><code>gateway-service</code>: <code>RouterValidator</code> (<code>POST</code>/<code>DELETE /products</code> só admin) e <code>RouterValidatorTest</code> (PR gateway-service#7, via fork); <code>pma26</code>: <code>docker/smoke-test.sh</code> (admin cria/apaga produto, user → 403), <code>docs/openapi.yaml</code>, <code>docs/requests.http</code>, <code>docs/gargalos/rbac.md</code>; <code>k8s/base/gateway.yaml</code> (<code>maxReplicas: 8</code>), <code>docs/custos.md</code>, <code>k8s/README.md</code>, <code>docs/load-test.md</code></td>
+<td>Claude Code</td>
+<td>Restringiu a criação e a remoção de produtos a admin no gateway, ajustou smoke test e docs; trocou o máximo do HPA para 8 para caber nos 2 nós do EKS. Validou com <code>mvn verify</code> (16 testes) e smoke test</td>
+<td>Felipe e Carlos decidiram a regra de admin em <code>/products</code> e o <code>maxReplicas: 8</code>; Felipe pediu a implementação; revisão pendente</td>
+</tr>
 </tbody>
 </table>
 
